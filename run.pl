@@ -2,14 +2,13 @@
 
 use Gtk3 -init;
 use Glib::Object::Introspection;
-use Gtk3::Ex::PdfViewer;
 use Glib 'TRUE', 'FALSE';
 
 use Moo;
 
 has window => ( is => 'lazy' );
 
-has [qw{table dock master layout dockbar box pdf_viewer}] => ( is => 'rw' );
+has [qw{table dock master layout dockbar box}] => ( is => 'rw' );
 
 sub gval ($$) { Glib::Object::Introspection::GValueWrapper->new('Glib::'.ucfirst($_[0]) => $_[1]) } # GValue wrapper shortcut
 sub genum { Glib::Object::Introspection->convert_sv_to_enum($_[0], $_[1]) }
@@ -79,20 +78,8 @@ sub setup_window {
 		$self->dock->add_item( $item, 'GDL_DOCK_TOP' );
 	}
 
-	my $viewer = $self->create_pdf_viewer();
-	my $viewer_dock_item = Gdl::DockItem->new_with_stock ("PDF", "PDF", "GTK_STOCK_NEW",
-					"GDL_DOCK_ITEM_BEH_NORMAL");
-	$viewer_dock_item->add( $viewer->widget );
-	$self->dock->add_item( $viewer_dock_item, 'GDL_DOCK_TOP' );
-	$viewer->show_file( "$ENV{HOME}/r/thesis/thesis/thesis.pdf" );
 }
 
-sub create_pdf_viewer {
-	my ($self) = @_;
-	my $viewer = Gtk3::Ex::PdfViewer->new();
-	$self->pdf_viewer( $viewer );
-	$viewer;
-}
 
 
 sub create_text_item {
