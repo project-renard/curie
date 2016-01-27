@@ -1,3 +1,3 @@
 Testing out GTK+ UI.
 
-https://public.etherpad-mozilla.org/p/dW7FmrdR34
+<https://project-renard.github.io/doc/development/meeting-log/posts/2016/01/24/initial-setup/>
