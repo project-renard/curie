@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 
 use Gtk3 -init;
+use Cairo;
 use Glib::Object::Introspection;
 use Glib 'TRUE', 'FALSE';
 
@@ -48,7 +49,9 @@ sub setup_drawing_area_example {
 	my $drawing_area = Gtk3::DrawingArea->new();
 	$drawing_area->signal_connect( draw => sub {
 		my ($widget, $cr) = @_;
-		$cr->set_source_rgb(0, 1, 0);
+
+		my $img = Cairo::ImageSurface->create_from_png( 'peppers.png' );
+		$cr->set_source_surface($img, 0, 0);
 		$cr->paint;
 
 		return TRUE;
