@@ -37,6 +37,29 @@ sub setup_window {
 	$self->builder->add_from_file( UI_FILE );
 	$self->builder->connect_signals;
 
+	$self->setup_drawing_area_example;
+}
+
+sub setup_drawing_area_example {
+	my ($self) = @_;
+
+	my $vbox = $self->builder->get_object('application_vbox');
+
+	my $drawing_area = Gtk3::DrawingArea->new();
+	$drawing_area->signal_connect( draw => sub {
+		my ($widget, $cr) = @_;
+		$cr->set_source_rgb(0, 1, 0);
+		$cr->paint;
+
+		return TRUE;
+	});
+
+	$vbox->pack_start( $drawing_area, TRUE, TRUE, 0);
+}
+
+sub setup_docking_example {
+	my ($self) = @_;
+
 	#/* table */
 	$self->table( Gtk3::Box->new("GTK_ORIENTATION_VERTICAL", 5) );
 	my $vbox = $self->builder->get_object('application_vbox');
@@ -78,7 +101,6 @@ sub setup_window {
 
 		$self->dock->add_item( $item, 'GDL_DOCK_TOP' );
 	}
-
 }
 
 
