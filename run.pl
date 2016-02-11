@@ -51,6 +51,14 @@ sub setup_window {
 
 	$self->setup_button_events;
 	$self->setup_drawing_area_example;
+
+	$self->setup_window_title;
+}
+
+sub setup_window_title {
+	my ($self) = @_;
+	my $mw = $self->builder->get_object('main_window');
+	$mw->set_title( $self->pdf_filename ) if defined $self->pdf_filename;
 }
 
 sub mudraw_get_image_surface_of_pdf_page_as_png {
