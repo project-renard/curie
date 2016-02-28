@@ -50,6 +50,7 @@ sub setup_window {
 	$self->builder->connect_signals;
 
 	$self->setup_button_events;
+	$self->setup_text_entry_events;
 	$self->setup_drawing_area_example;
 }
 
@@ -98,6 +99,7 @@ sub _trigger_pdf_filename {
 sub _trigger_pdf_current_page {
 	my ($self) = @_;
 	$self->refresh_drawing_area;
+
 }
 
 sub setup_button_events {
@@ -112,6 +114,23 @@ sub setup_button_events {
 		clicked => \&set_current_page_forward, $self );
 	$self->builder->get_object('button-back')->signal_connect(
 		clicked => \&set_current_page_back, $self );
+}
+
+sub setup_text_entry_events {
+	my ($self) = @_;
+
+	$self->builder->get_object('page-number-entry')->signal_connect(
+		activate => \&set_current_page_number, $self );
+}
+
+sub set_current_page_number {
+	my ($entry, $self) = @_;
+
+	my $text = $entry -> get_text;
+	if ($text =~ /^[0-9]+$/ and $text <= $self->pdf_last_page
+		 and $text >= $self->pdf_first_page){
+		$self->pdf_current_page( $text );
+	}
 }
 
 sub set_current_page_forward {
@@ -143,6 +162,10 @@ sub refresh_drawing_area {
 	return unless $self->drawing_area;
 
 	$self->drawing_area->queue_draw;
+
+	$self->builder->get_object('page-number-entry')
+		->set_text($self->pdf_current_page);
+
 }
 
 sub setup_drawing_area_example {
