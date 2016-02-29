@@ -10,3 +10,5 @@ sudo apt-get install perlbrew
 sudo perlbrew install-cpanm
 sudo cpan App::cpanminus
 sudo apt-get install cpanminus
+
+sudo cpanm --installdeps .
