@@ -196,7 +196,16 @@ sub setup_drawing_area_example {
 		return TRUE;
 	}, $self);
 
-	$vbox->pack_start( $drawing_area, TRUE, TRUE, 0);
+	my $scrolled_window = Gtk3::ScrolledWindow->new();
+	$scrolled_window->set_hexpand(TRUE);
+	$scrolled_window->set_vexpand(TRUE);
+	#viewport might go here
+	$scrolled_window->add($drawing_area);
+	$drawing_area->set_size_request( 250, 500 );
+	$scrolled_window->set_policy( 'automatic', 'automatic');
+	
+	
+	$vbox->pack_start( $scrolled_window, TRUE, TRUE, 0);
 }
 
 sub main {
@@ -216,6 +225,8 @@ sub main {
 
 	$self->window->signal_connect(destroy => sub { Gtk3::main_quit });
 	$self->window->set_default_size( 800, 600 );
+
+	
 	$self->window->show_all;
 
 
