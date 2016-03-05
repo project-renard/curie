@@ -19,6 +19,7 @@ has [qw{ pdf_filename }] => ( is => 'rw', trigger => 1 );
 has pdf_current_page => ( is => 'rw', trigger => 1 );
 
 has [qw(pdf_first_page pdf_last_page)] => ( is => 'rw' );
+has [qw(pdf_current_page_width pdf_current_page_height)] => ( is => 'rw' );
 
 has [qw(drawing_area)] => ( is => 'rw' );
 
@@ -176,6 +177,17 @@ sub refresh_drawing_area {
 
 }
 
+sub on_draw_pdf_page {
+	my ($self, $img) = @_;
+
+	$self->pdf_current_page_width( $img->get_width );
+	$self->pdf_current_page_height( $img->get_height );
+
+	$self->drawing_area->set_size_request(
+		$self->pdf_current_page_width,
+		$self->pdf_current_page_height );
+}
+
 sub setup_drawing_area_example {
 	my ($self) = @_;
 
@@ -193,10 +205,19 @@ sub setup_drawing_area_example {
 		$cr->set_source_surface($img, 0, 0);
 		$cr->paint;
 
+		$self->on_draw_pdf_page( $img );
+
 		return TRUE;
 	}, $self);
 
-	$vbox->pack_start( $drawing_area, TRUE, TRUE, 0);
+	my $scrolled_window = Gtk3::ScrolledWindow->new();
+	$scrolled_window->set_hexpand(TRUE);
+	$scrolled_window->set_vexpand(TRUE);
+
+	$scrolled_window->add($drawing_area);
+	$scrolled_window->set_policy( 'automatic', 'automatic');
+	
+	$vbox->pack_start( $scrolled_window, TRUE, TRUE, 0);
 }
 
 sub main {
@@ -216,6 +237,8 @@ sub main {
 
 	$self->window->signal_connect(destroy => sub { Gtk3::main_quit });
 	$self->window->set_default_size( 800, 600 );
+
+	
 	$self->window->show_all;
 
 
