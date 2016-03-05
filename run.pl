@@ -1,14 +1,38 @@
 #!/usr/bin/env perl
 
+package App::Curie;
+
+use v5.016;
+
+use Capture::Tiny qw(capture_stdout);
 use Gtk3 -init;
+use Cairo;
 use Glib::Object::Introspection;
 use Glib 'TRUE', 'FALSE';
 
 use Moo;
 
-has window => ( is => 'lazy' );
+use constant UI_FILE => "curie.glade";
 
-has [qw{table dock master layout dockbar box}] => ( is => 'rw' );
+has [qw{ pdf_filename }] => ( is => 'rw', trigger => 1 );
+
+has pdf_current_page => ( is => 'rw', trigger => 1 );
+
+has [qw(pdf_first_page pdf_last_page)] => ( is => 'rw' );
+has [qw(pdf_current_page_width pdf_current_page_height)] => ( is => 'rw' );
+
+has [qw(drawing_area)] => ( is => 'rw' );
+
+has window => ( is => 'lazy' );
+	sub _build_window {
+		my ($self) = @_;
+		my $window = $self->builder->get_object('main_window');
+	}
+
+has builder => ( is => 'lazy', clearer => 1 );
+	sub _build_builder {
+		Gtk3::Builder->new ();
+	}
 
 sub gval ($$) { Glib::Object::Introspection::GValueWrapper->new('Glib::'.ucfirst($_[0]) => $_[1]) } # GValue wrapper shortcut
 sub genum { Glib::Object::Introspection->convert_sv_to_enum($_[0], $_[1]) }
@@ -23,107 +47,202 @@ sub setup_gtk {
 sub setup_window {
 	my ($self) = @_;
 
-	#/* table */
-	#table = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
-	$self->table( Gtk3::Box->new("GTK_ORIENTATION_VERTICAL", 5) );
-	#gtk_container_add (GTK_CONTAINER (win), table);
-	$self->window->add( $self->table );
-	#gtk_container_set_border_width (GTK_CONTAINER (table), 10);
-	$self->table->set_border_width( 10 );
+	$self->builder->add_from_file( UI_FILE );
+	$self->builder->connect_signals;
 
-	#/* create the dock */
-	#dock = gdl_dock_new ();
-	$self->dock( Gdl::Dock->new () );
-	#GdlDockMaster *master = GDL_DOCK_MASTER (gdl_dock_object_get_master (GDL_DOCK_OBJECT (dock)));
-	$self->master( Gdl::DockObject::get_master($self->dock) );
-	#g_object_set (master, "tab-pos", GTK_POS_TOP, NULL);
-	$self->master->set("tab-pos", "GTK_POS_TOP");
-	#g_object_set (master, "tab-reorderable", TRUE, NULL);
-	$self->master->set("tab-reorderable", TRUE);
+	$self->setup_button_events;
+	$self->setup_text_entry_events;
+	$self->setup_drawing_area_example;
 
-	#/* ... and the layout manager */
-	#layout = gdl_dock_layout_new (G_OBJECT (dock));
-	$self->layout( Gdl::DockLayout->new( $self->dock ) );
+	$self->setup_window_title;
+}
 
-	#/* create the dockbar */
-	#dockbar = gdl_dock_bar_new (G_OBJECT (dock));
-	$self->dockbar( Gdl::DockBar->new( $self->dock ));
-	#gdl_dock_bar_set_style(GDL_DOCK_BAR(dockbar), GDL_DOCK_BAR_TEXT);
-	$self->dockbar->set_style( "GDL_DOCK_BAR_TEXT" );
+sub setup_window_title {
+	my ($self) = @_;
+	my $mw = $self->builder->get_object('main_window');
+	$mw->set_title( $self->pdf_filename ) if defined $self->pdf_filename;
+}
 
-	#box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
-	$self->box( Gtk3::Box->new("GTK_ORIENTATION_HORIZONTAL", 5) );
-	#gtk_box_pack_start (GTK_BOX (table), box, TRUE, TRUE, 0);
-	$self->table->pack_start( $self->box, TRUE, TRUE, 0);
+sub mudraw_get_image_surface_of_pdf_page_as_png {
+	my ($pdf_filename, $pdf_page_no) = @_;
 
-        #gtk_box_pack_start (GTK_BOX (box), dockbar, FALSE, FALSE, 0);
-	$self->box->pack_start( $self->dockbar, FALSE, FALSE, 0);
-        #gtk_box_pack_end (GTK_BOX (box), dock, TRUE, TRUE, 0);
-	$self->box->pack_end( $self->dock, TRUE, TRUE, 0 );
+	my $png_filename = 'test.png';
+	system("mudraw",
+		qw( -F png ),
+		qw( -o), $png_filename,
+		$pdf_filename,
+		$pdf_page_no,
+	);
 
-	my $first_item = Gdl::DockItem->new_with_stock("Item #4", "Item #4",
-						  "GTK_STOCK_JUSTIFY_FILL",
-						  [ "GDL_DOCK_ITEM_BEH_NORMAL",
-						  "GDL_DOCK_ITEM_BEH_CANT_ICONIFY" ]);
-	$first_item->add( create_text_item() );
-	$first_item->show;
-	$self->dock->add_item( $first_item, "GDL_DOCK_TOP" );
-	for (my $i = 1; $i < 3; $i++) {
-		my $name = sprintf "Item #%d", $i + 4;
-		my $item = Gdl::DockItem->new_with_stock ($name, $name, "GTK_STOCK_NEW",
-					"GDL_DOCK_ITEM_BEH_NORMAL");
-		$item->add( create_text_item() );
-		$item->show();
+	my $img = Cairo::ImageSurface->create_from_png( $png_filename );
+}
 
-		$self->dock->add_item( $item, 'GDL_DOCK_TOP' );
+sub get_pdfinfo_for_filename {
+	my ($pdf_filename) = @_;
+
+	my ($stdout, $exit) = capture_stdout {
+		system("pdfinfo", $pdf_filename);
+	};
+
+	my %info = $stdout =~ /
+			(?<key> [^:]*? )
+			:\s*
+			(?<value> .* )
+			\n
+		/xmg;
+
+	return \%info;
+}
+
+sub _trigger_pdf_filename {
+	my ($self) = @_;
+
+	my $info = get_pdfinfo_for_filename( $self->pdf_filename );
+
+	$self->pdf_first_page(1);
+	$self->pdf_last_page( $info->{Pages} );
+
+	$self->pdf_current_page( 1 );
+}
+
+sub _trigger_pdf_current_page {
+	my ($self) = @_;
+	$self->refresh_drawing_area;
+
+}
+
+sub setup_button_events {
+	my ($self) = @_;
+
+	$self->builder->get_object('button-first')->signal_connect(
+		clicked => \&set_current_page_to_first, $self );
+	$self->builder->get_object('button-last')->signal_connect(
+		clicked => \&set_current_page_to_last, $self );
+
+	$self->builder->get_object('button-forward')->signal_connect(
+		clicked => \&set_current_page_forward, $self );
+	$self->builder->get_object('button-back')->signal_connect(
+		clicked => \&set_current_page_back, $self );
+}
+
+sub setup_text_entry_events {
+	my ($self) = @_;
+
+	$self->builder->get_object('page-number-entry')->signal_connect(
+		activate => \&set_current_page_number, $self );
+}
+
+sub set_current_page_number {
+	my ($entry, $self) = @_;
+
+	my $text = $entry -> get_text;
+	if ($text =~ /^[0-9]+$/ and $text <= $self->pdf_last_page
+		 and $text >= $self->pdf_first_page){
+		$self->pdf_current_page( $text );
 	}
+}
+
+sub set_current_page_forward {
+	my ($button, $self) = @_;
+	if( $self->pdf_current_page <= $self->pdf_last_page ) {
+		$self->pdf_current_page( $self->pdf_current_page + 1 );
+	}
+}
+
+sub set_current_page_back {
+	my ($button, $self) = @_;
+	if( $self->pdf_current_page >= $self->pdf_first_page ) {
+		$self->pdf_current_page( $self->pdf_current_page - 1 );
+	}
+}
+
+sub set_current_page_to_first {
+	my ($button, $self) = @_;
+	$self->pdf_current_page( $self->pdf_first_page );
+}
+
+sub set_current_page_to_last {
+	my ($button, $self) = @_;
+	$self->pdf_current_page( $self->pdf_last_page );
+}
+
+sub refresh_drawing_area {
+	my ($self) = @_;
+	return unless $self->drawing_area;
+
+	$self->drawing_area->queue_draw;
+
+	$self->builder->get_object('page-number-entry')
+		->set_text($self->pdf_current_page);
 
 }
 
+sub on_draw_pdf_page {
+	my ($self, $img) = @_;
 
+	$self->pdf_current_page_width( $img->get_width );
+	$self->pdf_current_page_height( $img->get_height );
 
-sub create_text_item {
-	my $vbox1;
-	my $scrolledwindow1;
-	my $text;
-
-	$vbox1 = Gtk3::Box->new ("GTK_ORIENTATION_VERTICAL", 0);
-	$vbox1->show;
-
-	$scrolledwindow1 = Gtk3::ScrolledWindow->new(undef, undef);
-	$scrolledwindow1->show;
-	$vbox1->pack_start( $scrolledwindow1, TRUE, TRUE, 0);
-	#gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow1),
-					#GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-        #gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (scrolledwindow1),
-                                             #GTK_SHADOW_ETCHED_IN);
-	$text = Gtk3::TextView->new();
-	$text->set( "wrap-mode", "GTK_WRAP_WORD");
-	$text->show;
-	$scrolledwindow1->add( $text );
-
-	return $vbox1;
+	$self->drawing_area->set_size_request(
+		$self->pdf_current_page_width,
+		$self->pdf_current_page_height );
 }
 
+sub setup_drawing_area_example {
+	my ($self) = @_;
+
+	my $vbox = $self->builder->get_object('application_vbox');
+
+	my $drawing_area = Gtk3::DrawingArea->new();
+	$self->drawing_area( $drawing_area );
+	$drawing_area->signal_connect( draw => sub {
+		my ($widget, $cr) = @_;
+
+		my $img = mudraw_get_image_surface_of_pdf_page_as_png(
+			$self->pdf_filename,
+			$self->pdf_current_page,
+		);
+		$cr->set_source_surface($img, 0, 0);
+		$cr->paint;
+
+		$self->on_draw_pdf_page( $img );
+
+		return TRUE;
+	}, $self);
+
+	my $scrolled_window = Gtk3::ScrolledWindow->new();
+	$scrolled_window->set_hexpand(TRUE);
+	$scrolled_window->set_vexpand(TRUE);
+
+	$scrolled_window->add($drawing_area);
+	$scrolled_window->set_policy( 'automatic', 'automatic');
+	
+	$vbox->pack_start( $scrolled_window, TRUE, TRUE, 0);
+}
 
 sub main {
 	setup_gtk;
 
-	my $self = __PACKAGE__->new;
+	my $pdf_filename = shift @ARGV;
+
+	die "No PDF filename given" unless $pdf_filename;
+
+	die "PDF filename does not exist: $pdf_filename" unless -f $pdf_filename;
+
+
+	my $self = __PACKAGE__->new(
+		pdf_filename => $pdf_filename,
+	);
 	$self->setup_window;
 
-	#my $button = Gtk3::Button->new ('Quit');
-	#$button->signal_connect (clicked => sub { Gtk3::main_quit });
-	#$self->window->add ($button);
-	$self->window->set_default_size( 200, 200 );
+	$self->window->signal_connect(destroy => sub { Gtk3::main_quit });
+	$self->window->set_default_size( 800, 600 );
+
+	
 	$self->window->show_all;
 
 
 	Gtk3::main;
-}
-
-sub _build_window {
-	my $window = Gtk3::Window->new ('toplevel');
 }
 
 main;
