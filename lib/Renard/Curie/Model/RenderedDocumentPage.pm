@@ -1,5 +1,6 @@
 package Renard::Curie::Model::RenderedDocumentPage;
 
+use Modern::Perl;
 use Moo;
 use Path::Tiny;
 
@@ -18,11 +19,15 @@ has cairo_image_surface => (
 sub _build_cairo_image_surface {
 	my ($self) = @_;
 
-	# TODO build in-memory
-	my $png_filename = path('test.png');
-	$png_filename->spew( $self->png_data );
-	my $img = Cairo::ImageSurface->create_from_png( $png_filename );
-	$png_filename->remove;
+	# read the PNG data in-memory
+	my $img = Cairo::ImageSurface->create_from_png_stream(
+		sub {
+			my ($callback_data, $length) = @_;
+			state $offset = 0;
+			my $data = substr $callback_data, $offset, $length;
+			$offset += $length;
+			$data;
+		}, $self->png_data );
 
 	return $img;
 }
