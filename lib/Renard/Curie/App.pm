@@ -32,10 +32,11 @@ has builder => ( is => 'lazy', clearer => 1 );
 has page_document_component => ( is => 'rw' );
 
 sub setup_gtk {
-	Glib::Object::Introspection->setup(
-		basename => 'Gdl',
-		version => '3',
-		package => 'Gdl', );
+	# stub out the GDL loading for now. Docking is not yet used.
+	##Glib::Object::Introspection->setup(
+		##basename => 'Gdl',
+		##version => '3',
+		##package => 'Gdl', );
 }
 
 sub setup_window {
