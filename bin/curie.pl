@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+# PODNAME: curie: a document reader
 
 use FindBin;
 use lib "$FindBin::Bin/../lib";
