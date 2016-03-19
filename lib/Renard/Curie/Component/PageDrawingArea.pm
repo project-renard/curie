@@ -51,7 +51,7 @@ sub refresh_drawing_area {
 	$self->drawing_area->queue_draw;
 }
 
-sub on_draw_pdf_page {
+sub on_draw_page {
 	my ($self, $cr) = @_;
 
 	$self->toggle_forward_buttons();
@@ -84,7 +84,7 @@ sub setup_drawing_area {
 			page_number => $self->current_page_number,
 		);
 		$self->current_rendered_page( $rp );
-		$self->on_draw_pdf_page( $cr );
+		$self->on_draw_page( $cr );
 
 		return TRUE;
 	}, $self);
