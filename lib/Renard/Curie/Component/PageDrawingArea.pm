@@ -54,6 +54,9 @@ sub refresh_drawing_area {
 sub on_draw_pdf_page {
 	my ($self, $cr) = @_;
 
+	$self->toggle_forward_buttons();
+	$self->toggle_backward_buttons();
+
 	my $img = $self->current_rendered_page->cairo_image_surface;
 
 	$cr->set_source_surface($img, 0, 0);
@@ -134,6 +137,26 @@ sub set_current_page_to_first {
 sub set_current_page_to_last {
 	my ($button, $self) = @_;
 	$self->current_page_number( $self->document->last_page_number );
+}
+
+sub toggle_forward_buttons {
+	my ($self) = @_;
+	$self->builder->get_object('button-last')->set_sensitive(1);
+        $self->builder->get_object('button-forward')->set_sensitive(1);
+	if ($self->current_page_number >= $self->document->last_page_number){
+		$self->builder->get_object('button-last')->set_sensitive(0);
+		$self->builder->get_object('button-forward')->set_sensitive(0);
+	}
+}
+
+sub toggle_backward_buttons {
+	my ($self) = @_;
+	$self->builder->get_object('button-back')->set_sensitive(1);
+        $self->builder->get_object('button-first')->set_sensitive(1);
+	if ($self->current_page_number <= $self->document->first_page_number){
+		$self->builder->get_object('button-back')->set_sensitive(0);
+		$self->builder->get_object('button-first')->set_sensitive(0);
+	}
 }
 
 
