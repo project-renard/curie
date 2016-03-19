@@ -54,8 +54,7 @@ sub refresh_drawing_area {
 sub on_draw_page {
 	my ($self, $cr) = @_;
 
-	$self->toggle_forward_buttons();
-	$self->toggle_backward_buttons();
+	$self->set_navigation_buttons_sensitivity;
 
 	my $img = $self->current_rendered_page->cairo_image_surface;
 
@@ -117,14 +116,14 @@ sub set_current_page_number {
 
 sub set_current_page_forward {
 	my ($button, $self) = @_;
-	if( $self->current_page_number < $self->document->last_page_number ) {
+	if( $self->can_move_to_next_page ) {
 		$self->current_page_number( $self->current_page_number + 1 );
 	}
 }
 
 sub set_current_page_back {
 	my ($button, $self) = @_;
-	if( $self->current_page_number > $self->document->first_page_number ) {
+	if( $self->can_move_to_previous_page ) {
 		$self->current_page_number( $self->current_page_number - 1 );
 	}
 }
@@ -139,25 +138,35 @@ sub set_current_page_to_last {
 	$self->current_page_number( $self->document->last_page_number );
 }
 
-sub toggle_forward_buttons {
+sub can_move_to_previous_page {
 	my ($self) = @_;
-	$self->builder->get_object('button-last')->set_sensitive(1);
-        $self->builder->get_object('button-forward')->set_sensitive(1);
-	if ($self->current_page_number >= $self->document->last_page_number){
-		$self->builder->get_object('button-last')->set_sensitive(0);
-		$self->builder->get_object('button-forward')->set_sensitive(0);
-	}
+	$self->current_page_number > $self->document->first_page_number;
 }
 
-sub toggle_backward_buttons {
+sub can_move_to_next_page {
 	my ($self) = @_;
-	$self->builder->get_object('button-back')->set_sensitive(1);
-        $self->builder->get_object('button-first')->set_sensitive(1);
-	if ($self->current_page_number <= $self->document->first_page_number){
-		$self->builder->get_object('button-back')->set_sensitive(0);
-		$self->builder->get_object('button-first')->set_sensitive(0);
-	}
+	$self->current_page_number < $self->document->last_page_number;
 }
 
+=method set_navigation_buttons_sensitivity
+
+
+Enables and disables forward and back navigation buttons when at the end and
+start of the document respectively.
+
+=cut
+sub set_navigation_buttons_sensitivity {
+	my ($self) = @_;
+	my $can_move_forward = $self->can_move_to_next_page;
+	my $can_move_back = $self->can_move_to_previous_page;
+
+	for my $button_name ( qw(button-last button-forward) ) {
+		$self->builder->get_object($button_name)->set_sensitive($can_move_forward);
+	}
+
+	for my $button_name ( qw(button-first button-back) ) {
+		$self->builder->get_object($button_name)->set_sensitive($can_move_back);
+	}
+}
 
 1;
