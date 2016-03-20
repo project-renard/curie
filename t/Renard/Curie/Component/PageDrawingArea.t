@@ -49,7 +49,7 @@ subtest 'Check that moving forward changes the page number' => sub {
 		$forward_button->clicked;
 		is($page_comp->current_page_number, 4, 'On page 4 after hitting forward' );
 
-		$app->window->close;
+		$app->window->destroy;
 	});
 
 	$app->run;
@@ -86,7 +86,7 @@ subtest 'Check that the current button sensitivity is set on the first and last 
 		ok ! $last_button->is_sensitive   , 'button-last is disabled on last page';
 		ok ! $forward_button->is_sensitive, 'button-forward is disabled on last page';
 
-		$app->window->close;
+		$app->window->destroy;
 	});
 	$app->run;
 };
