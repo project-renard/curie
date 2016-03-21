@@ -8,6 +8,8 @@ addons:
       - libpoppler-glib-dev
       - poppler-utils # pdfinfo
       - mupdf-tools   # mudraw
+      - aspell     # for dzil Test::PodSpelling
+      - aspell-en  # for dzil Test::PodSpelling
 perl:
   - "5.16"
   - "5.18"
