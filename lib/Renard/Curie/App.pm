@@ -46,28 +46,39 @@ sub setup_window {
 	$self->builder->connect_signals;
 }
 
-
-sub main {
-	setup_gtk;
-
-	my $pdf_filename = shift @ARGV;
-
-	die "No PDF filename given" unless $pdf_filename;
-
-	my $self = __PACKAGE__->new;
-	$self->setup_window;
-
-	$self->open_document( $pdf_filename );
-
-	$self->window->signal_connect(destroy => sub { Gtk3::main_quit });
-	$self->window->set_default_size( 800, 600 );
-	
+sub run {
+	my ($self) = @_;
 	$self->window->show_all;
-
 	Gtk3::main;
 }
 
-sub open_document {
+sub BUILD {
+	my ($self) = @_;
+	setup_gtk;
+
+	$self->setup_window;
+
+	$self->window->signal_connect(destroy => sub { Gtk3::main_quit });
+	$self->window->set_default_size( 800, 600 );
+}
+
+sub process_arguments {
+	my ($self) = @_;
+	my $pdf_filename = shift @ARGV;
+	if( $pdf_filename ) {
+		$self->open_pdf_document( $pdf_filename );
+	} else {
+		warn "No PDF filename given";
+	}
+}
+
+sub main {
+	my $self = __PACKAGE__->new;
+	$self->process_arguments;
+	$self->run;
+}
+
+sub open_pdf_document {
 	my ($self, $pdf_filename) = @_;
 
 	if( not -f $pdf_filename ) {
@@ -83,6 +94,12 @@ sub open_document {
 	my $mw = $self->builder->get_object('main_window');
 	$mw->set_title( $pdf_filename );
 	
+	$self->open_document( $doc );
+}
+
+sub open_document {
+	my ($self, $doc) = @_;
+
 	my $pd = Renard::Curie::Component::PageDrawingArea->new(
 		builder => $self->builder,
 		document => $doc,

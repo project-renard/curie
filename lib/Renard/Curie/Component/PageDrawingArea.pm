@@ -92,7 +92,9 @@ sub setup_drawing_area {
 	$scrolled_window->set_hexpand(TRUE);
 	$scrolled_window->set_vexpand(TRUE);
 
-	$scrolled_window->add($drawing_area);
+	# XXX ->add_with_viewport( ... ) deprecated for Gtk v3.8+,
+	# use ->add( ... ) instead 
+	$scrolled_window->add_with_viewport($drawing_area);
 	$scrolled_window->set_policy( 'automatic', 'automatic');
 
 	$vbox->pack_start( $scrolled_window, TRUE, TRUE, 0);
