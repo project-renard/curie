@@ -1,6 +1,5 @@
-package Renard::Curie::App;
-
 use Modern::Perl;
+package Renard::Curie::App;
 
 use Gtk3 -init;
 use Cairo;

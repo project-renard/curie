@@ -1,3 +1,4 @@
+use Modern::Perl;
 package Renard::Curie::Helper;
 
 sub gval ($$) {

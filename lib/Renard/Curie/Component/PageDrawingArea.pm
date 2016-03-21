@@ -1,6 +1,6 @@
+use Modern::Perl;
 package Renard::Curie::Component::PageDrawingArea;
 
-use Modern::Perl;
 use Moo;
 use Glib 'TRUE', 'FALSE';
 

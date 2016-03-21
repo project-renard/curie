@@ -1,3 +1,4 @@
+use Modern::Perl;
 package Renard::Curie::Model::PDFDocument;
 
 use Moo;

@@ -1,6 +1,6 @@
+use Modern::Perl;
 package Renard::Curie::Data::PDF;
 
-use Modern::Perl;
 use Capture::Tiny qw(capture_stdout);
 
 sub mudraw_get_pdf_page_as_png {
