@@ -111,7 +111,7 @@ sub set_current_page_number {
 
 	my $text = $entry -> get_text;
 	if ($text =~ /^[0-9]+$/ and $text <= $self->document->last_page_number
-		 and $text >= $self->document->first_page_number){
+			and $text >= $self->document->first_page_number){
 		$self->current_page_number( $text );
 	}
 }
