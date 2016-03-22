@@ -12,6 +12,7 @@ use File::Basename;
 use Moo;
 
 use Renard::Curie::Error;
+use Renard::Curie::Helper;
 use Renard::Curie::Model::PDFDocument;
 use Renard::Curie::Component::PageDrawingArea;
 
