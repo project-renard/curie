@@ -1,6 +1,5 @@
-package Renard::Curie::App;
-
 use Modern::Perl;
+package Renard::Curie::App;
 
 use Gtk3 -init;
 use Cairo;
@@ -93,7 +92,7 @@ sub open_pdf_document {
 	# set window title
 	my $mw = $self->builder->get_object('main_window');
 	$mw->set_title( $pdf_filename );
-	
+
 	$self->open_document( $doc );
 }
 
