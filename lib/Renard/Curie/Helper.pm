@@ -26,7 +26,7 @@ sub import {
 
 }
 
-sub gval ($$) {
+sub gval ($$) { ## no critic
 	# GValue wrapper shortcut
 	Glib::Object::Introspection::GValueWrapper->new('Glib::'.ucfirst($_[0]) => $_[1])
 }

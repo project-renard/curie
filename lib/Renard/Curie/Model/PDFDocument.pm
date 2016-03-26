@@ -1,3 +1,4 @@
+use Modern::Perl;
 package Renard::Curie::Model::PDFDocument;
 
 use Moo;
@@ -60,12 +61,11 @@ rendered PDF page. This is C<1.0> by default.
 
 Optional. Value must be a Float.
 
-TODO : need to implement this option
 
 =back
 
 =cut
-
+# TODO : need to implement zoom_level option
 sub get_rendered_page {
 	my ($self, %opts) = @_;
 

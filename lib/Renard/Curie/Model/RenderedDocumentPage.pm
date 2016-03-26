@@ -1,6 +1,6 @@
+use Modern::Perl;
 package Renard::Curie::Model::RenderedDocumentPage;
 
-use Modern::Perl;
 use Moo;
 use Path::Tiny;
 
