@@ -21,6 +21,7 @@ sub setup {
 	$self->setup_button_events;
 	$self->setup_text_entry_events;
 	$self->setup_drawing_area;
+	$self->setup_number_of_pages_label;
 }
 
 sub setup_button_events {
@@ -101,7 +102,6 @@ sub setup_drawing_area {
 sub _trigger_current_page_number {
 	my ($self) = @_;
 	$self->refresh_drawing_area;
-
 }
 
 sub set_current_page_number {
@@ -112,6 +112,11 @@ sub set_current_page_number {
 			and $text >= $self->document->first_page_number){
 		$self->current_page_number( $text );
 	}
+}
+
+sub setup_number_of_pages_label {
+	my ($self) = @_;
+	$self->builder->get_object("number-of-pages-label")->set_text( $self->document->last_page_number );
 }
 
 sub set_current_page_forward {
