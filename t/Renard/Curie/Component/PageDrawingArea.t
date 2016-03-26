@@ -11,6 +11,7 @@ my $colors = [
 	[ 0, 0, 1 ],
 	[ 0, 0, 0 ],
 ];
+
 my @surfaces = map {
 	my ($width, $height) = (100, 100);
 	my $surface = Cairo::ImageSurface->create(
@@ -55,7 +56,6 @@ subtest 'Check that moving forward changes the page number' => sub {
 	$app->run;
 };
 
-
 subtest 'Check that the current button sensitivity is set on the first and last page' => sub {
 	my $app = Renard::Curie::App->new;
 	$app->open_document( $cairo_doc );
@@ -91,5 +91,19 @@ subtest 'Check that the current button sensitivity is set on the first and last 
 	$app->run;
 };
 
+subtest 'Check the number of pages label' => sub {
+	my $app = Renard::Curie::App->new;
+	$app->open_document( $cairo_doc );
+	my $page_comp = $app->page_document_component;
+	my $number_of_pages_label;
+	lives_ok {
+		$number_of_pages_label = $page_comp->builder->get_object("number-of-pages-label");
+	} 'The number of pages label exists';
+	Glib::Timeout->add(500, sub {
+			is( $number_of_pages_label->get_text() , '4', 'Number of pages should be equal to four.' );
+			$app->window->destroy;
+		});
+	$app->run;
+};
 
 done_testing;
