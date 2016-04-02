@@ -125,7 +125,7 @@ sub setup_status_bar{
 	my ($status_bar) =  $self->builder->get_object('statusbar');
 	my ($width, $height) =  $status_bar->get_size_request();
 	$status_bar->set_border_width(3);
-	$status_bar->set_size_request($width, 25);
+	$status_bar->set_size_request($width, 0);
 }
 
 sub set_current_page_forward {
