@@ -31,11 +31,22 @@ my $cairo_doc = Renard::Curie::Model::CairoImageSurfaceDocument->new(
 	image_surfaces => \@surfaces,
 );
 
-subtest 'Check that moving forward changes the page number' => sub {
-	my $app = Renard::Curie::App->new;
-	$app->open_document( $cairo_doc );
+sub build_test{
+	my ($callback) = @_;
+	return sub{
+		my $app = Renard::Curie::App->new;
+		$app->open_document( $cairo_doc );
 
-	my $page_comp = $app->page_document_component;
+		my $page_comp = $app->page_document_component;
+
+		$callback->( $app, $page_comp );
+
+		$app->run;
+	}
+}
+
+subtest 'Check that moving forward changes the page number' => build_test ( sub {
+	my ( $app, $page_comp ) = @_;
 	my $forward_button = $page_comp->builder->get_object('button-forward');
 
 	Glib::Timeout->add(100, sub {
@@ -52,15 +63,10 @@ subtest 'Check that moving forward changes the page number' => sub {
 
 		$app->window->destroy;
 	});
+});
 
-	$app->run;
-};
-
-subtest 'Check that the current button sensitivity is set on the first and last page' => sub {
-	my $app = Renard::Curie::App->new;
-	$app->open_document( $cairo_doc );
-
-	my $page_comp = $app->page_document_component;
+subtest 'Check that the current button sensitivity is set on the first and last page' => build_test (sub {
+	my ( $app, $page_comp ) = @_;
 
 	my $first_button = $page_comp->builder->get_object('button-first');
 	my $last_button = $page_comp->builder->get_object('button-last');
@@ -88,22 +94,20 @@ subtest 'Check that the current button sensitivity is set on the first and last 
 
 		$app->window->destroy;
 	});
-	$app->run;
-};
+});
 
-subtest 'Check the number of pages label' => sub {
-	my $app = Renard::Curie::App->new;
-	$app->open_document( $cairo_doc );
-	my $page_comp = $app->page_document_component;
+subtest 'Check the number of pages label' => build_test ( sub {
+	my ( $app, $page_comp ) = @_;
 	my $number_of_pages_label;
+
 	lives_ok {
 		$number_of_pages_label = $page_comp->builder->get_object("number-of-pages-label");
 	} 'The number of pages label exists';
+
 	Glib::Timeout->add(500, sub {
 			is( $number_of_pages_label->get_text() , '4', 'Number of pages should be equal to four.' );
 			$app->window->destroy;
 		});
-	$app->run;
-};
+});
 
 done_testing;
