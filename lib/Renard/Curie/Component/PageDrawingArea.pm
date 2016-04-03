@@ -16,6 +16,8 @@ has current_page_number => (
 
 has [qw(drawing_area)] => ( is => 'rw' );
 
+has scrolled_window => (is => 'rw');
+
 sub FOREIGNBUILDARGS {
 	my ($class, %args) = @_;
 	return ();
@@ -122,6 +124,7 @@ sub setup_drawing_area {
 
 	$scrolled_window->add($drawing_area);
 	$scrolled_window->set_policy( 'automatic', 'automatic');
+	$self->scrolled_window($scrolled_window);
 
 	my $vbox = $self->builder->get_object('page-drawing-component');
 	$vbox->pack_start( $scrolled_window, TRUE, TRUE, 0);

@@ -56,7 +56,7 @@ sub create_cairo_document {
 	];
 
 	my @surfaces = map {
-		my ($width, $height) = (100, 100);
+		my ($width, $height) = (5000, 5000);
 		my $surface = Cairo::ImageSurface->create(
 			'rgb24', $width, $height
 		);
