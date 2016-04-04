@@ -7,6 +7,7 @@ use Glib::Object::Introspection;
 use Glib 'TRUE', 'FALSE';
 use File::Spec;
 use File::Basename;
+use Path::Tiny;
 
 use Moo;
 
@@ -14,6 +15,8 @@ use Renard::Curie::Error;
 use Renard::Curie::Helper;
 use Renard::Curie::Model::PDFDocument;
 use Renard::Curie::Component::PageDrawingArea;
+
+use Renard::Curie::Component::ProteinViewer;
 
 use constant UI_FILE =>
 	File::Spec->catfile(dirname(__FILE__), "curie.glade");
@@ -75,6 +78,7 @@ sub process_arguments {
 sub main {
 	my $self = __PACKAGE__->new;
 	$self->process_arguments;
+	$self->setup_protein_viewer;
 	$self->run;
 }
 
@@ -107,6 +111,44 @@ sub open_document {
 
 	$self->page_document_component($pd);
 	$pd->setup;
+}
+
+sub setup_protein_viewer {
+	use Gtk3::SimpleList;
+	my ($self) = @_;
+	my $pv_win = Gtk3::Window->new('toplevel');
+	$pv_win->set_default_size(640, 480);
+
+	my $box = Gtk3::Box->new( 'horizontal', 0 );
+
+	my $list = Gtk3::ListBox->new( );
+	my $slist = Gtk3::SimpleList->new (
+                    'Protein name'    => 'text',
+                    'PDBD ID'    => 'text',
+		    );
+
+	@{$slist->{data}} = (
+		[ 'STRUCTURE OF A B-DNA DODECAMER. CONFORMATION AND DYNAMICS', '1BNA', ],
+		[ 'THE STEREOCHEMISTRY OF THE PROTEIN MYOGLOBIN', '1MBN' ],
+		[ "STRUCTURE OF THE DENGUE VIRUS 2'O METHYLTRANSFERASE", '1r6a' ],
+		[ 'CRYSTAL STRUCTURE OF YEAST PHENYLALANINE T-RNA', '6TNA', ],
+	);
+
+	my $pv = Renard::Curie::Component::ProteinViewer->new;
+	$box->pack_start( $slist, TRUE, TRUE, 0 );
+	$box->pack_end( $pv->widget, TRUE, TRUE, 0 );
+
+      $slist->signal_connect (row_activated => sub {
+              my ($sl, $path, $column) = @_;
+              my $row_ref = $sl->get_row_data_from_path ($path);
+	      my $pdb_id = $row_ref->[1];
+	      my $pdb_data = path('pv', 'pdbs', "${pdb_id}.pdb")->slurp_utf8;
+	      $pv->load_molecule_pdb($pdb_data);
+	      use DDP; p $row_ref;
+          });
+
+	$pv_win->add( $box );
+	$pv_win->show_all;
 }
 
 

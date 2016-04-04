@@ -6,3 +6,7 @@ gir1.2-gdl-3
 libpoppler-glib-dev
 poppler-utils # pdfinfo
 mupdf-tools   # mudraw
+
+# for using browser
+# - used in ProteinViewer
+gir1.2-webkit-3.0
