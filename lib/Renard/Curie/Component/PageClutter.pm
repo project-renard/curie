@@ -19,8 +19,7 @@ has [qw(drawing_area)] => ( is => 'rw' );
 sub setup {
 	my ($self) = @_;
 	$self->setup_button_events;
-	# $self->setup_text_entry_events;
-	# $self->setup_drawing_area;
+	$self->setup_text_entry_events;
 	$self->setup_number_of_pages_label;
 }
 
@@ -52,52 +51,14 @@ sub refresh_drawing_area {
 	$self->drawing_area->queue_draw;
 }
 
+=draw
 sub on_draw_page {
 	my ($self, $cr) = @_;
-
 	$self->set_navigation_buttons_sensitivity;
-
-	my $img = $self->current_rendered_page->cairo_image_surface;
-
-	$cr->set_source_surface($img, 0, 0);
-	$cr->paint;
-
-	$self->drawing_area->set_size_request(
-		$self->current_rendered_page->width,
-		$self->current_rendered_page->height );
-
 	$self->builder->get_object('page-number-entry')
 		->set_text($self->current_page_number);
 }
-
-sub setup_drawing_area {
-	my ($self) = @_;
-
-	my $vbox = $self->builder->get_object('application_vbox');
-
-	my $drawing_area = Gtk3::DrawingArea->new();
-	$self->drawing_area( $drawing_area );
-	$drawing_area->signal_connect( draw => sub {
-		my ($widget, $cr) = @_;
-
-		my $rp = $self->document->get_rendered_page(
-			page_number => $self->current_page_number,
-		);
-		$self->current_rendered_page( $rp );
-		$self->on_draw_page( $cr );
-
-		return TRUE;
-	}, $self);
-
-	my $scrolled_window = Gtk3::ScrolledWindow->new();
-	$scrolled_window->set_hexpand(TRUE);
-	$scrolled_window->set_vexpand(TRUE);
-
-	$scrolled_window->add($drawing_area);
-	$scrolled_window->set_policy( 'automatic', 'automatic');
-
-	$vbox->pack_start( $scrolled_window, TRUE, TRUE, 0);
-}
+=cut
 
 sub _trigger_current_page_number {
 	my ($self) = @_;
