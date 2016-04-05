@@ -6,6 +6,13 @@ use Glib 'TRUE', 'FALSE';
 
 has builder => ( is => 'ro', required => 1 );
 has document => ( is => 'rw', required => 1 );
+has current_rendered_page => ( is => 'rw' );
+has current_page_number => (
+		is => 'rw',
+		default => sub { 1 },
+		trigger => 1 # _trigger_current_page_number
+		);
+
 has [qw(drawing_area)] => ( is => 'rw' );
 
 sub setup {
