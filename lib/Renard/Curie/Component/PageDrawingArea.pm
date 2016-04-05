@@ -22,6 +22,7 @@ sub setup {
 	$self->setup_text_entry_events;
 	$self->setup_drawing_area;
 	$self->setup_number_of_pages_label;
+	$self->setup_status_bar;
 }
 
 sub setup_button_events {
@@ -117,6 +118,14 @@ sub set_current_page_number {
 sub setup_number_of_pages_label {
 	my ($self) = @_;
 	$self->builder->get_object("number-of-pages-label")->set_text( $self->document->last_page_number );
+}
+
+sub setup_status_bar{
+	my ($self) = @_;
+	my ($status_bar) =  $self->builder->get_object('statusbar');
+	my ($width, $height) =  $status_bar->get_size_request();
+	$status_bar->set_border_width(3);
+	$status_bar->set_size_request($width, 0);
 }
 
 sub set_current_page_forward {
