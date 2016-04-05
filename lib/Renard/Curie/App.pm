@@ -14,6 +14,8 @@ use Renard::Curie::Error;
 use Renard::Curie::Helper;
 use Renard::Curie::Model::PDFDocument;
 use Renard::Curie::Component::PageDrawingArea;
+use Renard::Curie::Component::PageClutterArrea;
+
 
 use constant UI_FILE =>
 	File::Spec->catfile(dirname(__FILE__), "curie.glade");
@@ -104,6 +106,11 @@ sub open_document {
 		builder => $self->builder,
 		document => $doc,
 	);
+	my $pc = Renard::Curie::Component::PageClutterArrea->new(
+		builder => $self->builder,
+		document => $doc,
+	);
+
 
 	$self->page_document_component($pd);
 	$pd->setup;

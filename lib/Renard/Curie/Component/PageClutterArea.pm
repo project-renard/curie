@@ -14,8 +14,6 @@ has current_page_number => (
 	trigger => 1 # _trigger_current_page_number
 	);
 
-has [qw(drawing_area)] => ( is => 'rw' );
-
 sub setup {
 	my ($self) = @_;
 	$self->setup_button_events;

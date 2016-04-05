@@ -16,7 +16,6 @@ sub setup {
 sub refresh_drawing_area {
 	my ($self) = @_;
 	return unless $self->drawing_area;
-
 	$self->drawing_area->queue_draw;
 }
 
