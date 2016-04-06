@@ -14,6 +14,8 @@ use Renard::Curie::Error;
 use Renard::Curie::Helper;
 use Renard::Curie::Model::PDFDocument;
 use Renard::Curie::Component::PageDrawingArea;
+use Renard::Curie::Component::PageClutterArea;
+
 
 use constant UI_FILE =>
 	File::Spec->catfile(dirname(__FILE__), "curie.glade");
@@ -30,6 +32,7 @@ has builder => ( is => 'lazy', clearer => 1 );
 	}
 
 has page_document_component => ( is => 'rw' );
+has page_clutter_component  => ( is => 'rw' );
 
 sub setup_gtk {
 	# stub out the GDL loading for now. Docking is not yet used.
@@ -104,9 +107,19 @@ sub open_document {
 		builder => $self->builder,
 		document => $doc,
 	);
+	my $pc = Renard::Curie::Component::PageClutterArea->new(
+		builder => $self->builder,
+		document => $doc,
+	);
+
 
 	$self->page_document_component($pd);
 	$pd->setup;
+
+	$self->page_clutter_component($pd);
+	$pc->setup;
+
+
 }
 
 
