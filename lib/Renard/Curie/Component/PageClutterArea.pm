@@ -1,5 +1,5 @@
 use Modern::Perl;
-package Renard::Curie::Component::PageClutter;
+package Renard::Curie::Component::PageClutterArea;
 
 use Moo;
 use Glib 'TRUE', 'FALSE';
@@ -14,11 +14,15 @@ has current_page_number => (
 	trigger => 1 # _trigger_current_page_number
 	);
 
+has [qw(drawing_area)] => ( is => 'rw' );
+
+
 sub setup {
 	my ($self) = @_;
 	$self->setup_button_events;
 	$self->setup_text_entry_events;
 	$self->setup_number_of_pages_label;
+	#$self->setup_drawing_area;
 }
 
 sub setup_button_events {
@@ -49,14 +53,13 @@ sub refresh_drawing_area {
 	$self->drawing_area->queue_draw;
 }
 
-=draw
+
 sub on_draw_page {
 	my ($self, $cr) = @_;
 	$self->set_navigation_buttons_sensitivity;
 	$self->builder->get_object('page-number-entry')
 		->set_text($self->current_page_number);
 }
-=cut
 
 sub _trigger_current_page_number {
 	my ($self) = @_;
