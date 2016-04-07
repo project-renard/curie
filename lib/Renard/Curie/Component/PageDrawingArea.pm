@@ -3,8 +3,15 @@ package Renard::Curie::Component::PageDrawingArea;
 
 use Moo;
 use Glib 'TRUE', 'FALSE';
+use Glib::Object::Subclass 'Gtk3::Bin';
 
-has builder => ( is => 'ro', required => 1 );
+use File::Spec;
+use File::Basename;
+
+use constant UI_FILE =>
+	File::Spec->catfile(dirname(__FILE__), "PageDrawingArea.glade");
+
+has builder => ( is => 'lazy' ); # _build_builder
 has document => ( is => 'rw', required => 1 );
 
 has current_rendered_page => ( is => 'rw' );
@@ -16,12 +23,30 @@ has current_page_number => (
 
 has [qw(drawing_area)] => ( is => 'rw' );
 
-sub setup {
+sub _build_builder {
+	Gtk3::Builder->new();
+}
+
+sub FOREIGNBUILDARGS {
+	my ($class, %args) = @_;
+	return ();
+}
+
+sub BUILD {
 	my ($self) = @_;
+
+	$self->builder->add_from_file( UI_FILE );
+	$self->builder->connect_signals;
+
 	$self->setup_button_events;
 	$self->setup_text_entry_events;
 	$self->setup_drawing_area;
 	$self->setup_number_of_pages_label;
+
+	# add as child for this Gtk3::Bin
+	$self->add(
+		$self->builder->get_object('page-drawing-component')
+	);
 }
 
 sub setup_button_events {
@@ -73,8 +98,6 @@ sub on_draw_page {
 sub setup_drawing_area {
 	my ($self) = @_;
 
-	my $vbox = $self->builder->get_object('application_vbox');
-
 	my $drawing_area = Gtk3::DrawingArea->new();
 	$self->drawing_area( $drawing_area );
 	$drawing_area->signal_connect( draw => sub {
@@ -96,6 +119,7 @@ sub setup_drawing_area {
 	$scrolled_window->add($drawing_area);
 	$scrolled_window->set_policy( 'automatic', 'automatic');
 
+	my $vbox = $self->builder->get_object('page-drawing-component');
 	$vbox->pack_start( $scrolled_window, TRUE, TRUE, 0);
 }
 

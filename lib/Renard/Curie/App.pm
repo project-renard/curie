@@ -21,7 +21,7 @@ use constant UI_FILE =>
 has window => ( is => 'lazy' );
 	sub _build_window {
 		my ($self) = @_;
-		my $window = $self->builder->get_object('main_window');
+		my $window = $self->builder->get_object('main-window');
 	}
 
 has builder => ( is => 'lazy', clearer => 1 );
@@ -91,7 +91,7 @@ sub open_pdf_document {
 	);
 
 	# set window title
-	my $mw = $self->builder->get_object('main_window');
+	my $mw = $self->builder->get_object('main-window');
 	$mw->set_title( $pdf_filename );
 
 	$self->open_document( $doc );
@@ -101,12 +101,12 @@ sub open_document {
 	my ($self, $doc) = @_;
 
 	my $pd = Renard::Curie::Component::PageDrawingArea->new(
-		builder => $self->builder,
 		document => $doc,
 	);
 
 	$self->page_document_component($pd);
-	$pd->setup;
+	$self->builder->get_object('application-vbox')
+		->pack_start( $pd, TRUE, TRUE, 0 );
 }
 
 
