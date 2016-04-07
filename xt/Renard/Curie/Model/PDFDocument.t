@@ -1,9 +1,19 @@
-use Test::Most tests => 1;
+use Test::Most;
 
-use Path::Tiny;
+use lib 't/lib';
+use CurieTestHelper;
+
+use Modern::Perl;
+use Try::Tiny;
 use Renard::Curie::Model::PDFDocument;
 
-my $pdf_ref_path = path( $ENV{RENARD_TEST_DATA_PATH}, qw(PDF Adobe pdf_reference_1-7.pdf) );
+my $pdf_ref_path = try {
+	CurieTestHelper->test_data_directory->child(qw(PDF Adobe pdf_reference_1-7.pdf));
+} catch {
+	plan skip_all => "$_";
+};
+
+plan tests => 1;
 
 subtest pdf_ref => sub {
 	my $pdf_doc = Renard::Curie::Model::PDFDocument->new(

@@ -1,51 +1,13 @@
-use Test::Most;
+use Test::Most tests => 3;
+
+use lib 't/lib';
+use CurieTestHelper;
 
 use Modern::Perl;
-use Renard::Curie::App;
-use Renard::Curie::Model::CairoImageSurfaceDocument;
-use Cairo;
 
-my $colors = [
-	[ 1, 0, 0 ],
-	[ 0, 1, 0 ],
-	[ 0, 0, 1 ],
-	[ 0, 0, 0 ],
-];
+my $cairo_doc = CurieTestHelper->create_cairo_document;
 
-my @surfaces = map {
-	my ($width, $height) = (100, 100);
-	my $surface = Cairo::ImageSurface->create(
-		'rgb24', $width, $height
-	);
-	my $cr = Cairo::Context->create( $surface );
-
-	my $rgb = $_;
-	$cr->set_source_rgb( @$rgb );
-	$cr->rectangle(0, 0, $width, $height);
-	$cr->fill;
-
-	$surface;
-} @$colors;
-
-my $cairo_doc = Renard::Curie::Model::CairoImageSurfaceDocument->new(
-	image_surfaces => \@surfaces,
-);
-
-sub build_test{
-	my ($callback) = @_;
-	return sub{
-		my $app = Renard::Curie::App->new;
-		$app->open_document( $cairo_doc );
-
-		my $page_comp = $app->page_document_component;
-
-		$callback->( $app, $page_comp );
-
-		$app->run;
-	}
-}
-
-subtest 'Check that moving forward changes the page number' => build_test ( sub {
+subtest 'Check that moving forward changes the page number' => CurieTestHelper->run_app_with_document($cairo_doc, sub {
 	my ( $app, $page_comp ) = @_;
 	my $forward_button = $page_comp->builder->get_object('button-forward');
 
@@ -65,7 +27,7 @@ subtest 'Check that moving forward changes the page number' => build_test ( sub 
 	});
 });
 
-subtest 'Check that the current button sensitivity is set on the first and last page' => build_test (sub {
+subtest 'Check that the current button sensitivity is set on the first and last page' => CurieTestHelper->run_app_with_document($cairo_doc, sub {
 	my ( $app, $page_comp ) = @_;
 
 	my $first_button = $page_comp->builder->get_object('button-first');
@@ -96,7 +58,7 @@ subtest 'Check that the current button sensitivity is set on the first and last 
 	});
 });
 
-subtest 'Check the number of pages label' => build_test ( sub {
+subtest 'Check the number of pages label' => CurieTestHelper->run_app_with_document($cairo_doc, sub {
 	my ( $app, $page_comp ) = @_;
 	my $number_of_pages_label;
 
