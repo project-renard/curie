@@ -39,6 +39,8 @@ subtest 'Check that the current button sensitivity is set on the first and last 
 	Glib::Timeout->add(500, sub {
 		is($page_comp->current_page_number, 1, 'Start on page 1' );
 
+		$page_comp->set_navigation_buttons_sensitivity;
+
 		ok ! $first_button->is_sensitive  , 'button-first is disabled on first page';
 		ok ! $back_button->is_sensitive   , 'button-back is disabled on first page';
 		ok   $last_button->is_sensitive   , 'button-last is enabled on first page';
