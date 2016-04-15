@@ -9,11 +9,13 @@ use File::Spec;
 use File::Basename;
 
 use Moo;
+use URI::file;
 
 use Renard::Curie::Error;
 use Renard::Curie::Helper;
 use Renard::Curie::Model::Document::PDF;
 use Renard::Curie::Component::PageDrawingArea;
+use Renard::Curie::Component::AbiWordDocumentEditor;
 
 use constant UI_FILE =>
 	File::Spec->catfile(dirname(__FILE__), "curie.glade");
@@ -64,11 +66,11 @@ sub BUILD {
 
 sub process_arguments {
 	my ($self) = @_;
-	my $pdf_filename = shift @ARGV;
-	if( $pdf_filename ) {
-		$self->open_pdf_document( $pdf_filename );
+	my $filename = shift @ARGV;
+	if( $filename ) {
+		$self->open_filename_by_ext( $filename );
 	} else {
-		warn "No PDF filename given";
+		warn "No filename given";
 	}
 }
 
@@ -76,6 +78,15 @@ sub main {
 	my $self = __PACKAGE__->new;
 	$self->process_arguments;
 	$self->run;
+}
+
+sub open_filename_by_ext {
+	my ($self, $filename ) = @_;
+	if( $filename =~ /\.pdf$/i ) {
+		$self->open_pdf_document( $filename );
+	} elsif ( $filename =~ /\.(rtf|odt|doc[x]?)$/i ) {
+		$self->open_word_processor_document( $filename );
+	}
 }
 
 sub open_pdf_document {
@@ -95,6 +106,14 @@ sub open_pdf_document {
 	$mw->set_title( $pdf_filename );
 
 	$self->open_document( $doc );
+}
+
+sub open_word_processor_document {
+	my ($self, $filename) = @_;
+	my $abi = AbiWord::Widget->new;
+	$self->builder->get_object('application_vbox')->pack_start( $abi , TRUE, TRUE, 0 );
+	my $uri = URI::file->new_abs( $filename );
+	$abi->load_file( "$uri" , '' );
 }
 
 sub open_document {

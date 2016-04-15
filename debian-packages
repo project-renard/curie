@@ -6,3 +6,5 @@ gir1.2-gdl-3
 libpoppler-glib-dev
 poppler-utils # pdfinfo
 mupdf-tools   # mudraw
+
+gir1.2-abiword-3.0 # for embedding abiword
