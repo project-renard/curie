@@ -3,7 +3,7 @@ package CurieTestHelper;
 
 use Path::Tiny;
 
-use Renard::Curie::Model::CairoImageSurfaceDocument;
+use Renard::Curie::Model::Document::CairoImageSurface;
 use Cairo;
 
 use Renard::Curie::App;
@@ -27,7 +27,7 @@ sub test_data_directory {
 
 =func create_cairo_document
 
-Returns a L<Renard::Curie::Model::CairoImageSurfaceDocument> which can be
+Returns a L<Renard::Curie::Model::Document::CairoImageSurface> which can be
 used for testing.
 
 The pages have the colors:
@@ -67,7 +67,7 @@ sub create_cairo_document {
 		$surface;
 	} @$colors;
 
-	my $cairo_doc = Renard::Curie::Model::CairoImageSurfaceDocument->new(
+	my $cairo_doc = Renard::Curie::Model::Document::CairoImageSurface->new(
 		image_surfaces => \@surfaces,
 	);
 }

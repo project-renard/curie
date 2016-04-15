@@ -12,7 +12,7 @@ use Moo;
 
 use Renard::Curie::Error;
 use Renard::Curie::Helper;
-use Renard::Curie::Model::PDFDocument;
+use Renard::Curie::Model::Document::PDF;
 use Renard::Curie::Component::PageDrawingArea;
 
 use constant UI_FILE =>
@@ -86,7 +86,7 @@ sub open_pdf_document {
 			->throw("PDF filename does not exist: $pdf_filename");
 	}
 
-	my $doc = Renard::Curie::Model::PDFDocument->new(
+	my $doc = Renard::Curie::Model::Document::PDF->new(
 		filename => $pdf_filename,
 	);
 

@@ -1,14 +1,7 @@
 use Modern::Perl;
-package Renard::Curie::Model::RenderedDocumentPage;
+package Renard::Curie::Model::Page::RenderedFromPNG;
 
 use Moo;
-use Path::Tiny;
-
-has [ qw(width height) ] => (
-	is => 'lazy' # _build_width _build_height
-);
-
-has zoom_level => ( is => 'rw' );
 
 has png_data => ( is => 'rw', required => 1 );
 
@@ -32,14 +25,8 @@ sub _build_cairo_image_surface {
 	return $img;
 }
 
-sub _build_width {
-	my ($self) = @_;
-	$self->cairo_image_surface->get_width;
-}
-
-sub _build_height {
-	my ($self) = @_;
-	$self->cairo_image_surface->get_height;
-}
+with qw(
+	Renard::Curie::Model::Page::Role::CairoRenderable
+);
 
 1;
