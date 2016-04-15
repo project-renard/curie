@@ -3,6 +3,7 @@ package Renard::Curie::Data::PDF;
 
 use Capture::Tiny qw(capture_stdout);
 use XML::Simple;
+use Alien::MuPDF 0.004;
 
 sub _call_mutool {
 	my @args = ( "mutool", @_ );
