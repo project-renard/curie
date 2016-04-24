@@ -3,10 +3,15 @@ package Renard::Curie::Data::PDF;
 
 use Capture::Tiny qw(capture_stdout);
 use XML::Simple;
+use Path::Tiny;
 use Alien::MuPDF 0.004;
 
+BEGIN {
+	our $MUTOOL_PATH =  path(Alien::MuPDF->dist_dir, qw(bin mutool));
+}
+
 sub _call_mutool {
-	my @args = ( "mutool", @_ );
+	my @args = ( $Renard::Curie::Data::PDF::MUTOOL_PATH, @_ );
 	my ($stdout, $exit) = capture_stdout {
 		system( @args );
 	};
