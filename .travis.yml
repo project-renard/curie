@@ -10,8 +10,7 @@ addons:
       - gobject-introspection
       - libgtk-3-dev
       - libpoppler-glib-dev
-      - poppler-utils # pdfinfo
-      - mupdf-tools   # mudraw
+      - mupdf-tools   # mutool
       - aspell     # for dzil Test::PodSpelling
       - aspell-en  # for dzil Test::PodSpelling
 perl:

@@ -21,7 +21,7 @@ sub _call_mutool {
 	return $stdout;
 }
 
-sub mudraw_get_pdf_page_as_png {
+sub get_mutool_pdf_page_as_png {
 	my ($pdf_filename, $pdf_page_no) = @_;
 
 	my $stdout = _call_mutool(
@@ -33,23 +33,6 @@ sub mudraw_get_pdf_page_as_png {
 	);
 
 	return $stdout;
-}
-
-sub get_pdfinfo_for_filename {
-	my ($pdf_filename) = @_;
-
-	my ($stdout, $exit) = capture_stdout {
-		system("pdfinfo", $pdf_filename);
-	};
-
-	my %info = $stdout =~ /
-			(?<key> [^:]*? )
-			:\s*
-			(?<value> .* )
-			\n
-		/xmg;
-
-	return \%info;
 }
 
 sub get_mutool_text_stext_raw {

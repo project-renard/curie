@@ -7,11 +7,11 @@ use Renard::Curie::Model::Page::RenderedFromPNG;
 
 sub _build_last_page_number {
 	my ($self) = @_;
-	my $info = Renard::Curie::Data::PDF::get_pdfinfo_for_filename(
+	my $info = Renard::Curie::Data::PDF::get_mutool_page_info_xml(
 		$self->filename
 	);
 
-	return $info->{Pages};
+	return scalar @{ $info->{page} };
 }
 
 =method get_rendered_page
@@ -27,7 +27,7 @@ sub get_rendered_page {
 
 	my $page_number = $opts{page_number};
 
-	my $png_data = Renard::Curie::Data::PDF::mudraw_get_pdf_page_as_png(
+	my $png_data = Renard::Curie::Data::PDF::get_mutool_pdf_page_as_png(
 		$self->filename, $page_number,
 	);
 
