@@ -1,4 +1,8 @@
 language: perl
+cache:
+  directories:
+    # local::lib caching
+    - $HOME/perl5
 addons:
   apt:
     packages:
