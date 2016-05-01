@@ -4,5 +4,4 @@ gobject-introspection
 libgtk-3-dev
 gir1.2-gdl-3
 libpoppler-glib-dev
-poppler-utils # pdfinfo
-mupdf-tools   # mudraw
+mupdf-tools   # mutool

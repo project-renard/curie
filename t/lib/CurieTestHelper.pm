@@ -1,13 +1,6 @@
 use Modern::Perl;
 package CurieTestHelper;
 
-use Path::Tiny;
-
-use Renard::Curie::Model::Document::CairoImageSurface;
-use Cairo;
-
-use Renard::Curie::App;
-
 =func test_data_directory
 
 Returns a L<Path::Class> object that points to the path defined by
@@ -17,6 +10,8 @@ If the environment variable is not defined, throws an error.
 
 =cut
 sub test_data_directory {
+	require Path::Tiny;
+	Path::Tiny->import();
 	my ($package) = @_;
 
 	if( not defined $ENV{RENARD_TEST_DATA_PATH} ) {
@@ -45,6 +40,10 @@ The pages have the colors:
 =cut
 sub create_cairo_document {
 	my ($package) = @_;
+
+	require Renard::Curie::Model::Document::CairoImageSurface;
+	require Cairo;
+
 	my $colors = [
 		[ 1, 0, 0 ],
 		[ 0, 1, 0 ],
@@ -111,6 +110,9 @@ the document C<$document>.
 =cut
 sub run_app_with_document {
 	my ($package, $document, $callback) = @_;
+
+	require Renard::Curie::App;
+
 	return sub{
 		my $app = Renard::Curie::App->new;
 		$app->open_document( $document );
