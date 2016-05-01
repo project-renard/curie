@@ -28,14 +28,16 @@ IF %COMPILER%==msys2 (
   bash -lc "cpanm --verbose Log::Dispatch"
 
   REM Need to stub out RM so it does not remove cchars.h
-  bash -lc "cpanm --verbose Term::ReadKey --build-args RM=echo"
+  REM bash -lc "cpanm --verbose Term::ReadKey --build-args RM=echo"
 
-  bash -lc ". $APPVEYOR_BUILD_FOLDER/ci/appveyor/EUMMnosearch.sh; cpanm --notest IO::Socket::SSL"
+  REM bash -lc ". $APPVEYOR_BUILD_FOLDER/ci/appveyor/EUMMnosearch.sh; cpanm --notest IO::Socket::SSL"
 
-  bash -lc "cpanm --notest Dist::Zilla"
+  REM bash -lc "cpanm --notest Dist::Zilla"
 
   bash -lc "pacman -S --needed --noconfirm mingw-w64-x86_64-cairo mingw-w64-x86_64-gtk3 mingw-w64-x86_64-expat mingw-w64-x86_64-openssl"
 
-  bash -lc "dzil authordeps --missing | cpanm --notest"
-  bash -lc ". $APPVEYOR_BUILD_FOLDER/ci/appveyor/EUMMnosearch.sh; dzil listdeps | cpanm --notest"
+  REM bash -lc "dzil authordeps --missing | cpanm --notest"
+  REM bash -lc ". $APPVEYOR_BUILD_FOLDER/ci/appveyor/EUMMnosearch.sh; dzil listdeps | cpanm --notest"
+
+  bash -lc ". $APPVEYOR_BUILD_FOLDER/ci/appveyor/EUMMnosearch.sh; cpanm --notest --installdeps ."
 )
