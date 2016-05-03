@@ -64,5 +64,5 @@ IF %COMPILER%==msys2 (
 
   REM Install via cpanfile
   REM bash -lc "cd $APPVEYOR_BUILD_FOLDER; . $APPVEYOR_BUILD_FOLDER/ci/appveyor/EUMMnosearch.sh; cpanm --verbose --configure-args verbose --build-args NOECHO=' ' -n Gtk3 Glib"
-  bash -lc "cd $APPVEYOR_BUILD_FOLDER; . $APPVEYOR_BUILD_FOLDER/ci/appveyor/EUMMnosearch.sh; cpanm --notest --installdeps ."
+  bash -lc "cd $APPVEYOR_BUILD_FOLDER; . $APPVEYOR_BUILD_FOLDER/ci/appveyor/EUMMnosearch.sh; export MAKEFLAGS='-j4 -P4'; cpanm --notest --installdeps ."
 )
