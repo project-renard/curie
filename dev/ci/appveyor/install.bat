@@ -52,17 +52,17 @@ IF %COMPILER%==msys2 (
   REM   REM Need to stub out RM so it does not remove cchars.h
   REM   bash -lc "cpanm --verbose Term::ReadKey --build-args RM=echo"
 
-  REM   bash -lc ". $APPVEYOR_BUILD_FOLDER/ci/appveyor/EUMMnosearch.sh; cpanm --notest IO::Socket::SSL"
+  REM   bash -lc ". $APPVEYOR_BUILD_FOLDER/dev/ci/appveyor/EUMMnosearch.sh; cpanm --notest IO::Socket::SSL"
 
   REM   REM Install dzil
   REM   bash -lc "cpanm --notest Dist::Zilla"
 
   REM   REM Get deps via dzil
   REM   bash -lc "dzil authordeps --missing | cpanm --notest"
-  REM   bash -lc ". $APPVEYOR_BUILD_FOLDER/ci/appveyor/EUMMnosearch.sh; dzil listdeps | cpanm --notest"
+  REM   bash -lc ". $APPVEYOR_BUILD_FOLDER/dev/ci/appveyor/EUMMnosearch.sh; dzil listdeps | cpanm --notest"
   REM )
 
   REM Install via cpanfile
-  REM bash -lc "cd $APPVEYOR_BUILD_FOLDER; . $APPVEYOR_BUILD_FOLDER/ci/appveyor/EUMMnosearch.sh; cpanm --verbose --configure-args verbose --build-args NOECHO=' ' -n Gtk3 Glib"
-  bash -lc "cd $APPVEYOR_BUILD_FOLDER; . $APPVEYOR_BUILD_FOLDER/ci/appveyor/EUMMnosearch.sh; export MAKEFLAGS='-j4 -P4'; cpanm --notest --installdeps ."
+  REM bash -lc "cd $APPVEYOR_BUILD_FOLDER; . $APPVEYOR_BUILD_FOLDER/dev/ci/appveyor/EUMMnosearch.sh; cpanm --verbose --configure-args verbose --build-args NOECHO=' ' -n Gtk3 Glib"
+  bash -lc "cd $APPVEYOR_BUILD_FOLDER; . $APPVEYOR_BUILD_FOLDER/dev/ci/appveyor/EUMMnosearch.sh; export MAKEFLAGS='-j4 -P4'; cpanm --notest --installdeps ."
 )

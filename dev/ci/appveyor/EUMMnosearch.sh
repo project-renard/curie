@@ -7,5 +7,5 @@ export OPENSSL_PREFIX="/c/msys64/mingw64"
 #pkg-config --libs --cflags  openssl
 
 BUILD_DIR=`(cd $APPVEYOR_BUILD_FOLDER && pwd)`
-export PERL5OPT="-I$BUILD_DIR/ci/appveyor -MEUMMnosearch"
+export PERL5OPT="-I$BUILD_DIR/dev/ci/appveyor -MEUMMnosearch"
 echo PERL5OPT=$PERL5OPT;
