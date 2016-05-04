@@ -33,14 +33,8 @@ IF %COMPILER%==msys2 (
   REM Native deps
   bash -lc "pacman -S --needed --noconfirm mingw-w64-x86_64-gobject-introspection mingw-w64-x86_64-cairo mingw-w64-x86_64-gtk3 mingw-w64-x86_64-expat mingw-w64-x86_64-openssl"
 
-  REM Information about the toolchain
-  bash -lc "echo perl; which -a perl; perl -V"
-  bash -lc "echo cc; which -a cc; cc -v"
   REM There is not a corresponding cc for the mingw64 gcc. So we copy it in place.
   bash -lc "cp -pv /mingw64/bin/gcc /mingw64/bin/cc"
-  bash -lc "echo cc; which -a cc; cc -v"
-  bash -lc "echo gcc; which -a gcc; gcc -v"
-  bash -lc "echo ld; which -a ld; ld -V"
 
 
   REM IF %PERL_BUILD%==dzil (
