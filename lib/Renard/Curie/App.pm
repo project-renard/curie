@@ -15,18 +15,10 @@ use Renard::Curie::Helper;
 use Renard::Curie::Model::Document::PDF;
 use Renard::Curie::Component::PageDrawingArea;
 
-use constant UI_FILE =>
-	File::Spec->catfile(dirname(__FILE__), "curie.glade");
-
 has window => ( is => 'lazy' );
 	sub _build_window {
 		my ($self) = @_;
 		my $window = $self->builder->get_object('main-window');
-	}
-
-has builder => ( is => 'lazy', clearer => 1 );
-	sub _build_builder {
-		Gtk3::Builder->new ();
 	}
 
 has page_document_component => ( is => 'rw' );
@@ -41,9 +33,6 @@ sub setup_gtk {
 
 sub setup_window {
 	my ($self) = @_;
-
-	$self->builder->add_from_file( UI_FILE );
-	$self->builder->connect_signals;
 }
 
 sub run {
@@ -108,5 +97,9 @@ sub open_document {
 		->pack_start( $pd, TRUE, TRUE, 0 );
 }
 
+with qw(
+	Renard::Curie::Component::Role::FromBuilder
+	Renard::Curie::Component::Role::UIFileFromPackageName
+);
 
 1;

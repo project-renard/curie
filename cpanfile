@@ -8,6 +8,7 @@ requires 'Glib::Object::Introspection';
 requires 'Glib::Object::Subclass';
 requires 'Gtk3';
 requires 'Modern::Perl';
+requires 'Module::Util';
 requires 'Moo';
 requires 'Moo::Role';
 requires 'Path::Tiny';
