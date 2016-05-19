@@ -54,7 +54,10 @@ sub BUILD {
 
 	$self->setup_window;
 
-	$self->window->signal_connect(destroy => sub { Gtk3::main_quit });
+	$self->window->signal_connect( destroy => sub {
+		my ($event, $self) = @_;
+		$self->on_application_quit_cb($event);
+	}, $self );
 	$self->window->set_default_size( 800, 600 );
 }
 
@@ -103,6 +106,18 @@ sub open_document {
 	$self->builder->get_object('application-vbox')
 		->pack_start( $pd, TRUE, TRUE, 0 );
 }
+
+# Callbacks {{{
+sub on_open_file_cb {
+	my ($event, $self) = @_;
+
+}
+
+sub on_application_quit_cb {
+	my ($event, $self) = @_;
+	Gtk3::main_quit;
+}
+# }}}
 
 with qw(
 	Renard::Curie::Component::Role::FromBuilder
