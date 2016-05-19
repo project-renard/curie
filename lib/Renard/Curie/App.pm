@@ -36,7 +36,7 @@ sub setup_gtk {
 sub setup_window {
 	my ($self) = @_;
 
-	my $menu = Renard::Curie::Component::MenuBar->new();
+	my $menu = Renard::Curie::Component::MenuBar->new( app => $self );
 	$self->menu_bar( $menu );
 	$self->builder->get_object('application-vbox')
 		->pack_start( $menu, FALSE, TRUE, 0 );

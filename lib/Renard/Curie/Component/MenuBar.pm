@@ -4,6 +4,12 @@ package Renard::Curie::Component::MenuBar;
 use Moo;
 use Glib::Object::Subclass 'Gtk3::Bin';
 
+has app => ( is => 'ro', required => 1, weak_ref => 1 );
+
+sub FOREIGNBUILDARGS {
+	my ($class, %args) = @_;
+	return ();
+}
 
 sub BUILD {
 	my ($self) = @_;
