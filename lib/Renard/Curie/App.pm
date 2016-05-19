@@ -22,7 +22,7 @@ has window => ( is => 'lazy' );
 		my $window = $self->builder->get_object('main-window');
 	}
 
-has page_document_component => ( is => 'rw' );
+has page_document_component => ( is => 'rw', predicate => 1, clearer => 1 );
 has menu_bar => ( is => 'rw' );
 
 sub setup_gtk {
@@ -98,23 +98,44 @@ sub open_pdf_document {
 sub open_document {
 	my ($self, $doc) = @_;
 
+	if( $self->has_page_document_component ) {
+		$self->builder->get_object('application-vbox')
+			->remove( $self->page_document_component );
+		$self->clear_page_document_component;
+	}
 	my $pd = Renard::Curie::Component::PageDrawingArea->new(
 		document => $doc,
 	);
-
 	$self->page_document_component($pd);
 	$self->builder->get_object('application-vbox')
 		->pack_start( $pd, TRUE, TRUE, 0 );
+	$pd->show_all;
 }
 
 # Callbacks {{{
 sub on_open_file_cb {
-	my ($event, $self) = @_;
+	my ($self, $event) = @_;
 
+	my $result;
+
+	my $dialog = Gtk3::FileChooserDialog->new(
+		"Open File",
+		$self->window,
+		'GTK_FILE_CHOOSER_ACTION_OPEN',
+		'gtk-cancel' => 'cancel',
+		'gtk-open' => 'accept',
+	);
+
+	$result = $dialog->run;
+	if ( $result eq 'accept' ) {
+		my $filename = $dialog->get_filename;
+		$dialog->destroy;
+		$self->open_pdf_document($filename);
+	}
 }
 
 sub on_application_quit_cb {
-	my ($event, $self) = @_;
+	my ($self, $event) = @_;
 	Gtk3::main_quit;
 }
 # }}}
