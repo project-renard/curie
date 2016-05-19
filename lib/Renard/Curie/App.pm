@@ -14,6 +14,7 @@ use Renard::Curie::Error;
 use Renard::Curie::Helper;
 use Renard::Curie::Model::Document::PDF;
 use Renard::Curie::Component::PageDrawingArea;
+use Renard::Curie::Component::MenuBar;
 
 has window => ( is => 'lazy' );
 	sub _build_window {
@@ -22,6 +23,7 @@ has window => ( is => 'lazy' );
 	}
 
 has page_document_component => ( is => 'rw' );
+has menu_bar => ( is => 'rw' );
 
 sub setup_gtk {
 	# stub out the GDL loading for now. Docking is not yet used.
@@ -33,6 +35,11 @@ sub setup_gtk {
 
 sub setup_window {
 	my ($self) = @_;
+
+	my $menu = Renard::Curie::Component::MenuBar->new();
+	$self->menu_bar( $menu );
+	$self->builder->get_object('application-vbox')
+		->pack_start( $menu, FALSE, TRUE, 0 );
 }
 
 sub run {

@@ -17,6 +17,7 @@ requires 'custom::failures';
 
 on test => sub {
     requires 'Data::DPath';
+    requires 'List::AllUtils';
     requires 'Test::Most';
     requires 'Try::Tiny';
 };
