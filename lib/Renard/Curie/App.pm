@@ -112,11 +112,8 @@ sub open_document {
 	$pd->show_all;
 }
 
-# Callbacks {{{
-sub on_open_file_cb {
-	my ($self, $event) = @_;
-
-	my $result;
+sub get_open_file_dialog {
+	my ($self) = @_;
 
 	my $dialog = Gtk3::FileChooserDialog->new(
 		"Open File",
@@ -126,11 +123,23 @@ sub on_open_file_cb {
 		'gtk-open' => 'accept',
 	);
 
-	$result = $dialog->run;
+	return $dialog;
+}
+
+# Callbacks {{{
+sub on_open_file_dialog_cb {
+	my ($self, $event) = @_;
+
+	my $dialog = $self->get_open_file_dialog;
+
+	my $result = $dialog->run;
+
 	if ( $result eq 'accept' ) {
 		my $filename = $dialog->get_filename;
 		$dialog->destroy;
 		$self->open_pdf_document($filename);
+	} else {
+		$dialog->destroy;
 	}
 }
 

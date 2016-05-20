@@ -37,7 +37,7 @@ sub BUILD {
 # Callbacks {{{
 sub on_menu_file_open_activate_cb {
 	my ($self, $event) = @_;
-	$self->app->on_open_file_cb($event);
+	$self->app->on_open_file_dialog_cb($event);
 }
 
 sub on_menu_file_quit_activate_cb {
