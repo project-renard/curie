@@ -61,6 +61,8 @@ sub setup_button_events {
 		clicked => \&set_current_page_forward, $self );
 	$self->builder->get_object('button-back')->signal_connect(
 		clicked => \&set_current_page_back, $self );
+
+	$self->set_navigation_buttons_sensitivity;
 }
 
 sub setup_text_entry_events {
