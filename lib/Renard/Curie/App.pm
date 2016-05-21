@@ -91,8 +91,7 @@ sub open_pdf_document {
 	);
 
 	# set window title
-	my $mw = $self->builder->get_object('main-window');
-	$mw->set_title( $pdf_filename );
+	$self->window->set_title( $pdf_filename );
 
 	$self->open_document( $doc );
 }
