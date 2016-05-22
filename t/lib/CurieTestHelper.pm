@@ -3,6 +3,8 @@ package CurieTestHelper;
 
 =func test_data_directory
 
+  CurieTestHelper->test_data_directory
+
 Returns a L<Path::Class> object that points to the path defined by
 the environment variable C<RENARD_TEST_DATA_PATH>.
 
@@ -21,6 +23,8 @@ sub test_data_directory {
 }
 
 =func create_cairo_document
+
+  CurieTestHelper->create_cairo_document
 
 Returns a L<Renard::Curie::Model::Document::CairoImageSurface> which can be
 used for testing.
@@ -73,7 +77,7 @@ sub create_cairo_document {
 
 =func run_app_with_document
 
-  run_app_with_document( $document, $callback )
+  CurieTestHelper->run_app_with_document( $document, $callback )
 
 Set up a L<Renard::Curie::App> application for running tests on a given
 document. The main loop of the L<Renard::Curie::App> application is run after
@@ -111,18 +115,83 @@ the document C<$document>.
 sub run_app_with_document {
 	my ($package, $document, $callback) = @_;
 
-	require Renard::Curie::App;
-
-	return sub{
-		my $app = Renard::Curie::App->new;
-		$app->open_document( $document );
-
-		my $page_component = $app->page_document_component;
-
+	my ($app, $page_component) = $package->create_app_with_document($document);
+	return sub {
 		$callback->( $app, $page_component );
 
 		$app->run;
 	}
+}
+
+=func refresh_gui
+
+  CurieTestHelper->refresh_gui( %args )
+
+Runs the Gtk main loop until there are no more events left.
+
+The C<%args> hash may contain the key value pair
+
+=over 4
+
+=item C<delay>
+
+takes an Int value which is passed to L<C<sleep>> in order to
+sleep after the events have been processed.
+
+=back
+
+=cut
+sub refresh_gui {
+	my ($package, %args) = @_;
+	$args{delay} //= 0;
+	while( Gtk3::events_pending() ) {
+		# do not block if there are no events left
+		Gtk3::main_iteration_do(0);
+	}
+	sleep $args{delay};
+}
+
+=func create_app_with_document
+
+  CurieTestHelper->create_app_with_document($document)
+
+
+Creates a C<Renard::Curie::App> with a C<Renard::Curie::Model::Document> C<$document> opened.
+
+Returns two objects in a list
+
+  ($app, $page_component)
+
+where
+
+=over 4
+
+=item C<$app>
+
+is a C<Renard::Curie::App>
+
+=item C<$page_component>
+
+is a C<Renard::Curie::Component::PageDrawingArea> component which contains the
+document passed in C<$document>.
+
+=back
+
+=cut
+sub create_app_with_document {
+	my ($package, $document) = @_;
+
+	require Renard::Curie::App;
+
+	my $app = Renard::Curie::App->new;
+	$app->open_document( $document );
+
+	my $page_component = $app->page_document_component;
+
+	$app->window->show_all;
+	$package->refresh_gui;
+
+	($app, $page_component);
 }
 
 1;
