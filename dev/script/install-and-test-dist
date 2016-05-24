@@ -1,0 +1,21 @@
+#!/bin/bash
+
+if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+	brew install cpanm || return $?
+
+	# Override the rest of the default Perl Travis-CI commands because we are done.
+	# Default for install: cpanm --quiet --installdeps --notest .
+	function cpanm {
+		sudo -E cpanm --notest --installdeps .
+		sudo -E cpanm -n Alien::MuPDF --verbose
+	}
+
+	# Default for script: make test (no M::B or EUMM)
+	function make {
+		if [ "$#" == 1 ] && [ "$1" == "test" ]; then
+			prove -lvr t
+		fi
+	}
+elif [ "$TRAVIS_OS_NAME" == "linux" ]; then
+	eval $(curl https://travis-perl.github.io/init) --auto
+fi

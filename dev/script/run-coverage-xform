@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+	# NOTE: we only run coverage on Linux.
+	if [ -n "$COVERAGE" ] && [ "$COVERAGE" != "0" ]; then
+		echo "Applying PPI transformation"
+		./dev/apply-ppi-xform-for-coverage;
+	fi
+fi
+
+true

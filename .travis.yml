@@ -29,15 +29,14 @@ matrix:
       os: linux
       dist: trusty
       sudo: required
+    - perl: "system"
+      os: osx
   allow_failures:
     - perl: blead       # ignore failures for blead perl
 before_install:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
-  - sleep 3 # give xvfb some time to start
-  - git clone https://github.com/project-renard/test-data.git test-data
-  - export RENARD_TEST_DATA_PATH="`( cd test-data && pwd )`"
-  - if [ "$COVERAGE" == "1" ]; then
-      ./dev/apply-ppi-xform-for-coverage;
-    fi
-  - eval $(curl https://travis-perl.github.io/init) --auto
+  - . dev/script/install-native-dep
+  - . dev/script/start-xvfb
+  - . dev/script/get-aux-repo
+  - . dev/script/install-and-test-dist
+before_script:
+  - . dev/script/run-coverage-xform
