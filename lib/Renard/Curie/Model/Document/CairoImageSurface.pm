@@ -17,6 +17,13 @@ method _build_last_page_number :ReturnType(PageNumber) {
 	return scalar @{ $self->image_surfaces };
 }
 
+=method get_rendered_page
+
+Returns a new Renard::Curie::Model::Page::CairoImageSurface object.
+
+See L<Renard::Curie::Model::Document::Role::Renderable> for more details.
+
+=cut
 method get_rendered_page( (PageNumber) :$page_number ) {
 	my $index = $page_number - 1;
 
