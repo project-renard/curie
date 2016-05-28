@@ -12,6 +12,7 @@ requires 'Module::Util';
 requires 'Moo';
 requires 'Moo::Role';
 requires 'Path::Tiny';
+requires 'URI';
 requires 'XML::Simple';
 requires 'custom::failures';
 
