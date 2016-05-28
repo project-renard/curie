@@ -15,6 +15,7 @@ use Renard::Curie::Helper;
 use Renard::Curie::Model::Document::PDF;
 use Renard::Curie::Component::PageDrawingArea;
 use Renard::Curie::Component::MenuBar;
+use Renard::Curie::Component::FileChooser;
 
 has window => ( is => 'lazy' );
 	sub _build_window {
@@ -112,25 +113,12 @@ sub open_document {
 	$pd->show_all;
 }
 
-sub get_open_file_dialog {
-	my ($self) = @_;
-
-	my $dialog = Gtk3::FileChooserDialog->new(
-		"Open File",
-		$self->window,
-		'GTK_FILE_CHOOSER_ACTION_OPEN',
-		'gtk-cancel' => 'cancel',
-		'gtk-open' => 'accept',
-	);
-
-	return $dialog;
-}
-
 # Callbacks {{{
 sub on_open_file_dialog_cb {
 	my ($self, $event) = @_;
 
-	my $dialog = $self->get_open_file_dialog;
+	my $file_chooser = Renard::Curie::Component::FileChooser->new( app => $self );
+	my $dialog = $file_chooser->get_open_file_dialog_with_filters;
 
 	my $result = $dialog->run;
 
