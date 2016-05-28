@@ -5,13 +5,6 @@ use Moo;
 use Glib 'TRUE', 'FALSE';
 use Glib::Object::Subclass 'Gtk3::Bin';
 
-use File::Spec;
-use File::Basename;
-
-use constant UI_FILE =>
-	File::Spec->catfile(dirname(__FILE__), "PageDrawingArea.glade");
-
-has builder => ( is => 'lazy' ); # _build_builder
 has document => ( is => 'rw', required => 1 );
 
 has current_rendered_page => ( is => 'rw' );
@@ -23,10 +16,6 @@ has current_page_number => (
 
 has [qw(drawing_area)] => ( is => 'rw' );
 
-sub _build_builder {
-	Gtk3::Builder->new();
-}
-
 sub FOREIGNBUILDARGS {
 	my ($class, %args) = @_;
 	return ();
@@ -34,9 +23,6 @@ sub FOREIGNBUILDARGS {
 
 sub BUILD {
 	my ($self) = @_;
-
-	$self->builder->add_from_file( UI_FILE );
-	$self->builder->connect_signals;
 
 	$self->setup_button_events;
 	$self->setup_text_entry_events;
@@ -199,5 +185,10 @@ sub set_navigation_buttons_sensitivity {
 		$self->builder->get_object($button_name)->set_sensitive($can_move_back);
 	}
 }
+
+with qw(
+	Renard::Curie::Component::Role::FromBuilder
+	Renard::Curie::Component::Role::UIFileFromPackageName
+);
 
 1;

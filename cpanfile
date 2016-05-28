@@ -8,6 +8,7 @@ requires 'Glib::Object::Introspection';
 requires 'Glib::Object::Subclass';
 requires 'Gtk3';
 requires 'Modern::Perl';
+requires 'Module::Util';
 requires 'Moo';
 requires 'Moo::Role';
 requires 'Path::Tiny';
@@ -16,6 +17,7 @@ requires 'custom::failures';
 
 on test => sub {
     requires 'Data::DPath';
+    requires 'List::AllUtils';
     requires 'Test::Most';
     requires 'Try::Tiny';
 };

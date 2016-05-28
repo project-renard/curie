@@ -14,9 +14,7 @@ use Renard::Curie::Error;
 use Renard::Curie::Helper;
 use Renard::Curie::Model::Document::PDF;
 use Renard::Curie::Component::PageDrawingArea;
-
-use constant UI_FILE =>
-	File::Spec->catfile(dirname(__FILE__), "curie.glade");
+use Renard::Curie::Component::MenuBar;
 
 has window => ( is => 'lazy' );
 	sub _build_window {
@@ -24,12 +22,8 @@ has window => ( is => 'lazy' );
 		my $window = $self->builder->get_object('main-window');
 	}
 
-has builder => ( is => 'lazy', clearer => 1 );
-	sub _build_builder {
-		Gtk3::Builder->new ();
-	}
-
-has page_document_component => ( is => 'rw' );
+has page_document_component => ( is => 'rw', predicate => 1, clearer => 1 );
+has menu_bar => ( is => 'rw' );
 
 sub setup_gtk {
 	# stub out the GDL loading for now. Docking is not yet used.
@@ -42,8 +36,10 @@ sub setup_gtk {
 sub setup_window {
 	my ($self) = @_;
 
-	$self->builder->add_from_file( UI_FILE );
-	$self->builder->connect_signals;
+	my $menu = Renard::Curie::Component::MenuBar->new( app => $self );
+	$self->menu_bar( $menu );
+	$self->builder->get_object('application-vbox')
+		->pack_start( $menu, FALSE, TRUE, 0 );
 }
 
 sub run {
@@ -58,7 +54,10 @@ sub BUILD {
 
 	$self->setup_window;
 
-	$self->window->signal_connect(destroy => sub { Gtk3::main_quit });
+	$self->window->signal_connect( destroy => sub {
+		my ($event, $self) = @_;
+		$self->on_application_quit_cb($event);
+	}, $self );
 	$self->window->set_default_size( 800, 600 );
 }
 
@@ -99,14 +98,60 @@ sub open_pdf_document {
 sub open_document {
 	my ($self, $doc) = @_;
 
+	if( $self->has_page_document_component ) {
+		$self->builder->get_object('application-vbox')
+			->remove( $self->page_document_component );
+		$self->clear_page_document_component;
+	}
 	my $pd = Renard::Curie::Component::PageDrawingArea->new(
 		document => $doc,
 	);
-
 	$self->page_document_component($pd);
 	$self->builder->get_object('application-vbox')
 		->pack_start( $pd, TRUE, TRUE, 0 );
+	$pd->show_all;
 }
 
+sub get_open_file_dialog {
+	my ($self) = @_;
+
+	my $dialog = Gtk3::FileChooserDialog->new(
+		"Open File",
+		$self->window,
+		'GTK_FILE_CHOOSER_ACTION_OPEN',
+		'gtk-cancel' => 'cancel',
+		'gtk-open' => 'accept',
+	);
+
+	return $dialog;
+}
+
+# Callbacks {{{
+sub on_open_file_dialog_cb {
+	my ($self, $event) = @_;
+
+	my $dialog = $self->get_open_file_dialog;
+
+	my $result = $dialog->run;
+
+	if ( $result eq 'accept' ) {
+		my $filename = $dialog->get_filename;
+		$dialog->destroy;
+		$self->open_pdf_document($filename);
+	} else {
+		$dialog->destroy;
+	}
+}
+
+sub on_application_quit_cb {
+	my ($self, $event) = @_;
+	Gtk3::main_quit;
+}
+# }}}
+
+with qw(
+	Renard::Curie::Component::Role::FromBuilder
+	Renard::Curie::Component::Role::UIFileFromPackageName
+);
 
 1;
