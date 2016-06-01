@@ -17,7 +17,9 @@ requires 'custom::failures';
 
 on test => sub {
     requires 'Data::DPath';
+    requires 'File::Temp';
     requires 'List::AllUtils';
+    requires 'Test::MockModule';
     requires 'Test::Most';
     requires 'Try::Tiny';
 };

@@ -67,8 +67,6 @@ sub process_arguments {
 	my $pdf_filename = shift @ARGV;
 	if( $pdf_filename ) {
 		$self->open_pdf_document( $pdf_filename );
-	} else {
-		warn "No PDF filename given";
 	}
 }
 
