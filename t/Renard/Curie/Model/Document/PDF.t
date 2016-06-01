@@ -25,6 +25,10 @@ subtest pdf_ref => sub {
 	is( $pdf_doc->first_page_number, 1, "First page number is correct" );
 
 	is( $pdf_doc->last_page_number, 1310, "Last page number is correct" );
+
+	my $first_page = $pdf_doc->get_rendered_page( page_number => 1 );
+	is  $first_page->width, 531, "Check width of first page";
+	is  $first_page->height, 666, "Check height of first page";
 };
 
 

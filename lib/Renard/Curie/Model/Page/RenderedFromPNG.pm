@@ -2,6 +2,7 @@ use Modern::Perl;
 package Renard::Curie::Model::Page::RenderedFromPNG;
 
 use Moo;
+use Cairo;
 
 has png_data => ( is => 'rw', required => 1 );
 

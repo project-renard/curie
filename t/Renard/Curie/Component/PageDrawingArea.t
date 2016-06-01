@@ -1,4 +1,4 @@
-use Test::Most tests => 3;
+use Test::Most tests => 5;
 
 use lib 't/lib';
 use CurieTestHelper;
@@ -62,6 +62,43 @@ subtest 'Check the number of pages label' => sub {
 	} 'The number of pages label exists';
 
 	is( $number_of_pages_label->get_text() , '4', 'Number of pages should be equal to four.' );
+};
+
+subtest 'Check the page entry' => sub {
+	my ($app, $page_comp) = CurieTestHelper->create_app_with_document($cairo_doc);
+
+	my $entry = $page_comp->builder->get_object('page-number-entry');
+
+	$page_comp->current_page_number(2);
+
+	$entry->set_text('4foo');
+	$entry->signal_emit('activate');
+
+	is $page_comp->current_page_number, 2, "Page number was not changed";
+
+	$entry->set_text('3');
+	$entry->signal_emit('activate');
+	is $page_comp->current_page_number, 3, "Page number was changed";
+};
+
+subtest 'Page number bound checking' => sub {
+	my ($app, $page_comp) = CurieTestHelper->create_app_with_document($cairo_doc);
+
+	$page_comp->set_current_page_to_first;
+	$page_comp->set_current_page_back;
+	is $page_comp->current_page_number, 1, "Can not go to previous page when on first page";
+
+	$page_comp->current_page_number(2);
+	$page_comp->set_current_page_back;
+	is $page_comp->current_page_number, 1, "Can move to previous page when on second page";
+
+	$page_comp->current_page_number(2);
+	$page_comp->set_current_page_forward;
+	is $page_comp->current_page_number, 3, "Can move to next page when on second page";
+
+	$page_comp->set_current_page_to_last;
+	$page_comp->set_current_page_forward;
+	is $page_comp->current_page_number, $cairo_doc->last_page_number, "Can not go to next page when on last page";
 };
 
 done_testing;

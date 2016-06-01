@@ -39,14 +39,30 @@ sub setup_button_events {
 	my ($self) = @_;
 
 	$self->builder->get_object('button-first')->signal_connect(
-		clicked => \&set_current_page_to_first, $self );
+		clicked =>
+			sub {
+				my ($button, $self) = @_;
+				$self->set_current_page_to_first;
+			}, $self );
 	$self->builder->get_object('button-last')->signal_connect(
-		clicked => \&set_current_page_to_last, $self );
+		clicked =>
+			sub {
+				my ($button, $self) = @_;
+				$self->set_current_page_to_last;
+			}, $self );
 
 	$self->builder->get_object('button-forward')->signal_connect(
-		clicked => \&set_current_page_forward, $self );
+		clicked =>
+			sub {
+				my ($button, $self) = @_;
+				$self->set_current_page_forward;
+			}, $self );
 	$self->builder->get_object('button-back')->signal_connect(
-		clicked => \&set_current_page_back, $self );
+		clicked =>
+			sub {
+				my ($button, $self) = @_;
+				$self->set_current_page_back;
+			}, $self );
 
 	$self->set_navigation_buttons_sensitivity;
 }
@@ -132,26 +148,26 @@ sub setup_number_of_pages_label {
 }
 
 sub set_current_page_forward {
-	my ($button, $self) = @_;
+	my ($self) = @_;
 	if( $self->can_move_to_next_page ) {
 		$self->current_page_number( $self->current_page_number + 1 );
 	}
 }
 
 sub set_current_page_back {
-	my ($button, $self) = @_;
+	my ($self) = @_;
 	if( $self->can_move_to_previous_page ) {
 		$self->current_page_number( $self->current_page_number - 1 );
 	}
 }
 
 sub set_current_page_to_first {
-	my ($button, $self) = @_;
+	my ($self) = @_;
 	$self->current_page_number( $self->document->first_page_number );
 }
 
 sub set_current_page_to_last {
-	my ($button, $self) = @_;
+	my ($self) = @_;
 	$self->current_page_number( $self->document->last_page_number );
 }
 
