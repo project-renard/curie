@@ -1,4 +1,4 @@
-use Test::Most tests => 5;
+use Test::Most tests => 6;
 
 use lib 't/lib';
 use CurieTestHelper;
@@ -7,10 +7,11 @@ use Modern::Perl;
 
 my $cairo_doc = CurieTestHelper->create_cairo_document;
 
-subtest 'Check that moving forward changes the page number' => sub {
+subtest 'Check that moving forward and backward changes the page number' => sub {
 	my ($app, $page_comp) = CurieTestHelper->create_app_with_document($cairo_doc);
 
 	my $forward_button = $page_comp->builder->get_object('button-forward');
+	my $back_button = $page_comp->builder->get_object('button-back');
 
 	is($page_comp->current_page_number, 1, 'Start on page 1' );
 
@@ -20,8 +21,33 @@ subtest 'Check that moving forward changes the page number' => sub {
 	$forward_button->clicked;
 	is($page_comp->current_page_number, 3, 'On page 3 after hitting forward' );
 
-	$forward_button->clicked;
-	is($page_comp->current_page_number, 4, 'On page 4 after hitting forward' );
+	$back_button->clicked;
+	is($page_comp->current_page_number, 2, 'On page 2 after hitting back' );
+};
+
+subtest 'Check that the first and last buttons work' => sub {
+	my ($app, $page_comp) = CurieTestHelper->create_app_with_document($cairo_doc);
+
+	my $first_button = $page_comp->builder->get_object('button-first');
+	my $last_button = $page_comp->builder->get_object('button-last');
+
+	is($page_comp->current_page_number, 1, 'Start on page 1' );
+
+	subtest "Check first button" => sub {
+		$page_comp->current_page_number(3);
+		is $page_comp->current_page_number, 3, "Setting page to 3";
+
+		$first_button->clicked;
+		is($page_comp->current_page_number, 1, 'On page 1 after hitting first' );
+	};
+
+	subtest "Check last button" => sub {
+		$page_comp->current_page_number(2);
+		is $page_comp->current_page_number, 2, "Setting page to 2";
+
+		$last_button->clicked;
+		is($page_comp->current_page_number, 4, 'On page 4 after hitting last' );
+	};
 };
 
 subtest 'Check that the current button sensitivity is set on the first and last page' => sub {
@@ -41,6 +67,7 @@ subtest 'Check that the current button sensitivity is set on the first and last 
 	ok   $forward_button->is_sensitive, 'button-forward is enabled on first page';
 
 	$last_button->clicked;
+	$page_comp->refresh_drawing_area;
 
 	is $page_comp->current_page_number, 4, 'On page 4 after hitting button-last';
 

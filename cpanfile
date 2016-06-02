@@ -12,6 +12,7 @@ requires 'Module::Util';
 requires 'Moo';
 requires 'Moo::Role';
 requires 'Path::Tiny';
+requires 'URI';
 requires 'XML::Simple';
 requires 'custom::failures';
 
@@ -20,6 +21,8 @@ on test => sub {
     requires 'File::Temp';
     requires 'List::AllUtils';
     requires 'Test::MockModule';
+    requires 'Test::MockObject';
     requires 'Test::Most';
     requires 'Try::Tiny';
+    requires 'URI::file';
 };
