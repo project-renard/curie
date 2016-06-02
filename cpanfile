@@ -21,6 +21,8 @@ on test => sub {
     requires 'File::Temp';
     requires 'List::AllUtils';
     requires 'Test::MockModule';
+    requires 'Test::MockObject';
     requires 'Test::Most';
     requires 'Try::Tiny';
+    requires 'URI::file';
 };

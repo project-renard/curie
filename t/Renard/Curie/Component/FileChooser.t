@@ -1,4 +1,4 @@
-use Test::Most tests => 3;
+use Test::Most tests => 2;
 
 use lib 't/lib';
 use CurieTestHelper;
@@ -30,7 +30,7 @@ subtest "Menu: File -> Open" => sub {
 	} catch {
 		plan skip_all => "$_";
 	};
-		
+
 	my $fc = Test::MockModule->new('Gtk3::FileChooserDialog', no_auto => 1);
 	my ($got_file, $destroyed) = (0, 0);
 	$fc->mock( get_filename => sub { $got_file = 1; "$pdf_ref_path" } );
@@ -56,19 +56,4 @@ subtest "Menu: File -> Open" => sub {
 		ok(!$got_file, "Callback did not retrieve the filename");
 		ok( $destroyed, "Callback destroyed the dialog");
 	};
-};
-
-subtest "Menu: File -> Quit" => sub {
-	my $app = Renard::Curie::App->new;
-
-	Glib::Timeout->add(100, sub {
-		cmp_ok( Gtk3::main_level, '>', 0, 'Main loop is running');
-		$app->menu_bar->builder
-			->get_object('menu-item-file-quit')
-			->signal_emit('activate');
-	});
-
-	$app->run;
-
-	is( Gtk3::main_level, 0, 'Main loop is no longer running');
 };
