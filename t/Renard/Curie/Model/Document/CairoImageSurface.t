@@ -17,8 +17,8 @@ subtest pdf_ref => sub {
 	is( $cairo_doc->last_page_number, 4, "Last page number is correct" );
 
 	my $first_page = $cairo_doc->get_rendered_page( page_number => 1 );
-	is  $first_page->width, 100, "Check width of first page";
-	is  $first_page->height, 100, "Check height of first page";
+	is  $first_page->width, 5000, "Check width of first page";
+	is  $first_page->height, 5000, "Check height of first page";
 };
 
 

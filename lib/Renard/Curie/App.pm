@@ -43,6 +43,43 @@ sub setup_window {
 		->pack_start( $menu, FALSE, TRUE, 0 );
 }
 
+sub setup_keybindings {
+	my ($self) = @_;
+
+	$self->builder->get_object('main-window')->
+		signal_connect( key_press_event => \&key_pressed, $self );
+}
+
+sub key_pressed {
+	my ($window, $event, $self) = @_;
+
+	if($event->keyval == Gtk3::Gdk::KEY_Page_Down){
+		$self->page_document_component->set_current_page_forward;
+	} elsif($event->keyval == Gtk3::Gdk::KEY_Page_Up){
+		$self->page_document_component->set_current_page_back;
+	} elsif($event->keyval == Gtk3::Gdk::KEY_Up){
+		decrement_scroll($self->page_document_component->scrolled_window->get_vadjustment);
+	} elsif($event->keyval == Gtk3::Gdk::KEY_Down){
+		increment_scroll($self->page_document_component->scrolled_window->get_vadjustment);
+	} elsif($event->keyval == Gtk3::Gdk::KEY_Right){
+		increment_scroll($self->page_document_component->scrolled_window->get_hadjustment);
+	} elsif($event->keyval == Gtk3::Gdk::KEY_Left){
+		decrement_scroll($self->page_document_component->scrolled_window->get_hadjustment);
+	}
+}
+
+sub increment_scroll{
+	my ( $current ) = @_;
+	my $adjustment = $current->get_value + $current->get_step_increment;
+	$current->set_value($adjustment);
+}
+
+sub decrement_scroll{
+	my ( $current ) = @_;
+	my $adjustment = $current->get_value - $current->get_step_increment;
+	$current->set_value($adjustment);
+}
+
 sub run {
 	my ($self) = @_;
 	$self->window->show_all;
@@ -54,6 +91,7 @@ sub BUILD {
 	setup_gtk;
 
 	$self->setup_window;
+	$self->setup_keybindings;
 
 	$self->window->signal_connect( destroy => sub {
 		my ($event, $self) = @_;
