@@ -1,32 +1,39 @@
-use Modern::Perl;
+use Renard::Curie::Setup;
 package Renard::Curie::App;
 
 use Gtk3 -init;
 use Cairo;
 use Glib::Object::Introspection;
 use Glib 'TRUE', 'FALSE';
-use File::Spec;
-use File::Basename;
 
 use Moo;
 
-use Renard::Curie::Error;
 use Renard::Curie::Helper;
 use Renard::Curie::Model::Document::PDF;
 use Renard::Curie::Component::PageDrawingArea;
 use Renard::Curie::Component::MenuBar;
 use Renard::Curie::Component::FileChooser;
 
+use Renard::Curie::Types qw(InstanceOf Path Str DocumentModel);
+use Function::Parameters;
+
 has window => ( is => 'lazy' );
-	sub _build_window {
-		my ($self) = @_;
+	method _build_window :ReturnType(InstanceOf['Gtk3::Window']) {
 		my $window = $self->builder->get_object('main-window');
 	}
 
-has page_document_component => ( is => 'rw', predicate => 1, clearer => 1 );
-has menu_bar => ( is => 'rw' );
+has page_document_component => (
+	is => 'rw',
+	isa => InstanceOf['Renard::Curie::Component::PageDrawingArea'],
+	predicate => 1, # has_page_document_component
+	clearer => 1 # clear_page_document_compnent
+);
+has menu_bar => (
+	is => 'rw',
+	isa => InstanceOf['Renard::Curie::Component::MenuBar'],
+);
 
-sub setup_gtk {
+classmethod setup_gtk() {
 	# stub out the GDL loading for now. Docking is not yet used.
 	##Glib::Object::Introspection->setup(
 		##basename => 'Gdl',
@@ -34,25 +41,19 @@ sub setup_gtk {
 		##package => 'Gdl', );
 }
 
-sub setup_window {
-	my ($self) = @_;
-
+method setup_window() {
 	my $menu = Renard::Curie::Component::MenuBar->new( app => $self );
 	$self->menu_bar( $menu );
 	$self->builder->get_object('application-vbox')
 		->pack_start( $menu, FALSE, TRUE, 0 );
 }
 
-sub setup_keybindings {
-	my ($self) = @_;
-
+method setup_keybindings() {
 	$self->builder->get_object('main-window')->
 		signal_connect( key_press_event => \&key_pressed, $self );
 }
 
-sub key_pressed {
-	my ($window, $event, $self) = @_;
-
+fun key_pressed($window, $event, $self) {
 	if($event->keyval == Gtk3::Gdk::KEY_Page_Down){
 		$self->page_document_component->set_current_page_forward;
 	} elsif($event->keyval == Gtk3::Gdk::KEY_Page_Up){
@@ -68,55 +69,49 @@ sub key_pressed {
 	}
 }
 
-sub increment_scroll{
-	my ( $current ) = @_;
+fun increment_scroll( (InstanceOf['Gtk3::Adjustment']) $current ) {
 	my $adjustment = $current->get_value + $current->get_step_increment;
 	$current->set_value($adjustment);
 }
 
-sub decrement_scroll{
-	my ( $current ) = @_;
+fun decrement_scroll( (InstanceOf['Gtk3::Adjustment']) $current ) {
 	my $adjustment = $current->get_value - $current->get_step_increment;
 	$current->set_value($adjustment);
 }
 
-sub run {
-	my ($self) = @_;
+method run() {
 	$self->window->show_all;
 	Gtk3::main;
 }
 
-sub BUILD {
-	my ($self) = @_;
-	setup_gtk;
+method BUILD {
+	$self->setup_gtk;
 
 	$self->setup_window;
 	$self->setup_keybindings;
 
-	$self->window->signal_connect( destroy => sub {
-		my ($event, $self) = @_;
+	$self->window->signal_connect( destroy => fun ($event, $self) {
 		$self->on_application_quit_cb($event);
 	}, $self );
 	$self->window->set_default_size( 800, 600 );
 }
 
-sub process_arguments {
-	my ($self) = @_;
+method process_arguments() {
 	my $pdf_filename = shift @ARGV;
+
 	if( $pdf_filename ) {
 		$self->open_pdf_document( $pdf_filename );
 	}
 }
 
-sub main {
+fun main() {
 	my $self = __PACKAGE__->new;
 	$self->process_arguments;
 	$self->run;
 }
 
-sub open_pdf_document {
-	my ($self, $pdf_filename) = @_;
-
+method open_pdf_document( (Path->coercibles) $pdf_filename ) {
+	$pdf_filename = Path->coerce( $pdf_filename );
 	if( not -f $pdf_filename ) {
 		Renard::Curie::Error::IO::FileNotFound
 			->throw("PDF filename does not exist: $pdf_filename");
@@ -132,9 +127,7 @@ sub open_pdf_document {
 	$self->open_document( $doc );
 }
 
-sub open_document {
-	my ($self, $doc) = @_;
-
+method open_document( (DocumentModel) $doc ) {
 	if( $self->has_page_document_component ) {
 		$self->builder->get_object('application-vbox')
 			->remove( $self->page_document_component );
@@ -150,9 +143,7 @@ sub open_document {
 }
 
 # Callbacks {{{
-sub on_open_file_dialog_cb {
-	my ($self, $event) = @_;
-
+method on_open_file_dialog_cb( $event ) {
 	my $file_chooser = Renard::Curie::Component::FileChooser->new( app => $self );
 	my $dialog = $file_chooser->get_open_file_dialog_with_filters;
 
@@ -167,8 +158,7 @@ sub on_open_file_dialog_cb {
 	}
 }
 
-sub on_application_quit_cb {
-	my ($self, $event) = @_;
+method on_application_quit_cb( $event ) {
 	Gtk3::main_quit;
 }
 # }}}

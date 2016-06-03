@@ -1,13 +1,16 @@
+#!/usr/bin/env perl
+
 use Test::Most tests => 6;
 
 use lib 't/lib';
 use CurieTestHelper;
 
-use Modern::Perl;
+use Renard::Curie::Setup;
+use Function::Parameters;
 
 my $cairo_doc = CurieTestHelper->create_cairo_document;
 
-subtest 'Check that moving forward and backward changes the page number' => sub {
+subtest 'Check that moving forward and backward changes the page number' => fun {
 	my ($app, $page_comp) = CurieTestHelper->create_app_with_document($cairo_doc);
 
 	my $forward_button = $page_comp->builder->get_object('button-forward');
@@ -25,7 +28,7 @@ subtest 'Check that moving forward and backward changes the page number' => sub 
 	is($page_comp->current_page_number, 2, 'On page 2 after hitting back' );
 };
 
-subtest 'Check that the first and last buttons work' => sub {
+subtest 'Check that the first and last buttons work' => fun {
 	my ($app, $page_comp) = CurieTestHelper->create_app_with_document($cairo_doc);
 
 	my $first_button = $page_comp->builder->get_object('button-first');
@@ -33,7 +36,7 @@ subtest 'Check that the first and last buttons work' => sub {
 
 	is($page_comp->current_page_number, 1, 'Start on page 1' );
 
-	subtest "Check first button" => sub {
+	subtest "Check first button" => fun {
 		$page_comp->current_page_number(3);
 		is $page_comp->current_page_number, 3, "Setting page to 3";
 
@@ -41,7 +44,7 @@ subtest 'Check that the first and last buttons work' => sub {
 		is($page_comp->current_page_number, 1, 'On page 1 after hitting first' );
 	};
 
-	subtest "Check last button" => sub {
+	subtest "Check last button" => fun {
 		$page_comp->current_page_number(2);
 		is $page_comp->current_page_number, 2, "Setting page to 2";
 
@@ -50,7 +53,7 @@ subtest 'Check that the first and last buttons work' => sub {
 	};
 };
 
-subtest 'Check that the current button sensitivity is set on the first and last page' => sub {
+subtest 'Check that the current button sensitivity is set on the first and last page' => fun {
 	my ($app, $page_comp) = CurieTestHelper->create_app_with_document($cairo_doc);
 
 	my $first_button = $page_comp->builder->get_object('button-first');
@@ -79,7 +82,7 @@ subtest 'Check that the current button sensitivity is set on the first and last 
 	ok ! $forward_button->is_sensitive, 'button-forward is disabled on last page';
 };
 
-subtest 'Check the number of pages label' => sub {
+subtest 'Check the number of pages label' => fun {
 	my ($app, $page_comp) = CurieTestHelper->create_app_with_document($cairo_doc);
 
 	my $number_of_pages_label;
@@ -91,7 +94,7 @@ subtest 'Check the number of pages label' => sub {
 	is( $number_of_pages_label->get_text() , '4', 'Number of pages should be equal to four.' );
 };
 
-subtest 'Check the page entry' => sub {
+subtest 'Check the page entry' => fun {
 	my ($app, $page_comp) = CurieTestHelper->create_app_with_document($cairo_doc);
 
 	my $entry = $page_comp->builder->get_object('page-number-entry');
@@ -108,7 +111,7 @@ subtest 'Check the page entry' => sub {
 	is $page_comp->current_page_number, 3, "Page number was changed";
 };
 
-subtest 'Page number bound checking' => sub {
+subtest 'Page number bound checking' => fun {
 	my ($app, $page_comp) = CurieTestHelper->create_app_with_document($cairo_doc);
 
 	$page_comp->set_current_page_to_first;

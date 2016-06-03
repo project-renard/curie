@@ -1,13 +1,15 @@
+#!/usr/bin/env perl
+
 use Test::Most tests => 1;
 
 use lib 't/lib';
 use CurieTestHelper;
 
-use Modern::Perl;
-use Try::Tiny;
+use Renard::Curie::Setup;
 use Renard::Curie::Model::Page::RenderedFromPNG;
+use Function::Parameters;
 
-subtest "Process arguments for PDF file" => sub {
+subtest "Process arguments for PDF file" => fun {
 	my $png_path = try {
 		CurieTestHelper->test_data_directory->child(qw(PNG libpng ccwn3p08.png));
 	} catch {

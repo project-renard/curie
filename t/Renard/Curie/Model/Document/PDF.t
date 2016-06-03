@@ -1,11 +1,13 @@
+#!/usr/bin/env perl
+
 use Test::Most;
 
 use lib 't/lib';
 use CurieTestHelper;
 
-use Modern::Perl;
-use Try::Tiny;
+use Renard::Curie::Setup;
 use Renard::Curie::Model::Document::PDF;
+use Function::Parameters;
 
 my $pdf_ref_path = try {
 	CurieTestHelper->test_data_directory->child(qw(PDF Adobe pdf_reference_1-7.pdf));
@@ -15,7 +17,7 @@ my $pdf_ref_path = try {
 
 plan tests => 1;
 
-subtest pdf_ref => sub {
+subtest pdf_ref => fun {
 	my $pdf_doc = Renard::Curie::Model::Document::PDF->new(
 		filename => $pdf_ref_path
 	);

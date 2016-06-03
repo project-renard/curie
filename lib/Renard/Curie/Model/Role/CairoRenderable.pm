@@ -1,4 +1,4 @@
-use Modern::Perl;
+use Renard::Curie::Setup;
 package Renard::Curie::Model::Role::CairoRenderable;
 
 use Moo::Role;

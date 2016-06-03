@@ -1,8 +1,9 @@
-use Modern::Perl;
+use Renard::Curie::Setup;
 package Renard::Curie::Component::Role::FromBuilder;
 # ABSTRACT: Role that loads a Glade UI file into a Gtk3::Builder
 
 use Moo::Role;
+use Renard::Curie::Types qw(InstanceOf);
 
 =attr ui_file
 
@@ -17,15 +18,16 @@ A C<Gtk3::Builder> that contains the contents of the Glade file referenced in
 C<ui_file>.
 
 =cut
-has builder => ( is => 'lazy' ); # _build_builder
+has builder => (
+	is => 'lazy', # _build_builder
+	isa => InstanceOf['Gtk3::Builder'],
+);
 
-sub _build_builder {
-	Gtk3::Builder->new();
+method _build_builder :ReturnType(InstanceOf['Gtk3::Builder']) {
+	return Gtk3::Builder->new;
 }
 
-before BUILD => sub {
-	my ($self) = @_;
-
+before BUILD => method {
 	$self->builder->add_from_file( $self->ui_file );
 	$self->builder->connect_signals;
 };

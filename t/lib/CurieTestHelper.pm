@@ -1,5 +1,7 @@
-use Modern::Perl;
+use Renard::Curie::Setup;
 package CurieTestHelper;
+use Function::Parameters;
+use Renard::Curie::Types qw(CodeRef InstanceOf Maybe PositiveInt DocumentModel Dir Tuple);
 
 =func test_data_directory
 
@@ -11,10 +13,9 @@ the environment variable C<RENARD_TEST_DATA_PATH>.
 If the environment variable is not defined, throws an error.
 
 =cut
-sub test_data_directory {
+classmethod test_data_directory() :ReturnType(Dir) {
 	require Path::Tiny;
 	Path::Tiny->import();
-	my ($package) = @_;
 
 	if( not defined $ENV{RENARD_TEST_DATA_PATH} ) {
 		die "Must set environment variable RENARD_TEST_DATA_PATH to the path for the test-data repository";
@@ -42,9 +43,7 @@ The pages have the colors:
 * black
 
 =cut
-sub create_cairo_document {
-	my ($package) = @_;
-
+classmethod create_cairo_document() {
 	require Renard::Curie::Model::Document::CairoImageSurface;
 	require Cairo;
 
@@ -112,11 +111,9 @@ the document C<$document>.
    }
 
 =cut
-sub run_app_with_document {
-	my ($package, $document, $callback) = @_;
-
-	my ($app, $page_component) = $package->create_app_with_document($document);
-	return sub {
+classmethod run_app_with_document( (DocumentModel) $document, (CodeRef) $callback) :ReturnType(CodeRef) {
+	my ($app, $page_component) = $class->create_app_with_document($document);
+	return fun {
 		$callback->( $app, $page_component );
 
 		$app->run;
@@ -141,14 +138,12 @@ sleep after the events have been processed.
 =back
 
 =cut
-sub refresh_gui {
-	my ($package, %args) = @_;
-	$args{delay} //= 0;
+classmethod refresh_gui( (Maybe[PositiveInt]) :$delay = ) {
 	while( Gtk3::events_pending() ) {
 		# do not block if there are no events left
 		Gtk3::main_iteration_do(0);
 	}
-	sleep $args{delay};
+	sleep $delay if defined $delay;
 }
 
 =func create_app_with_document
@@ -178,9 +173,8 @@ document passed in C<$document>.
 =back
 
 =cut
-sub create_app_with_document {
-	my ($package, $document) = @_;
-
+classmethod create_app_with_document( (DocumentModel) $document )
+		:ReturnType( list => Tuple[InstanceOf['Renard::Curie::App'], InstanceOf['Renard::Curie::Component::PageDrawingArea']] ) {
 	require Renard::Curie::App;
 
 	my $app = Renard::Curie::App->new;
@@ -189,7 +183,7 @@ sub create_app_with_document {
 	my $page_component = $app->page_document_component;
 
 	$app->window->show_all;
-	$package->refresh_gui;
+	$class->refresh_gui;
 
 	($app, $page_component);
 }

@@ -1,10 +1,11 @@
-use Modern::Perl;
+use Renard::Curie::Setup;
 package Renard::Curie::Helper;
 
 use Class::Method::Modifiers;
 use Gtk3;
+use Function::Parameters;
 
-sub import {
+fun import {
 	# Note: The code below is marked as uncoverable because it only applies
 	# to a single version of GTK+ and thus is not part of the general
 	# coverage. The functionality that it adds is tested in other ways.
@@ -22,7 +23,7 @@ sub import {
 		# - <https://developer.gnome.org/gtk3/3.8/GtkScrolledWindow.html>
 		Class::Method::Modifiers::install_modifier
 			"Gtk3::ScrolledWindow",
-			around => add => sub {
+			around => add => fun {
 				# uncoverable subroutine
 				my $orig = shift;             # uncoverable statement
 				my $self = shift;             # uncoverable statement
@@ -30,15 +31,17 @@ sub import {
 			};                                    # uncoverable statement
 	}
 
+	return;
 }
 
-sub gval ($$) { ## no critic
+# Note: :prototype($$) would help here, but is only possible on Perl v5.20+
+classmethod gval( $glib_typename, $value ) { ## no critic
 	# GValue wrapper shortcut
-	Glib::Object::Introspection::GValueWrapper->new('Glib::'.ucfirst($_[1]) => $_[2])
+	Glib::Object::Introspection::GValueWrapper->new('Glib::'.ucfirst($glib_typename) => $value);
 }
 
-sub genum {
-	Glib::Object::Introspection->convert_sv_to_enum($_[1], $_[2])
+classmethod genum( $package, $sv ) {
+	Glib::Object::Introspection->convert_sv_to_enum($package, $sv);
 }
 
 1;

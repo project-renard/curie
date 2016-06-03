@@ -1,13 +1,13 @@
-use Modern::Perl;
+use Renard::Curie::Setup;
 package Renard::Curie::Data::PDF;
 
 use Capture::Tiny qw(capture_stdout);
 use XML::Simple;
-use Path::Tiny;
-use Alien::MuPDF 0.004;
+use Alien::MuPDF 0.005;
+use Function::Parameters;
 
 BEGIN {
-	our $MUTOOL_PATH =  path(Alien::MuPDF->dist_dir, qw(bin mutool));
+	our $MUTOOL_PATH = Alien::MuPDF->mutool_path;
 }
 
 =func _call_mutool
@@ -21,8 +21,8 @@ Returns the captured C<STDOUT> of the call.
 This function dies if C<mutool> unsuccessfully exits.
 
 =cut
-sub _call_mutool {
-	my @args = ( $Renard::Curie::Data::PDF::MUTOOL_PATH, @_ );
+fun _call_mutool( @mutool_args ) {
+	my @args = ( $Renard::Curie::Data::PDF::MUTOOL_PATH, @mutool_args );
 	my ($stdout, $exit) = capture_stdout {
 		system( @args );
 	};
@@ -40,9 +40,7 @@ This function returns a PNG stream that renders page number C<$pdf_page_no> of
 the PDF file C<$pdf_filename>.
 
 =cut
-sub get_mutool_pdf_page_as_png {
-	my ($pdf_filename, $pdf_page_no) = @_;
-
+fun get_mutool_pdf_page_as_png($pdf_filename, $pdf_page_no) {
 	my $stdout = _call_mutool(
 		qw(draw),
 		qw( -F png ),
@@ -103,9 +101,7 @@ Simplified, the high-level structure looks like:
             TODO
 
 =cut
-sub get_mutool_text_stext_raw {
-	my ($pdf_filename, $pdf_page_no) = @_;
-
+fun get_mutool_text_stext_raw($pdf_filename, $pdf_page_no) {
 	my $stdout = _call_mutool(
 		qw(draw),
 		qw(-F stext),
@@ -128,9 +124,7 @@ See the function L<get_mutool_text_stext_raw|/get_mutool_text_stext_raw> for
 details on the structure of this data.
 
 =cut
-sub get_mutool_text_stext_xml {
-	my ($pdf_filename, $pdf_page_no) = @_;
-
+fun get_mutool_text_stext_xml($pdf_filename, $pdf_page_no) {
 	my $stext_xml = get_mutool_text_stext_raw(
 		$pdf_filename,
 		$pdf_page_no,
@@ -171,9 +165,7 @@ The data is in the form:
   </document>
 
 =cut
-sub get_mutool_page_info_raw {
-	my ($pdf_filename) = @_;
-
+fun get_mutool_page_info_raw($pdf_filename) {
 	my $stdout = _call_mutool(
 		qw(pages),
 		$pdf_filename
@@ -197,9 +189,7 @@ See function L<get_mutool_page_info_raw|/get_mutool_page_info_raw> for
 information on the structure of the data.
 
 =cut
-sub get_mutool_page_info_xml {
-	my ($pdf_filename) = @_;
-
+fun get_mutool_page_info_xml($pdf_filename) {
 	my $page_info_xml = get_mutool_page_info_raw( $pdf_filename );
 
 	my $page_info = XMLin( $page_info_xml );
