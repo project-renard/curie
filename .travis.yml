@@ -37,4 +37,7 @@ before_install:
   - sleep 3 # give xvfb some time to start
   - git clone https://github.com/project-renard/test-data.git test-data
   - export RENARD_TEST_DATA_PATH="`( cd test-data && pwd )`"
+  - if [ "$COVERAGE" == "1" ]; then
+      ./dev/apply-ppi-xform-for-coverage;
+    fi
   - eval $(curl https://travis-perl.github.io/init) --auto

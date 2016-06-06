@@ -32,8 +32,11 @@ on test => sub {
     requires 'Data::DPath';
     requires 'File::Temp';
     requires 'List::AllUtils';
+    requires 'PPI::Dumper';
+    requires 'PPI::Transform';
     requires 'Test::MockModule';
     requires 'Test::MockObject';
     requires 'Test::Most';
     requires 'URI::file';
+    requires 'feature';
 };
