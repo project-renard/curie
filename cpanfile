@@ -11,7 +11,7 @@ requires 'Gtk3';
 requires 'Import::Into';
 requires 'Modern::Perl';
 requires 'Module::Util';
-requires 'Moo';
+requires 'Moo', '2.001001';
 requires 'Moo::Role';
 requires 'MooX::TypeTiny';
 requires 'Path::Tiny';

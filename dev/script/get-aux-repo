@@ -1,0 +1,4 @@
+#!/bin/sh
+
+git clone https://github.com/project-renard/test-data.git test-data || return $?
+export RENARD_TEST_DATA_PATH="`( cd test-data && pwd )`"

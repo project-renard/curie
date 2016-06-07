@@ -6,7 +6,7 @@ use Cairo;
 use Glib::Object::Introspection;
 use Glib 'TRUE', 'FALSE';
 
-use Moo;
+use Moo 2.001001;
 
 use Renard::Curie::Helper;
 use Renard::Curie::Model::Document::PDF;
