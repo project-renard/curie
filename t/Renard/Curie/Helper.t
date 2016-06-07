@@ -1,13 +1,15 @@
+#!/usr/bin/env perl
+
 use Test::Most tests => 1;
 
 use lib 't/lib';
 use CurieTestHelper;
-use Modern::Perl;
+use Renard::Curie::Setup;
 
-use Try::Tiny;
 use Renard::Curie::Helper;
+use Function::Parameters;
 
-subtest "Use helper functions" => sub {
+subtest "Use helper functions" => fun {
 	my $val = Renard::Curie::Helper->gval(int => 512);
 	isa_ok( $val, 'Glib::Object::Introspection::GValueWrapper' );
 

@@ -1,9 +1,10 @@
-use Modern::Perl;
+use Renard::Curie::Setup;
 package Renard::Curie::Component::Role::UIFileFromPackageName;
 # ABSTRACT: Role to obtain name of Glade UI file from the name of the package
 
 use Moo::Role;
 
+use Renard::Curie::Types qw(File);
 use File::Spec;
 use File::Basename;
 use Module::Util qw(:all);
@@ -19,8 +20,10 @@ contents of C<ui_file> will be C<lib/Foo/Bar.glade>.
 See the C<ui_file> attribute in L<Renard::Curie::Component::Role::FromBuilder>.
 
 =cut
-has ui_file => ( is => 'ro', default => sub {
-		my ($self) = @_;
+has ui_file => ( is => 'ro',
+	isa => File,
+	coerce => 1,
+	default => method {
 		my $module_name = ref $self;
 		my $package_last_component = (split(/::/, $module_name))[-1];
 		my $module_file = find_installed($module_name);

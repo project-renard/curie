@@ -1,12 +1,14 @@
+#!/usr/bin/env perl
+
 use Test::Most;
 
 use lib 't/lib';
 use CurieTestHelper;
 
-use Modern::Perl;
-use Try::Tiny;
+use Renard::Curie::Setup;
 use Renard::Curie::Data::PDF;
 use Data::DPath qw(dpathi);
+use Function::Parameters;
 
 my $pdf_ref_path = try {
 	CurieTestHelper->test_data_directory->child(qw(PDF Adobe pdf_reference_1-7.pdf));
@@ -16,12 +18,12 @@ my $pdf_ref_path = try {
 
 plan tests => 3;
 
-subtest 'PDF page to PNG' => sub {
+subtest 'PDF page to PNG' => fun {
 	my $png_data = Renard::Curie::Data::PDF::get_mutool_pdf_page_as_png( $pdf_ref_path, 1 );
 	like $png_data, qr/^\x{89}PNG/, 'data has PNG stream magic number';
 };
 
-subtest 'Get bounds of PDF page' => sub {
+subtest 'Get bounds of PDF page' => fun {
 	my $bounds = Renard::Curie::Data::PDF::get_mutool_page_info_xml( $pdf_ref_path );
 
 	my $first_page = $bounds->{page}[0];
@@ -29,7 +31,7 @@ subtest 'Get bounds of PDF page' => sub {
 	is_deeply( $first_page->{CropBox}, { b => 0, t => 666, l => 0, r => 531 }, 'has the expected CropBox' );
 };
 
-subtest 'Get characters for preface' => sub {
+subtest 'Get characters for preface' => fun {
 	my $preface_page = 23;
 
 	my $stext = Renard::Curie::Data::PDF::get_mutool_text_stext_xml( $pdf_ref_path, $preface_page );

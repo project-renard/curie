@@ -1,12 +1,15 @@
-use Modern::Perl;
+use Renard::Curie::Setup;
 package Renard::Curie::Model::Document::PDF;
 
 use Moo;
 use Renard::Curie::Data::PDF;
 use Renard::Curie::Model::Page::RenderedFromPNG;
+use Renard::Curie::Types qw(PageNumber);
+use Function::Parameters;
 
-sub _build_last_page_number {
-	my ($self) = @_;
+extends qw(Renard::Curie::Model::Document);
+
+method _build_last_page_number :ReturnType(PageNumber) {
 	my $info = Renard::Curie::Data::PDF::get_mutool_page_info_xml(
 		$self->filename
 	);
@@ -20,13 +23,7 @@ See L<Renard::Curie::Model::Document::Role::Renderable>.
 
 =cut
 # TODO : need to implement zoom_level option
-sub get_rendered_page {
-	my ($self, %opts) = @_;
-
-	die "Missing page number" unless defined $opts{page_number};
-
-	my $page_number = $opts{page_number};
-
+method get_rendered_page( (PageNumber) :$page_number ) {
 	my $png_data = Renard::Curie::Data::PDF::get_mutool_pdf_page_as_png(
 		$self->filename, $page_number,
 	);
@@ -41,6 +38,7 @@ sub get_rendered_page {
 with qw(
 	Renard::Curie::Model::Document::Role::FromFile
 	Renard::Curie::Model::Document::Role::Pageable
+	Renard::Curie::Model::Document::Role::Renderable
 );
 
 1;

@@ -1,18 +1,19 @@
+#!/usr/bin/env perl
+
 use Test::Most tests => 4;
 
 use lib 't/lib';
 use CurieTestHelper;
 
-use Modern::Perl;
-use Try::Tiny;
+use Renard::Curie::Setup;
 use Gtk3;
 use URI::file;
 use List::AllUtils qw(first);
 use Test::MockModule;
 use Test::MockObject;
-use Path::Tiny;
+use Function::Parameters;
 
-subtest 'Check that the menu item File -> Open exists' => sub {
+subtest 'Check that the menu item File -> Open exists' => fun {
 	require Renard::Curie::App;
 	my $app = Renard::Curie::App->new;
 
@@ -30,7 +31,7 @@ subtest 'Check that the menu item File -> Open exists' => sub {
 		'File -> Open menu item exists' );
 };
 
-subtest "Menu: File -> Open" => sub {
+subtest "Menu: File -> Open" => fun {
 	my $pdf_ref_path = try {
 		CurieTestHelper->test_data_directory->child(qw(PDF Adobe pdf_reference_1-7.pdf));
 	} catch {
@@ -39,10 +40,10 @@ subtest "Menu: File -> Open" => sub {
 
 	my $fc = Test::MockModule->new('Gtk3::FileChooserDialog', no_auto => 1);
 	my ($got_file, $destroyed) = (0, 0);
-	$fc->mock( get_filename => sub { $got_file = 1; "$pdf_ref_path" } );
-	$fc->mock( destroy => sub { $destroyed = 1 } );
+	$fc->mock( get_filename => fun { $got_file = 1; "$pdf_ref_path" } );
+	$fc->mock( destroy => fun { $destroyed = 1 } );
 
-	subtest "Accept dialog" => sub {
+	subtest "Accept dialog" => fun {
 		($got_file, $destroyed) = (0, 0);
 		$fc->mock( run => 'accept' );
 
@@ -53,7 +54,7 @@ subtest "Menu: File -> Open" => sub {
 		ok( $destroyed, "Callback destroyed the dialog");
 	};
 
-	subtest "Cancel dialog" => sub {
+	subtest "Cancel dialog" => fun {
 		($got_file, $destroyed) = (0, 0);
 		$fc->mock( run => 'cancel' );
 
@@ -64,10 +65,11 @@ subtest "Menu: File -> Open" => sub {
 	};
 };
 
-subtest "Menu: File -> Quit" => sub {
+subtest "Menu: File -> Quit" => fun {
+	plan tests => 2;
 	my $app = Renard::Curie::App->new;
 
-	Glib::Timeout->add(100, sub {
+	Glib::Timeout->add(100, fun {
 		cmp_ok( Gtk3::main_level, '>', 0, 'Main loop is running');
 		$app->menu_bar->builder
 			->get_object('menu-item-file-quit')
@@ -79,7 +81,7 @@ subtest "Menu: File -> Quit" => sub {
 	is( Gtk3::main_level, 0, 'Main loop is no longer running');
 };
 
-subtest "Menu: File -> Recent files" => sub {
+subtest "Menu: File -> Recent files" => fun {
 	my $pdf_ref_path = try {
 		CurieTestHelper->test_data_directory->child(qw(PDF Adobe pdf_reference_1-7.pdf));
 	} catch {
@@ -90,7 +92,7 @@ subtest "Menu: File -> Recent files" => sub {
 	my $pdf_ref_uri = URI::file->new_abs( $pdf_ref_path );
 
 	my $pdf_ref_menu_item = Test::MockObject->new;
-	$pdf_ref_menu_item->mock( get_uri => sub { $pdf_ref_uri } );
+	$pdf_ref_menu_item->mock( get_uri => fun { $pdf_ref_uri } );
 
 	my $rc_mock = Test::MockModule->new('Gtk3::RecentChooser', no_auto => 1);
 	$rc_mock->mock( get_current_item => $pdf_ref_menu_item );

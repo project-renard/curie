@@ -1,4 +1,4 @@
-use Modern::Perl;
+use Renard::Curie::Setup;
 package Renard::Curie::Model::Page::Role::Bounds;
 
 use Moo::Role;

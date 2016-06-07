@@ -1,16 +1,18 @@
+#!/usr/bin/env perl
+
 use Test::Most tests => 1;
 
 use lib 't/lib';
 use CurieTestHelper;
 
-use Modern::Perl;
+use Renard::Curie::Setup;
 use Renard::Curie::Model::Document::CairoImageSurface;
+use Function::Parameters;
 
-
-subtest pdf_ref => sub {
+subtest 'Cairo document model' => fun {
 	my $cairo_doc = CurieTestHelper->create_cairo_document;
 
-	ok( $cairo_doc, "PDF document object created successfully" );
+	ok( $cairo_doc, "Cairo document object created successfully" );
 
 	is( $cairo_doc->first_page_number, 1, "First page number is correct" );
 

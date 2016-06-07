@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
 
 dzil authordeps --missing | cpanm
-dzil listdeps | cpanm
+dzil listdeps --author --develop | cpanm
 dzil test
