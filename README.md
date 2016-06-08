@@ -19,8 +19,8 @@
 				<tr>
 					<td>Linux &amp; OS X</td>
 					<td>
-						<!-- [![Build Status](https://travis-ci.org/project-renard/curie.png?branch=master)](https://travis-ci.org/project-renard/curie) -->
-						<a href="https://travis-ci.org/project-renard/curie"><img src="https://travis-ci.org/project-renard/curie.png?branch=master" alt="Build status" /></a>
+						<!-- [![Build Status](https://travis-ci.org/project-renard/curie.svg?branch=master)](https://travis-ci.org/project-renard/curie) -->
+						<a href="https://travis-ci.org/project-renard/curie"><img src="https://travis-ci.org/project-renard/curie.svg?branch=master" alt="Build status" /></a>
 					</td>
 				</tr>
 				<tr>
@@ -33,8 +33,8 @@
 			</table>
 		</td>
 		<td>
-			<!-- [![Coverage Status](https://coveralls.io/repos/project-renard/curie/badge.png?branch=master)](https://coveralls.io/r/project-renard/curie?branch=master) -->
-			<a href="https://coveralls.io/r/project-renard/curie?branch=master"><img src="https://coveralls.io/repos/project-renard/curie/badge.png?branch=master" alt="Coverage Status" /></a>
+			<!-- [![Coverage Status](https://coveralls.io/repos/project-renard/curie/badge.svg?branch=master)](https://coveralls.io/r/project-renard/curie?branch=master) -->
+			<a href="https://coveralls.io/r/project-renard/curie?branch=master"><img src="https://coveralls.io/repos/project-renard/curie/badge.svg?branch=master" alt="Coverage Status" /></a>
 		</td>
 	</tr>
 </table>
