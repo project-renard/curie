@@ -31,6 +31,37 @@ has scrolled_window => (
 	isa => InstanceOf['Gtk3::ScrolledWindow'],
 );
 
+method setup_keybindings() {
+	$self->scrolled_window->
+		signal_connect( key_press_event => \&key_pressed, $self );
+}
+
+fun key_pressed($window, $event, $self) {
+	if($event->keyval == Gtk3::Gdk::KEY_Page_Down){
+		$self->set_current_page_forward;
+	} elsif($event->keyval == Gtk3::Gdk::KEY_Page_Up){
+		$self->set_current_page_back;
+	} elsif($event->keyval == Gtk3::Gdk::KEY_Up){
+		decrement_scroll($self->scrolled_window->get_vadjustment);
+	} elsif($event->keyval == Gtk3::Gdk::KEY_Down){
+		increment_scroll($self->scrolled_window->get_vadjustment);
+	} elsif($event->keyval == Gtk3::Gdk::KEY_Right){
+		increment_scroll($self->scrolled_window->get_hadjustment);
+	} elsif($event->keyval == Gtk3::Gdk::KEY_Left){
+		decrement_scroll($self->scrolled_window->get_hadjustment);
+	}
+}
+
+fun increment_scroll( (InstanceOf['Gtk3::Adjustment']) $current ) {
+	my $adjustment = $current->get_value + $current->get_step_increment;
+	$current->set_value($adjustment);
+}
+
+fun decrement_scroll( (InstanceOf['Gtk3::Adjustment']) $current ) {
+	my $adjustment = $current->get_value - $current->get_step_increment;
+	$current->set_value($adjustment);
+}
+
 classmethod FOREIGNBUILDARGS(@) {
 	return ();
 }
@@ -40,6 +71,7 @@ method BUILD {
 	$self->setup_text_entry_events;
 	$self->setup_drawing_area;
 	$self->setup_number_of_pages_label;
+	$self->setup_keybindings;
 
 	# add as child for this Gtk3::Bin
 	$self->add(
@@ -105,7 +137,7 @@ method setup_drawing_area() {
 	$self->drawing_area( $drawing_area );
 	$drawing_area->signal_connect( draw => fun (
 			(InstanceOf['Gtk3::DrawingArea']) $widget,
-			(InstanceOf['Cairo::Context']) $cr)  {
+			(InstanceOf['Cairo::Context']) $cr)	{
 		my $rp = $self->document->get_rendered_page(
 			page_number => $self->current_page_number,
 		);
