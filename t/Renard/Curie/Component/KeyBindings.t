@@ -15,7 +15,7 @@ my $cairo_doc = CurieTestHelper->create_cairo_document;
 fun Key_Event( (InstanceOf['Renard::Curie::App']) $app, (Int) $key) {
 	my $event = Gtk3::Gdk::Event->new('key-press');
 	$event->keyval($key);
-	$app->window->signal_emit( key_press_event => $event );
+	$app->page_document_component->signal_emit( key_press_event => $event );
 }
 
 subtest 'Check that Page Down moves forward a page and Page Up moves back a page' => fun {
