@@ -39,6 +39,7 @@ with qw(
 	Renard::Curie::Model::Document::Role::FromFile
 	Renard::Curie::Model::Document::Role::Pageable
 	Renard::Curie::Model::Document::Role::Renderable
+	Renard::Curie::Model::Document::Role::Cacheable
 );
 
 1;
