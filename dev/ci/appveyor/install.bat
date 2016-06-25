@@ -31,7 +31,7 @@ IF %COMPILER%==msys2 (
   bash -lc "cpanm --notest ExtUtils::MakeMaker Module::Build"
 
   REM Native deps
-  bash -lc "pacman -S --needed --noconfirm mingw-w64-x86_64-gobject-introspection mingw-w64-x86_64-cairo mingw-w64-x86_64-gtk3 mingw-w64-x86_64-expat mingw-w64-x86_64-openssl"
+  bash -lc "xargs pacman -S --needed --noconfirm < $APPVEYOR_BUILD_FOLDER/msys2-mingw64-packages"
 
   REM There is not a corresponding cc for the mingw64 gcc. So we copy it in place.
   bash -lc "cp -pv /mingw64/bin/gcc /mingw64/bin/cc"
