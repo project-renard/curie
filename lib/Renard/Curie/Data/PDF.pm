@@ -192,7 +192,8 @@ information on the structure of the data.
 fun get_mutool_page_info_xml($pdf_filename) {
 	my $page_info_xml = get_mutool_page_info_raw( $pdf_filename );
 
-	my $page_info = XMLin( $page_info_xml );
+	my $page_info = XMLin( $page_info_xml,
+		ForceArray => [ qw(page) ] );
 
 	return $page_info;
 }
