@@ -31,42 +31,14 @@ has scrolled_window => (
 	isa => InstanceOf['Gtk3::ScrolledWindow'],
 );
 
-method setup_keybindings() {
-	$self->set_can_focus( TRUE );
-	$self->signal_connect( key_press_event => \&key_pressed, $self );
-}
-
-fun key_pressed($window, $event, $self) {
-	if($event->keyval == Gtk3::Gdk::KEY_Page_Down){
-		$self->set_current_page_forward;
-	} elsif($event->keyval == Gtk3::Gdk::KEY_Page_Up){
-		$self->set_current_page_back;
-	} elsif($event->keyval == Gtk3::Gdk::KEY_Up){
-		decrement_scroll($self->scrolled_window->get_vadjustment);
-	} elsif($event->keyval == Gtk3::Gdk::KEY_Down){
-		increment_scroll($self->scrolled_window->get_vadjustment);
-	} elsif($event->keyval == Gtk3::Gdk::KEY_Right){
-		increment_scroll($self->scrolled_window->get_hadjustment);
-	} elsif($event->keyval == Gtk3::Gdk::KEY_Left){
-		decrement_scroll($self->scrolled_window->get_hadjustment);
-	}
-}
-
-fun increment_scroll( (InstanceOf['Gtk3::Adjustment']) $current ) {
-	my $adjustment = $current->get_value + $current->get_step_increment;
-	$current->set_value($adjustment);
-}
-
-fun decrement_scroll( (InstanceOf['Gtk3::Adjustment']) $current ) {
-	my $adjustment = $current->get_value - $current->get_step_increment;
-	$current->set_value($adjustment);
-}
-
 classmethod FOREIGNBUILDARGS(@) {
 	return ();
 }
 
 method BUILD {
+	# so that the widget can take input
+	$self->set_can_focus( TRUE );
+
 	$self->setup_button_events;
 	$self->setup_text_entry_events;
 	$self->setup_drawing_area;
@@ -110,28 +82,6 @@ method setup_text_entry_events() {
 		activate => \&set_current_page_number, $self );
 }
 
-method refresh_drawing_area() {
-	return unless $self->drawing_area;
-
-	$self->drawing_area->queue_draw;
-}
-
-method on_draw_page( (InstanceOf['Cairo::Context']) $cr ) {
-	$self->set_navigation_buttons_sensitivity;
-
-	my $img = $self->current_rendered_page->cairo_image_surface;
-
-	$cr->set_source_surface($img, 0, 0);
-	$cr->paint;
-
-	$self->drawing_area->set_size_request(
-		$self->current_rendered_page->width,
-		$self->current_rendered_page->height );
-
-	$self->builder->get_object('page-number-entry')
-		->set_text($self->current_page_number);
-}
-
 method setup_drawing_area() {
 	my $drawing_area = Gtk3::DrawingArea->new();
 	$self->drawing_area( $drawing_area );
@@ -159,6 +109,62 @@ method setup_drawing_area() {
 	$vbox->pack_start( $scrolled_window, TRUE, TRUE, 0);
 }
 
+method setup_number_of_pages_label() {
+	$self->builder->get_object("number-of-pages-label")->set_text( $self->document->last_page_number );
+}
+
+method setup_keybindings() {
+	$self->signal_connect( key_press_event => \&key_pressed, $self );
+}
+
+fun key_pressed($window, $event, $self) {
+	if($event->keyval == Gtk3::Gdk::KEY_Page_Down){
+		$self->set_current_page_forward;
+	} elsif($event->keyval == Gtk3::Gdk::KEY_Page_Up){
+		$self->set_current_page_back;
+	} elsif($event->keyval == Gtk3::Gdk::KEY_Up){
+		decrement_scroll($self->scrolled_window->get_vadjustment);
+	} elsif($event->keyval == Gtk3::Gdk::KEY_Down){
+		increment_scroll($self->scrolled_window->get_vadjustment);
+	} elsif($event->keyval == Gtk3::Gdk::KEY_Right){
+		increment_scroll($self->scrolled_window->get_hadjustment);
+	} elsif($event->keyval == Gtk3::Gdk::KEY_Left){
+		decrement_scroll($self->scrolled_window->get_hadjustment);
+	}
+}
+
+fun increment_scroll( (InstanceOf['Gtk3::Adjustment']) $current ) {
+	my $adjustment = $current->get_value + $current->get_step_increment;
+	$current->set_value($adjustment);
+}
+
+fun decrement_scroll( (InstanceOf['Gtk3::Adjustment']) $current ) {
+	my $adjustment = $current->get_value - $current->get_step_increment;
+	$current->set_value($adjustment);
+}
+
+method refresh_drawing_area() {
+	return unless $self->drawing_area;
+
+	$self->drawing_area->queue_draw;
+}
+
+method on_draw_page( (InstanceOf['Cairo::Context']) $cr ) {
+	$self->set_navigation_buttons_sensitivity;
+
+	my $img = $self->current_rendered_page->cairo_image_surface;
+
+	$cr->set_source_surface($img, 0, 0);
+	$cr->paint;
+
+	$self->drawing_area->set_size_request(
+		$self->current_rendered_page->width,
+		$self->current_rendered_page->height );
+
+	$self->builder->get_object('page-number-entry')
+		->set_text($self->current_page_number);
+}
+
 method _trigger_current_page_number {
 	$self->refresh_drawing_area;
 }
@@ -169,10 +175,6 @@ fun set_current_page_number( $entry, $self ) {
 			and $text >= $self->document->first_page_number) {
 		$self->current_page_number( $text );
 	}
-}
-
-method setup_number_of_pages_label() {
-	$self->builder->get_object("number-of-pages-label")->set_text( $self->document->last_page_number );
 }
 
 method set_current_page_forward() {
