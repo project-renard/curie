@@ -1,9 +1,10 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Data::PDF;
 
-use Capture::Tiny qw(capture_stdout);
+use Capture::Tiny qw(capture_stdout tee_stdout);
 use XML::Simple;
 use Alien::MuPDF 0.005;
+use Path::Tiny;
 use Function::Parameters;
 
 BEGIN {
@@ -23,9 +24,47 @@ This function dies if C<mutool> unsuccessfully exits.
 =cut
 fun _call_mutool( @mutool_args ) {
 	my @args = ( $Renard::Curie::Data::PDF::MUTOOL_PATH, @mutool_args );
-	my ($stdout, $exit) = capture_stdout {
-		system( @args );
-	};
+	my ($stdout, $exit);
+
+	# Note: The code below is marked as uncoverable because it only applies
+	# on Windows and we are currently only automatically checking coverage
+	# on Linux via Travis-CI.
+	# uncoverable branch true
+	if( $^O eq 'MSWin32' ) {
+		# Need to redirect to a file for two reasons:
+		# - /SUBSYSTEM:WINDOWS closes stdin/stdout <https://github.com/project-renard/curie/issues/128>.
+		# - MuPDF does not set the mode on stdout to binary <http://bugs.ghostscript.com/show_bug.cgi?id=694954>.
+		my $temp_fh = File::Temp->new;                       # uncoverable statement
+		close $temp_fh; # to avoid Windows file locking      # uncoverable statement
+
+		my $output_param = 0;                                # uncoverable statement
+		for my $idx (1..@args-2) {                           # uncoverable statement
+			# uncoverable branch true
+			if( $args[$idx] eq '-o'                      # uncoverable statement
+				&& $args[$idx+1] eq '-' ) {
+				$args[$idx+1] = $temp_fh->filename;  # uncoverable statement
+				$output_param = 1;                   # uncoverable statement
+			}
+		}
+
+		# uncoverable branch true
+		if( not $output_param ) {                            # uncoverable statement
+			# redirect into a temp file
+			my $cmd = join " ",                          # uncoverable statement
+				map { $_ =~ /\s/ ? "\"$_\"" : $_ }   # uncoverable statement
+				@args;                               # uncoverable statement
+			my $redir = $temp_fh->filename;              # uncoverable statement
+			@args = ("$cmd > \"$redir\"");               # uncoverable statement
+		}
+
+		system( @args );                                     # uncoverable statement
+		$stdout = path( $temp_fh->filename )->slurp_raw;     # uncoverable statement
+		$exit = $?;                                          # uncoverable statement
+	} else {
+		($stdout, $exit) = capture_stdout {
+			system( @args );
+		};
+	}
 
 	die "Unexpected mutool exit: $exit" if $exit;
 
