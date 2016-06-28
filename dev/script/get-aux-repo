@@ -1,4 +1,10 @@
 #!/bin/sh
 
-git clone https://github.com/project-renard/test-data.git test-data || return $?
-export RENARD_TEST_DATA_PATH="`( cd test-data && pwd )`"
+if [ -n "$APPVEYOR_BUILD_FOLDER" ]; then
+	cd $APPVEYOR_BUILD_FOLDER
+fi
+
+for repo in devops test-data; do
+	git clone https://github.com/project-renard/$repo.git  external/project-renard/$repo || return $?
+done
+. external/project-renard/devops/ENV.sh

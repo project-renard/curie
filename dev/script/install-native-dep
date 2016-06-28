@@ -11,6 +11,21 @@ elif [ "$TRAVIS_OS_NAME" == "linux" ]; then
 	# We do not need to install in this script on Travis-CI Linux. The
 	# packages are listed in .travis.yml
 	true
+elif [ -n "$APPVEYOR_BUILD_FOLDER" ] && [ "$MSYS2_ARCH" == "x86_64" ]; then
+	# build tools
+	pacman -S --needed --noconfirm mingw-w64-x86_64-toolchain autoconf automake libtool make patch mingw-w64-x86_64-libtool
+
+	# Set up perl
+	pacman -S --needed --noconfirm mingw-w64-x86_64-perl
+	pl2bat `which pl2bat`
+	yes | cpan App::cpanminus
+	cpanm --notest ExtUtils::MakeMaker Module::Build
+
+	# Native deps
+	xargs pacman -S --needed --noconfirm < $APPVEYOR_BUILD_FOLDER/msys2-mingw64-packages
+
+	# There is not a corresponding cc for the mingw64 gcc. So we copy it in place.
+	cp -pv /mingw64/bin/gcc /mingw64/bin/cc
 fi
 
 true
