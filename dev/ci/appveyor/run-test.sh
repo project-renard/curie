@@ -2,8 +2,7 @@
 
 cd $APPVEYOR_BUILD_FOLDER
 
-git clone https://github.com/project-renard/test-data.git test-data
-export RENARD_TEST_DATA_PATH="`( cd test-data && pwd )`"
+. external/project-renard/devops/ENV.sh
 prove -lvr t
 
 #dzil test

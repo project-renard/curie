@@ -16,27 +16,8 @@ set TMPDIR=%APPVEYOR_BUILD_FOLDER%\tmp
 IF %COMPILER%==msys2 (
   @echo on
   SET "PATH=C:\%MSYS2_DIR%\%MSYSTEM%\bin;C:\%MSYS2_DIR%\usr\bin;%PATH%"
-  bash -lc "pacman -S --needed --noconfirm pacman-mirrors"
-  bash -lc "pacman -S --needed --noconfirm git"
-  REM Update
-  bash -lc "pacman -Syu --noconfirm"
-
-  REM build tools
-  bash -lc "pacman -S --needed --noconfirm mingw-w64-x86_64-toolchain autoconf automake libtool make patch mingw-w64-x86_64-libtool"
-
-  REM Set up perl
-  bash -lc "pacman -S --needed --noconfirm mingw-w64-x86_64-perl"
-  bash -lc "pl2bat $(which pl2bat)"
-  bash -lc "yes | cpan App::cpanminus"
-  bash -lc "cpanm --notest ExtUtils::MakeMaker Module::Build"
-
-  REM Native deps
-  bash -lc "xargs pacman -S --needed --noconfirm < $APPVEYOR_BUILD_FOLDER/msys2-mingw64-packages"
-
-  REM There is not a corresponding cc for the mingw64 gcc. So we copy it in place.
-  bash -lc "cp -pv /mingw64/bin/gcc /mingw64/bin/cc"
-
-  REM Install via cpanfile
-  REM bash -lc "cd $APPVEYOR_BUILD_FOLDER; . $APPVEYOR_BUILD_FOLDER/dev/ci/appveyor/EUMMnosearch.sh; cpanm --verbose --configure-args verbose --build-args NOECHO=' ' -n Gtk3 Glib"
-  bash -lc "cd $APPVEYOR_BUILD_FOLDER; . $APPVEYOR_BUILD_FOLDER/dev/ci/appveyor/EUMMnosearch.sh; export MAKEFLAGS='-j4 -P4'; cpanm --notest --installdeps ."
+  bash -lc "cd $APPVEYOR_BUILD_FOLDER; ./dev/script/get-aux-repo"
+  bash -lc "cd $APPVEYOR_BUILD_FOLDER; ./dev/ci/appveyor/update-msys2.sh"
+  bash -lc "cd $APPVEYOR_BUILD_FOLDER; ./dev/script/install-native-dep"
+  bash -lc "cd $APPVEYOR_BUILD_FOLDER; ./dev/ci/appveyor/install-perl-dist.sh"
 )
