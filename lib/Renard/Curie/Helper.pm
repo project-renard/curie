@@ -44,4 +44,9 @@ classmethod genum( $package, $sv ) {
 	Glib::Object::Introspection->convert_sv_to_enum($package, $sv);
 }
 
+classmethod callback( $invocant, $callback_name, @args ) {
+	my $fun = $invocant->can( $callback_name );
+	$fun->( @args, $invocant );
+}
+
 1;

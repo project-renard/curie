@@ -53,33 +53,37 @@ method BUILD {
 
 method setup_button_events() {
 	$self->builder->get_object('button-first')->signal_connect(
-		clicked =>
-			fun ($button, $self) {
-				$self->set_current_page_to_first;
-			}, $self );
+		clicked => \&on_activate_button_first_cb, $self );
 	$self->builder->get_object('button-last')->signal_connect(
-		clicked =>
-			fun ($button, $self) {
-				$self->set_current_page_to_last;
-			}, $self );
+		clicked => \&on_activate_button_last_cb, $self );
 
 	$self->builder->get_object('button-forward')->signal_connect(
-		clicked =>
-			fun ($button, $self) {
-				$self->set_current_page_forward;
-			}, $self );
+		clicked => \&on_activate_button_forward_cb, $self );
 	$self->builder->get_object('button-back')->signal_connect(
-		clicked =>
-			fun ($button, $self) {
-				$self->set_current_page_back;
-			}, $self );
+		clicked => \&on_activate_button_back_cb, $self );
 
 	$self->set_navigation_buttons_sensitivity;
 }
 
+fun on_activate_button_first_cb($button, $self) {
+	$self->set_current_page_to_first;
+}
+
+fun on_activate_button_last_cb($button, $self) {
+	$self->set_current_page_to_last;
+}
+
+fun on_activate_button_forward_cb($button, $self) {
+	$self->set_current_page_forward;
+}
+
+fun on_activate_button_back_cb($button, $self) {
+	$self->set_current_page_back;
+}
+
 method setup_text_entry_events() {
 	$self->builder->get_object('page-number-entry')->signal_connect(
-		activate => \&set_current_page_number, $self );
+		activate => \&on_activate_page_number_entry_cb, $self );
 }
 
 method setup_drawing_area() {
@@ -114,10 +118,10 @@ method setup_number_of_pages_label() {
 }
 
 method setup_keybindings() {
-	$self->signal_connect( key_press_event => \&key_pressed, $self );
+	$self->signal_connect( key_press_event => \&on_key_press_event_cb, $self );
 }
 
-fun key_pressed($window, $event, $self) {
+fun on_key_press_event_cb($window, $event, $self) {
 	if($event->keyval == Gtk3::Gdk::KEY_Page_Down){
 		$self->set_current_page_forward;
 	} elsif($event->keyval == Gtk3::Gdk::KEY_Page_Up){
@@ -169,7 +173,7 @@ method _trigger_current_page_number {
 	$self->refresh_drawing_area;
 }
 
-fun set_current_page_number( $entry, $self ) {
+fun on_activate_page_number_entry_cb( $entry, $self ) {
 	my $text = $entry -> get_text;
 	if ($text =~ /^[0-9]+$/ and $text <= $self->document->last_page_number
 			and $text >= $self->document->first_page_number) {
