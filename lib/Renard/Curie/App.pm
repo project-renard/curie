@@ -58,9 +58,8 @@ method BUILD {
 
 	$self->setup_window;
 
-	$self->window->signal_connect( destroy => fun ($event, $self) {
-		$self->on_application_quit_cb($event);
-	}, $self );
+	$self->window->signal_connect(
+		destroy => \&on_application_quit_cb, $self );
 	$self->window->set_default_size( 800, 600 );
 }
 
@@ -111,7 +110,7 @@ method open_document( (DocumentModel) $doc ) {
 }
 
 # Callbacks {{{
-method on_open_file_dialog_cb( $event ) {
+fun on_open_file_dialog_cb( $event, $self ) {
 	my $file_chooser = Renard::Curie::Component::FileChooser->new( app => $self );
 	my $dialog = $file_chooser->get_open_file_dialog_with_filters;
 
@@ -126,7 +125,7 @@ method on_open_file_dialog_cb( $event ) {
 	}
 }
 
-method on_application_quit_cb( $event ) {
+fun on_application_quit_cb( $event, $self ) {
 	Gtk3::main_quit;
 }
 # }}}

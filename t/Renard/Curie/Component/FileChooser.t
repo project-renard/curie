@@ -6,6 +6,7 @@ use lib 't/lib';
 use CurieTestHelper;
 
 use Renard::Curie::Setup;
+use Renard::Curie::Helper;
 use Renard::Curie::App;
 use Renard::Curie::Component::FileChooser;
 use Test::MockModule;
@@ -43,7 +44,8 @@ subtest "Menu: File -> Open" => fun {
 		$fc->mock( run => 'accept' );
 
 		my $app = Renard::Curie::App->new;
-		$app->menu_bar->on_menu_file_open_activate_cb;
+		Renard::Curie::Helper->callback( $app->menu_bar,
+			on_menu_file_open_activate_cb => undef );
 
 		ok( $got_file, "Callback retrieved the filename");
 		ok( $destroyed, "Callback destroyed the dialog");
@@ -54,7 +56,8 @@ subtest "Menu: File -> Open" => fun {
 		$fc->mock( run => 'cancel' );
 
 		my $app = Renard::Curie::App->new;
-		$app->menu_bar->on_menu_file_open_activate_cb;
+		Renard::Curie::Helper->callback( $app->menu_bar,
+			on_menu_file_open_activate_cb => undef );
 		ok(!$got_file, "Callback did not retrieve the filename");
 		ok( $destroyed, "Callback destroyed the dialog");
 	};
