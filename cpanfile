@@ -41,3 +41,8 @@ on test => sub {
     requires 'URI::file';
     requires 'feature';
 };
+
+if( $^O eq 'MSWin32' ) {
+    requires 'Win32';
+    requires 'Win32::HideConsole';
+}
