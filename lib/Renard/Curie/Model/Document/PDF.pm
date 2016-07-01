@@ -1,5 +1,6 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Model::Document::PDF;
+# ABSTRACT: document that represents a PDF file
 
 use Moo;
 use Renard::Curie::Data::PDF;
@@ -9,6 +10,16 @@ use Function::Parameters;
 
 extends qw(Renard::Curie::Model::Document);
 
+=begin comment
+
+=method _build_last_page_number
+
+Retrieves the last page number of the PDF. Currently implemented through
+C<mutool>.
+
+=end comment
+
+=cut
 method _build_last_page_number :ReturnType(PageNumber) {
 	my $info = Renard::Curie::Data::PDF::get_mutool_page_info_xml(
 		$self->filename
@@ -18,6 +29,8 @@ method _build_last_page_number :ReturnType(PageNumber) {
 }
 
 =method get_rendered_page
+
+  method get_rendered_page( (PageNumber) :$page_number )
 
 See L<Renard::Curie::Model::Document::Role::Renderable>.
 

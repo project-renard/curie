@@ -1,5 +1,6 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Data::PDF;
+# ABSTRACT: Retrieve PDF image and text data via MuPDF's mutool
 
 use Capture::Tiny qw(capture_stdout tee_stdout);
 use XML::Simple;

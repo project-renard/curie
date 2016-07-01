@@ -9,6 +9,8 @@ use Renard::Curie::Types qw(InstanceOf);
 
 A C<Str> that contains the path to a Glade file to be loaded.
 
+Consumers of this role must implement this.
+
 =cut
 requires 'ui_file';
 

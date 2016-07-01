@@ -1,11 +1,17 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Model::Page::RenderedFromPNG;
+# ABSTRACT: Page generated from PNG data
 
 use Moo;
 use Cairo;
 use Function::Parameters;
 use Renard::Curie::Types qw(Str InstanceOf Int);
 
+=attr png_data
+
+A binary C<Str> which contains the PNG data that represents this page.
+
+=cut
 has png_data => (
 	is => 'rw',
 	isa => Str,
