@@ -6,18 +6,6 @@ use Moo;
 use Renard::Curie::Types qw(InstanceOf);
 use Function::Parameters;
 
-=attr app
-
-TODO
-
-=cut
-has app => (
-	is => 'ro',
-	isa => InstanceOf['Renard::Curie::App'],
-	required => 1,
-	weak_ref => 1
-);
-
 =attr all_filter
 
 A L<Gtk3::FileFilter> that displays all files.
@@ -92,5 +80,9 @@ method get_open_file_dialog_with_filters() :ReturnType(InstanceOf['Gtk3::FileCho
 
 	return $dialog;
 }
+
+with qw(
+	Renard::Curie::Component::Role::HasParentApp
+);
 
 1;

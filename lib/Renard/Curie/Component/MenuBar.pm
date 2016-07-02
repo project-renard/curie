@@ -9,18 +9,6 @@ use Function::Parameters;
 use Renard::Curie::Types qw(InstanceOf);
 use Renard::Curie::Helper;
 
-=attr app
-
-TODO
-
-=cut
-has app => (
-	is => 'ro',
-	isa => InstanceOf['Renard::Curie::App'],
-	required => 1,
-	weak_ref => 1
-);
-
 =attr recent_manager
 
 A lazy attribute that holds the default instance of L<Gtk3::RecentManager>.
@@ -131,6 +119,7 @@ fun on_menu_file_recentfiles_item_activated_cb( (InstanceOf['Gtk3::RecentChooser
 with qw(
 	Renard::Curie::Component::Role::FromBuilder
 	Renard::Curie::Component::Role::UIFileFromPackageName
+	Renard::Curie::Component::Role::HasParentApp
 );
 
 1;
