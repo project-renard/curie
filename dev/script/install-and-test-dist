@@ -18,8 +18,9 @@ if [ "$TRAVIS_OS_NAME" == "osx" ]; then
 
 	# Default for script: make test (no M::B or EUMM)
 	function make {
+		export TEST_JOBS=4
 		if [ "$#" == 1 ] && [ "$1" == "test" ]; then
-			prove -lvr t
+			prove -j${TEST_JOBS} -lvr t
 		fi
 	}
 elif [ "$TRAVIS_OS_NAME" == "linux" ]; then
