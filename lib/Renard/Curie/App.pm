@@ -1,5 +1,6 @@
 use Renard::Curie::Setup;
 package Renard::Curie::App;
+# ABSTRACT: A document viewing application
 
 use Gtk3 -init;
 use Cairo;
@@ -17,22 +18,57 @@ use Renard::Curie::Component::FileChooser;
 use Renard::Curie::Types qw(InstanceOf Path Str DocumentModel);
 use Function::Parameters;
 
-has window => ( is => 'lazy' );
-	method _build_window :ReturnType(InstanceOf['Gtk3::Window']) {
-		my $window = $self->builder->get_object('main-window');
-	}
+=attr window
 
+A L<Gtk3::Window> that contains the main window for the application.
+
+=cut
+has window => ( is => 'lazy' );
+
+method _build_window :ReturnType(InstanceOf['Gtk3::Window']) {
+	my $window = $self->builder->get_object('main-window');
+}
+
+=attr page_document_component
+
+A L<Renard::Curie::Component::PageDrawingArea> that holds the currently
+displayed document.
+
+=for :list
+* Predicate: C<has_page_document_component>
+* Clearer: C<clear_page_document_component>
+
+=for Pod::Coverage has_page_document_component clear_page_document_component
+
+=cut
 has page_document_component => (
 	is => 'rw',
 	isa => InstanceOf['Renard::Curie::Component::PageDrawingArea'],
 	predicate => 1, # has_page_document_component
 	clearer => 1 # clear_page_document_compnent
 );
+
+=attr menu_bar
+
+A L<Renard::Curie::Component::MenuBar> for the application's menu-bar.
+
+=cut
 has menu_bar => (
 	is => 'rw',
 	isa => InstanceOf['Renard::Curie::Component::MenuBar'],
 );
 
+=classmethod setup_gtk
+
+  classmethod setup_gtk()
+
+Sets up any of the L<Glib::Object::Introspection>-based libraries needed for
+the application.
+
+Currently loads nothing, but will load the Gnome Docking Library (C<libgdl>) in
+the future.
+
+=cut
 classmethod setup_gtk() {
 	# stub out the GDL loading for now. Docking is not yet used.
 	##Glib::Object::Introspection->setup(
@@ -41,6 +77,17 @@ classmethod setup_gtk() {
 		##package => 'Gdl', );
 }
 
+=method setup_window
+
+  method setup_window()
+
+Sets up components that make up the window shell for the application
+including:
+
+=for :list
+* L</menu_bar>
+
+=cut
 method setup_window() {
 	my $menu = Renard::Curie::Component::MenuBar->new( app => $self );
 	$self->menu_bar( $menu );
@@ -48,11 +95,25 @@ method setup_window() {
 		->pack_start( $menu, FALSE, TRUE, 0 );
 }
 
+=method run
+
+  method run()
+
+Displays L</window> and starts the L<Gtk3> event loop.
+
+=cut
 method run() {
 	$self->window->show_all;
 	Gtk3::main;
 }
 
+=method BUILD
+
+  method BUILD
+
+Initialises the application and sets up signals.
+
+=cut
 method BUILD {
 	$self->setup_gtk;
 
@@ -63,6 +124,13 @@ method BUILD {
 	$self->window->set_default_size( 800, 600 );
 }
 
+=method process_arguments
+
+  method process_arguments()
+
+Processes arguments given in C<@ARGV>.
+
+=cut
 method process_arguments() {
 	my $pdf_filename = shift @ARGV;
 
@@ -71,12 +139,26 @@ method process_arguments() {
 	}
 }
 
+=func main
+
+  fun main()
+
+Application entry point.
+
+=cut
 fun main() {
 	my $self = __PACKAGE__->new;
 	$self->process_arguments;
 	$self->run;
 }
 
+=method open_pdf_document
+
+  method open_pdf_document( (Path->coercibles) $pdf_filename )
+
+Opens a PDF file stored on the disk.
+
+=cut
 method open_pdf_document( (Path->coercibles) $pdf_filename ) {
 	$pdf_filename = Path->coerce( $pdf_filename );
 	if( not -f $pdf_filename ) {
@@ -94,6 +176,13 @@ method open_pdf_document( (Path->coercibles) $pdf_filename ) {
 	$self->open_document( $doc );
 }
 
+=method open_document
+
+  method open_document( (DocumentModel) $doc )
+
+Sets the document for the application's L</page_document_component>.
+
+=cut
 method open_document( (DocumentModel) $doc ) {
 	if( $self->has_page_document_component ) {
 		$self->builder->get_object('application-vbox')
@@ -110,6 +199,13 @@ method open_document( (DocumentModel) $doc ) {
 }
 
 # Callbacks {{{
+=callback on_open_file_dialog_cb
+
+  fun on_open_file_dialog_cb( $event, $self )
+
+Callback that opens a L<Renard::Curie::Component::FileChooser> component.
+
+=cut
 fun on_open_file_dialog_cb( $event, $self ) {
 	my $file_chooser = Renard::Curie::Component::FileChooser->new( app => $self );
 	my $dialog = $file_chooser->get_open_file_dialog_with_filters;
@@ -125,6 +221,13 @@ fun on_open_file_dialog_cb( $event, $self ) {
 	}
 }
 
+=callback on_application_quit_cb
+
+  fun on_application_quit_cb( $event, $self )
+
+Callback that stops the L<Gtk3> main loop.
+
+=cut
 fun on_application_quit_cb( $event, $self ) {
 	Gtk3::main_quit;
 }

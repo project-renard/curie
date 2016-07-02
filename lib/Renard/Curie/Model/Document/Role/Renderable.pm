@@ -1,5 +1,6 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Model::Document::Role::Renderable;
+# ABSTRACT: Role for documents that can render their pages
 
 use Moo::Role;
 
@@ -32,5 +33,7 @@ Optional. Value must be a Float.
 
 =cut
 requires 'get_rendered_page';
+
+# TODO implement the actual method signature here
 
 1;

@@ -1,12 +1,13 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Model::Document::Role::Pageable;
+# ABSTRACT: Role for documents that have numbered pages
 
 use Moo::Role;
 use Renard::Curie::Types qw(PageNumber);
 
 =attr first_page_number
 
-An C<Int> containing the first page number of the PDF document.
+A C<PageNumber> containing the first page number of the document.
 This is always C<1>.
 
 =cut
@@ -19,7 +20,7 @@ has first_page_number => (
 
 =attr last_page_number
 
-An C<Int> containing the last page number of the PDF document.
+A C<PageNumber> containing the last page number of the document.
 
 =cut
 has last_page_number => (

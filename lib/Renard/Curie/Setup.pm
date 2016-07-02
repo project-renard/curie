@@ -1,5 +1,6 @@
 use Modern::Perl;
 package Renard::Curie::Setup;
+# ABSTRACT: Packages that can be imported into every module
 
 use autodie;
 
