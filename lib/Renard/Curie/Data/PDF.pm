@@ -8,6 +8,8 @@ use Alien::MuPDF 0.005;
 use Path::Tiny;
 use Function::Parameters;
 
+use Log::Any qw($log);
+
 BEGIN {
 	our $MUTOOL_PATH = Alien::MuPDF->mutool_path;
 }
@@ -58,11 +60,13 @@ fun _call_mutool( @mutool_args ) {
 			@args = ("$cmd > \"$redir\"");               # uncoverable statement
 		}
 
+		$log->infof("running mutool: %s", \@args);
 		system( @args );                                     # uncoverable statement
 		$stdout = path( $temp_fh->filename )->slurp_raw;     # uncoverable statement
 		$exit = $?;                                          # uncoverable statement
 	} else {
 		($stdout, $exit) = capture_stdout {
+			$log->infof("running mutool: %s", \@args);
 			system( @args );
 		};
 	}

@@ -62,6 +62,10 @@ method BUILD {
 	$self->recent_chooser->signal_connect( 'item-activated' =>
 		\&on_menu_file_recentfiles_item_activated_cb, $self );
 
+	$self->builder->get_object('menu-item-help-logwin')
+		->signal_connect( activate =>
+			\&on_menu_help_logwin_activate_cb, $self );
+
 	# add as child for this Gtk3::Bin
 	$self->add(
 		$self->builder->get_object('menubar')
@@ -113,6 +117,20 @@ fun on_menu_file_recentfiles_item_activated_cb( (InstanceOf['Gtk3::RecentChooser
 	my $file = URI->new( $uri )->file;
 	$self->app->open_pdf_document( $file );
 }
+
+=callback on_menu_help_logwin_activate_cb
+
+  fun on_menu_help_logwin_activate_cb($event, $self)
+
+Callback for C<< Help -> Message log >> menu item.
+
+Displays the Message log window.
+
+=cut
+fun on_menu_help_logwin_activate_cb($event, $self) {
+	$self->app->log_window->show_log_window;
+}
+
 # }}}
 
 

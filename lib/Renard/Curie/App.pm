@@ -13,7 +13,10 @@ use Renard::Curie::Helper;
 use Renard::Curie::Model::Document::PDF;
 use Renard::Curie::Component::PageDrawingArea;
 use Renard::Curie::Component::MenuBar;
+use Renard::Curie::Component::LogWindow;
 use Renard::Curie::Component::FileChooser;
+
+use Log::Any::Adapter;
 
 use Renard::Curie::Types qw(InstanceOf Path Str DocumentModel);
 use Function::Parameters;
@@ -45,7 +48,7 @@ has page_document_component => (
 	is => 'rw',
 	isa => InstanceOf['Renard::Curie::Component::PageDrawingArea'],
 	predicate => 1, # has_page_document_component
-	clearer => 1 # clear_page_document_compnent
+	clearer => 1 # clear_page_document_component
 );
 
 =attr menu_bar
@@ -56,6 +59,16 @@ A L<Renard::Curie::Component::MenuBar> for the application's menu-bar.
 has menu_bar => (
 	is => 'rw',
 	isa => InstanceOf['Renard::Curie::Component::MenuBar'],
+);
+
+=attr log_window
+
+A L<Renard::Curie::Component::LogWindow> for the application's logging.
+
+=cut
+has log_window => (
+	is => 'rw',
+	isa => InstanceOf['Renard::Curie::Component::LogWindow'],
 );
 
 =classmethod setup_gtk
@@ -86,6 +99,7 @@ including:
 
 =for :list
 * L</menu_bar>
+* L</log_window>
 
 =cut
 method setup_window() {
@@ -93,6 +107,11 @@ method setup_window() {
 	$self->menu_bar( $menu );
 	$self->builder->get_object('application-vbox')
 		->pack_start( $menu, FALSE, TRUE, 0 );
+
+	my $log_win = Renard::Curie::Component::LogWindow->new( app => $self );
+	Log::Any::Adapter->set('+Renard::Curie::Log::Any::Adapter::LogWindow',
+		log_window => $log_win );
+	$self->log_window( $log_win );
 }
 
 =method run
@@ -104,6 +123,7 @@ Displays L</window> and starts the L<Gtk3> event loop.
 =cut
 method run() {
 	$self->window->show_all;
+	$self->_logger->info("starting the Gtk main event loop");
 	Gtk3::main;
 }
 
@@ -135,6 +155,7 @@ method process_arguments() {
 	my $pdf_filename = shift @ARGV;
 
 	if( $pdf_filename ) {
+		$self->_logger->infof("opening the file %s", $pdf_filename);
 		$self->open_pdf_document( $pdf_filename );
 	}
 }
@@ -236,6 +257,7 @@ fun on_application_quit_cb( $event, $self ) {
 with qw(
 	Renard::Curie::Component::Role::FromBuilder
 	Renard::Curie::Component::Role::UIFileFromPackageName
+	MooX::Role::Logger
 );
 
 1;
