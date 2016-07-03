@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-use Test::Most tests => 4;
+use Test::Most tests => 5;
 
 use lib 't/lib';
 use CurieTestHelper;
@@ -107,4 +107,19 @@ subtest "Menu: File -> Recent files" => fun {
 	$rc->signal_emit('item-activated');
 
 	is path($app->page_document_component->document->filename), $pdf_ref_path, 'File opened from Recent files';
+};
+
+subtest "Menu: Help -> Message log" => fun {
+	plan tests => 2;
+	my $app = Renard::Curie::App->new;
+
+	my $log_window = $app->log_window->builder->get_object('log-window');
+
+	ok( ! $log_window->get_visible, 'message log not visible at start' );
+
+	$app->menu_bar->builder
+		->get_object('menu-item-help-logwin')
+		->signal_emit('activate');
+
+	ok( $log_window->get_visible, 'message log now visible' );
 };
