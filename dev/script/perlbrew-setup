@@ -1,7 +1,0 @@
-#!/bin/sh
-
-curl -L http://install.perlbrew.pl | bash
-perlbrew init
-source ~/perl5/perlbrew/etc/bashrc
-echo "source ~/perl5/perlbrew/etc/bashrc" >> ~/.bash_profile
-perlbrew install-cpanm

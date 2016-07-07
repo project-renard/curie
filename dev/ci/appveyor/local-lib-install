@@ -1,7 +1,0 @@
-#!/bin/sh
-
-cpanm --notest local::lib
-mkdir -p ~/perl5; cp -puv $APPVEYOR_BUILD_FOLDER/dev/ci/appveyor/local-lib-variables ~/perl5
-~/perl5/local-lib-variables
-echo 'eval `~/perl5/local-lib-variables`' >> ~/.bash_profile
-echo 'export MANPATH=\$HOME/perl5/man:\$MANPATH' >> ~/.bash_profile

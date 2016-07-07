@@ -34,9 +34,5 @@ matrix:
   allow_failures:
     - perl: blead       # ignore failures for blead perl
 before_install:
-  - . dev/script/install-native-dep
-  - . dev/script/start-xvfb
-  - . dev/script/get-aux-repo
-  - . dev/script/install-and-test-dist
-before_script:
-  - . dev/script/run-coverage-xform
+  - export DEVOPS_BRANCH="master"
+  - eval $(curl https://raw.githubusercontent.com/project-renard/devops/$DEVOPS_BRANCH/script/travis-ci-auto.sh)
