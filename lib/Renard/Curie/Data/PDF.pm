@@ -60,7 +60,7 @@ fun _call_mutool( @mutool_args ) {
 			@args = ("$cmd > \"$redir\"");               # uncoverable statement
 		}
 
-		$log->infof("running mutool: %s", \@args);
+		$log->infof("running mutool: %s", \@args);           # uncoverable statement
 		system( @args );                                     # uncoverable statement
 		$stdout = path( $temp_fh->filename )->slurp_raw;     # uncoverable statement
 		$exit = $?;                                          # uncoverable statement
