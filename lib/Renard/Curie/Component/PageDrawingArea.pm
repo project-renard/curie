@@ -6,6 +6,9 @@ use Glib 'TRUE', 'FALSE';
 use Glib::Object::Subclass 'Gtk3::Bin';
 use Renard::Curie::Types qw(RenderableDocumentModel PageNumber Bool InstanceOf);
 use Function::Parameters;
+use Gtk3;
+
+#my $binding = Gtk3::BindingSet->new ("PageDrawingArea-Binding");
 
 has document => (
 	is => 'rw',
@@ -30,37 +33,6 @@ has scrolled_window => (
 	is => 'rw',
 	isa => InstanceOf['Gtk3::ScrolledWindow'],
 );
-
-method setup_keybindings() {
-	$self->scrolled_window->
-		signal_connect( key_press_event => \&key_pressed, $self );
-}
-
-fun key_pressed($window, $event, $self) {
-	if($event->keyval == Gtk3::Gdk::KEY_Page_Down){
-		$self->set_current_page_forward;
-	} elsif($event->keyval == Gtk3::Gdk::KEY_Page_Up){
-		$self->set_current_page_back;
-	} elsif($event->keyval == Gtk3::Gdk::KEY_Up){
-		decrement_scroll($self->scrolled_window->get_vadjustment);
-	} elsif($event->keyval == Gtk3::Gdk::KEY_Down){
-		increment_scroll($self->scrolled_window->get_vadjustment);
-	} elsif($event->keyval == Gtk3::Gdk::KEY_Right){
-		increment_scroll($self->scrolled_window->get_hadjustment);
-	} elsif($event->keyval == Gtk3::Gdk::KEY_Left){
-		decrement_scroll($self->scrolled_window->get_hadjustment);
-	}
-}
-
-fun increment_scroll( (InstanceOf['Gtk3::Adjustment']) $current ) {
-	my $adjustment = $current->get_value + $current->get_step_increment;
-	$current->set_value($adjustment);
-}
-
-fun decrement_scroll( (InstanceOf['Gtk3::Adjustment']) $current ) {
-	my $adjustment = $current->get_value - $current->get_step_increment;
-	$current->set_value($adjustment);
-}
 
 classmethod FOREIGNBUILDARGS(@) {
 	return ();
@@ -121,7 +93,8 @@ method on_draw_page( (InstanceOf['Cairo::Context']) $cr ) {
 
 	my $img = $self->current_rendered_page->cairo_image_surface;
 
-	$cr->set_source_surface($img, 0, 0);
+	$cr->set_source_surface($img, ($self->drawing_area->get_allocated_width - 
+		$self->current_rendered_page->width) / 2, 0);
 	$cr->paint;
 
 	$self->drawing_area->set_size_request(
