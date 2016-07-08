@@ -313,7 +313,8 @@ method on_draw_page_cb( (InstanceOf['Cairo::Context']) $cr ) {
 
 	my $img = $self->current_rendered_page->cairo_image_surface;
 
-	$cr->set_source_surface($img, 0, 0);
+	$cr->set_source_surface($img, ($self->drawing_area->get_allocated_width -
+		$self->current_rendered_page->width) / 2, 0);
 	$cr->paint;
 
 	$self->drawing_area->set_size_request(
