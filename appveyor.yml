@@ -18,11 +18,12 @@ environment:
 install:
   # running under CI
   - set CI_TESTING=1
-  - '%APPVEYOR_BUILD_FOLDER%\dev\ci\appveyor\install.bat'
+  - set DEVOPS_BRANCH=master
+  - 'cd %APPVEYOR_BUILD_FOLDER% & curl -fsS -o appveyor-ci-auto.bat https://raw.githubusercontent.com/project-renard/devops/%DEVOPS_BRANCH%/script/appveyor-ci-auto.bat & appveyor-ci-auto.bat install'
   - 'echo End intall at: & time /t'
 
 build_script:
   - 'echo Nothing to build'
 
 test_script:
-  - '%APPVEYOR_BUILD_FOLDER%\dev\ci\appveyor\test.bat'
+  - 'cd %APPVEYOR_BUILD_FOLDER% & appveyor-ci-auto.bat test'

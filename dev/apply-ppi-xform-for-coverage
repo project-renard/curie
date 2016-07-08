@@ -1,5 +1,0 @@
-#!/bin/sh
-
-# git checkout --  lib/ t/lib/
-find lib t/lib -type f -name '*.pm' -exec  perl -Ilib -It/lib -MPPIFPXform -E 'my $xform = PPIFPXform->new; $xform->file("{}");'  \;
-# git diff
