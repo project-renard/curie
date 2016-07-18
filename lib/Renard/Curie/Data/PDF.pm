@@ -242,5 +242,71 @@ fun get_mutool_page_info_xml($pdf_filename) {
 	return $page_info;
 }
 
+=func get_mutool_outline_simple
+
+  fun get_mutool_outline_simple($pdf_filename)
+
+Returns an array of the outline of the PDF file C<$pdf_filename> as an
+C<ArrayRef[HashRef]> where each C<HashRef> element is an element of the outline
+with the structure:
+
+  {
+    # The level in the outline that the item is at. Starts at zero (0).
+    level => PositiveOrZeroInt,
+
+    # The textual description of the item.
+    text  => Str,
+
+    # The page number that the outline item points to.
+    page  => PageNumber,
+  }
+
+A complete example is:
+
+  [
+    {
+      level => 0,
+      text  => 'Chapter 1',
+      page  => 20,
+    },
+    {
+      level => 1,
+      text  => 'Section 1.1',
+      page  => 25,
+    },
+    {
+      level => 0,
+      text  => 'Chapter 2',
+      page  => 30,
+    },
+  ]
+
+which represents the outline
+
+  Chapter 1 .......... 20
+    Section 1.1 ...... 25
+  Chapter 2 .......... 30
+
+=cut
+fun get_mutool_outline_simple($pdf_filename) {
+	my $outline_text = _call_mutool(
+		qw(show),
+		$pdf_filename,
+		qw(outline)
+	);
+
+	my @outline_items = ();
+	open my $outline_fh, '<:encoding(UTF-8):crlf', \$outline_text;
+	while( defined( my $line = <$outline_fh> ) ) {
+		$line =~ /^(?<indent>\t*)(?<text>.*)\t(?<page>\d+)$/;
+		my %copy = %+;
+		$copy{level} = length $copy{indent};
+		delete $copy{indent};
+		push @outline_items, \%copy;
+	}
+
+	return \@outline_items;
+}
+
 
 1;
