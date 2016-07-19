@@ -5,6 +5,7 @@ package Renard::Curie::Component::MenuBar;
 use Moo;
 use URI;
 use Glib::Object::Subclass 'Gtk3::Bin';
+use Glib 'TRUE', 'FALSE';
 use Function::Parameters;
 use Renard::Curie::Types qw(InstanceOf);
 use Renard::Curie::Helper;
@@ -49,6 +50,7 @@ Initialises the menu bar signals.
 
 =cut
 method BUILD {
+	# File menu
 	$self->builder->get_object('menu-item-file-open')
 		->signal_connect( activate =>
 			\&on_menu_file_open_activate_cb, $self );
@@ -62,6 +64,12 @@ method BUILD {
 	$self->recent_chooser->signal_connect( 'item-activated' =>
 		\&on_menu_file_recentfiles_item_activated_cb, $self );
 
+
+	# View menu
+	$self->builder->get_object('menu-item-view-pagemode-singlepage')
+		->set_active(TRUE);
+
+	# Help menu
 	$self->builder->get_object('menu-item-help-logwin')
 		->signal_connect( activate =>
 			\&on_menu_help_logwin_activate_cb, $self );
