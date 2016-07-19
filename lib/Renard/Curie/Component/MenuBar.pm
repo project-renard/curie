@@ -69,6 +69,10 @@ method BUILD {
 	$self->builder->get_object('menu-item-view-pagemode-singlepage')
 		->set_active(TRUE);
 
+	$self->builder->get_object('menu-item-view-sidebar')
+		->signal_connect( toggled =>
+			\&on_menu_view_sidebar_cb, $self );
+
 	# Help menu
 	$self->builder->get_object('menu-item-help-logwin')
 		->signal_connect( activate =>
@@ -137,6 +141,15 @@ Displays the Message log window.
 =cut
 fun on_menu_help_logwin_activate_cb($event, $self) {
 	$self->app->log_window->show_log_window;
+}
+
+=callback on_menu_view_sidebar_cb
+
+TODO
+
+=cut
+fun on_menu_view_sidebar_cb($event_menu_item, $self) {
+	$self->app->outline->set_reveal_child( $event_menu_item->get_active );
 }
 
 # }}}

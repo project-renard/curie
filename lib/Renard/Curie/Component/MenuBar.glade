@@ -210,6 +210,15 @@
                 </child>
               </object>
             </child>
+            <child>
+              <object class="GtkCheckMenuItem" id="menu-item-view-sidebar">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label">Side_bar</property>
+                <property name="use_underline">True</property>
+                <accelerator key="F9" signal="activate"/>
+              </object>
+            </child>
           </object>
         </child>
       </object>

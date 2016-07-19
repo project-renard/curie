@@ -33,6 +33,7 @@ requires 'Types::Standard';
 requires 'URI';
 requires 'XML::Simple';
 requires 'autodie';
+requires 'autovivification';
 requires 'custom::failures';
 
 on test => sub {

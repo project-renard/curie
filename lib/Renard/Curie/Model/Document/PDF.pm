@@ -5,6 +5,7 @@ package Renard::Curie::Model::Document::PDF;
 use Moo;
 use Renard::Curie::Data::PDF;
 use Renard::Curie::Model::Page::RenderedFromPNG;
+use Renard::Curie::Model::Outline;
 use Renard::Curie::Types qw(PageNumber);
 use Function::Parameters;
 
@@ -48,11 +49,20 @@ method get_rendered_page( (PageNumber) :$page_number ) {
 	);
 }
 
+method _build_outline {
+	my $outline_data = Renard::Curie::Data::PDF::get_mutool_outline_simple(
+		$self->filename
+	);
+
+	return Renard::Curie::Model::Outline->new( items => $outline_data );
+}
+
 with qw(
 	Renard::Curie::Model::Document::Role::FromFile
 	Renard::Curie::Model::Document::Role::Pageable
 	Renard::Curie::Model::Document::Role::Renderable
 	Renard::Curie::Model::Document::Role::Cacheable
+	Renard::Curie::Model::Document::Role::Outlineable
 );
 
 1;
