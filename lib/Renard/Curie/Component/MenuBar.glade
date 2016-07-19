@@ -176,31 +176,34 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkCheckMenuItem" id="menu-item-view-pagemode-singlepage">
+                      <object class="GtkRadioMenuItem" id="menu-item-view-pagemode-singlepage">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label">Single page</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkCheckMenuItem" id="menu-item-view-pagemode-facing-firstpagecenter">
+                      <object class="GtkRadioMenuItem" id="menu-item-view-pagemode-facing-firstpagecenter">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label">Facing pages (first page in center)</property>
+                        <property name="group">menu-item-view-pagemode-singlepage</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkCheckMenuItem" id="menu-item-view-pagemode-facing-firstpageright">
+                      <object class="GtkRadioMenuItem" id="menu-item-view-pagemode-facing-firstpageright">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label">Facing pages (first page on right)</property>
+                        <property name="group">menu-item-view-pagemode-singlepage</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkCheckMenuItem" id="menu-item-view-pagemode-facing-firstpageleft">
+                      <object class="GtkRadioMenuItem" id="menu-item-view-pagemode-facing-firstpageleft">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label">Facing pages (first page on left)</property>
+                        <property name="group">menu-item-view-pagemode-singlepage</property>
                       </object>
                     </child>
                   </object>
