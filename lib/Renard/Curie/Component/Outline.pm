@@ -22,9 +22,12 @@ has tree_view => (
 
 The L<Gtk3::TreeStore> that holds tree data of heading text and page numbers.
 
+When set, triggers an update to the model for L</tree_view>.
+
 =cut
 has model => (
 	is => 'rw',
+	trigger => 1, # _trigger_model
 	isa => InstanceOf['Gtk3::TreeStore'],
 );
 
@@ -56,9 +59,6 @@ method BUILD {
 
 	$self->tree_view( Gtk3::TreeView->new );
 
-	my $data = Gtk3::TreeStore->new( 'Glib::String', 'Glib::String', );
-	$self->model( $data );
-
 	my $text_column = Gtk3::TreeViewColumn->new_with_attributes(
 		'Heading',
 		Gtk3::CellRendererText->new,
@@ -71,7 +71,6 @@ method BUILD {
 	$self->tree_view->insert_column($text_column, 0);
 	$self->tree_view->insert_column($page_number, 1);
 
-	$self->tree_view->set_model( $data );
 	$self->tree_view->set( 'headers-visible', FALSE );
 
 	$self->tree_view->signal_connect(
@@ -94,51 +93,19 @@ displayed document.
 
 =cut
 method update( $doc ) {
-	my $tree_view = $self->tree_view;
-	my $data = $self->model;
-
-	$data->clear;
-
 	return unless $doc->DOES('Renard::Curie::Model::Document::Role::Outlineable');
-	my $outline_items = $doc->outline->items;
-	my $level = 0;
-	my $iter = undef;
-	my @parents = ();
-	for my $item (@$outline_items) {
-		no autovivification;
+	$self->model( $doc->outline->tree_store );
+}
 
-		# If we need to go up to the parent iterators.
-		while( @parents && $item->{level} < @parents ) {
-			$iter = pop @parents;
-		}
+=method _trigger_model
 
-		if( $item->{level} > @parents ) {
-			# If we need to go one level down to a child.
-			# NOTE : This is not a while(...) loop because the
-			# outline should only increase one level at a time.
-			push @parents, $iter;
-			$iter = $data->append($iter);
-			$level++;
+  method _trigger_model($new_model)
 
-			# But if going down one level is not enough, this is a
-			# malformed outline. It should not be possible to go
-			# down multiple levels at a time.
-			if( $item->{level} > @parents ) {
-				die "Something went wrong with the outline data. It may be malformed."
-					." The level for the current item '@{[ $item->{text} ]}'"
-					." is @{[ $item->{level} ]},"
-					." but we are only at @{[ scalar @parents ]}."
-			}
-		} else {
-			# We are still at the same level. Just add a new row to
-			# that last parent (or undef if we are at the root).
-			$iter = $data->append( $parents[-1] // undef );
-		}
+Trigger that updates the model for the underlying L<tree_view> attribute.
 
-		$data->set( $iter,
-			0 => $item->{text} // '',
-			1 => $item->{page} );
-	}
+=cut
+method _trigger_model($new_model) {
+	$self->tree_view->set_model( $new_model );
 }
 
 =callback on_tree_view_row_activate_cb
