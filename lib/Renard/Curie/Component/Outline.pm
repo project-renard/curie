@@ -1,32 +1,31 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Component::Outline;
+# ABSTRACT: Component that provides a list of headings for navigating
 
-# TODO
-# - Create an Model::Outline.
-# - Role for documents that have an outline.
-# - Sidebar list <https://metacpan.org/pod/Gtk3::SimpleList>.
-# - Make sure that the menu-item-view-sidebar object matches the state of the Revealer.
 use Moo;
 use Glib::Object::Subclass 'Gtk3::Revealer';
 use Glib 'TRUE', 'FALSE';
+use Renard::Curie::Types qw(InstanceOf);
 use Function::Parameters;
 
 =attr tree_view
 
-TODO
+The L<Gtk3::TreeView> component that displays the interactive tree.
 
 =cut
 has tree_view => (
-	is => 'rw'
+	is => 'rw',
+	isa => InstanceOf['Gtk3::TreeView'],
 );
 
 =attr model
 
-TODO
+The L<Gtk3::TreeStore> that holds tree data of heading text and page numbers.
 
 =cut
 has model => (
-	is => 'rw'
+	is => 'rw',
+	isa => InstanceOf['Gtk3::TreeStore'],
 );
 
 =classmethod FOREIGNBUILDARGS
@@ -42,7 +41,10 @@ classmethod FOREIGNBUILDARGS(@) {
 
 =method BUILD
 
-TODO
+Constructor that sets up the view and model.
+
+This class is a subclass of L<Gtk3::Revealer> which allows the visible state to
+be toggled.
 
 =cut
 method BUILD {
@@ -84,7 +86,10 @@ method BUILD {
 
 =method update
 
-TODO
+  method update( $doc )
+
+Updates the outline's model to correspond to the outline of the currently
+displayed document.
 
 =cut
 method update( $doc ) {
@@ -137,7 +142,10 @@ method update( $doc ) {
 
 =callback on_tree_view_row_activate_cb
 
-TODO
+  fun on_tree_view_row_activate_cb( $tree_view, $path, $column, $self )
+
+Callback that navigates the current document to the position that corresponds
+to a row of the tree that has been clicked.
 
 =cut
 fun on_tree_view_row_activate_cb( $tree_view, $path, $column, $self ) {

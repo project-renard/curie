@@ -64,9 +64,8 @@ has menu_bar => (
 
 =attr outline
 
-TODO
-
-A L<Renard::Curie::Component::Outline>
+A L<Renard::Curie::Component::Outline> which makes up the outline sidebar for
+this window.
 
 =cut
 has outline => (
@@ -86,7 +85,10 @@ has log_window => (
 
 =attr content_box
 
-TODO
+A horizontal L<Gtk3::Box> which is used to split the main application area into
+two different regions.
+
+The left region contains L</outline> and the right region contains L</page_document_component>.
 
 =cut
 has content_box => (

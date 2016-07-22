@@ -69,6 +69,8 @@ method BUILD {
 	$self->builder->get_object('menu-item-view-pagemode-singlepage')
 		->set_active(TRUE);
 
+	# TODO Make sure that the menu-item-view-sidebar object matches
+	# the outline's revealer state.
 	$self->builder->get_object('menu-item-view-sidebar')
 		->signal_connect( toggled =>
 			\&on_menu_view_sidebar_cb, $self );
@@ -145,7 +147,9 @@ fun on_menu_help_logwin_activate_cb($event, $self) {
 
 =callback on_menu_view_sidebar_cb
 
-TODO
+Callback for the C<< View -> Sidebar >> menu item.
+
+This toggles whether or not the outline sidebar is visible.
 
 =cut
 fun on_menu_view_sidebar_cb($event_menu_item, $self) {
