@@ -153,7 +153,7 @@ This toggles whether or not the outline sidebar is visible.
 
 =cut
 fun on_menu_view_sidebar_cb($event_menu_item, $self) {
-	$self->app->outline->set_reveal_child( $event_menu_item->get_active );
+	$self->app->outline->reveal( $event_menu_item->get_active );
 }
 
 # }}}

@@ -82,6 +82,7 @@ method BUILD {
 	$scrolled_window->add( $self->tree_view );
 	$frame->add( $scrolled_window );
 	$self->add( $frame );
+	$self->reveal( FALSE );
 }
 
 =method update
@@ -157,6 +158,23 @@ fun on_tree_view_row_activate_cb( $tree_view, $path, $column, $self ) {
 	my $page_num = $self->model->get_value($iter, 1);
 
 	$pd->current_page_number( $page_num );
+}
+
+=method reveal
+
+  method reveal( $should_reveal )
+
+Wrapper around the L<Gtk3::Revealer::set_reveal_child> method that sets the
+C<hexpand> property for this widget at the same time so that the parent
+container gives an appropriate amount of width to the widget.
+
+Without this, the revealer widget may still expand to take up some space when
+the child is not visible.
+
+=cut
+method reveal( $should_reveal ) {
+	$self->set( 'hexpand' => $should_reveal );
+	$self->set_reveal_child( $should_reveal );
 }
 
 with qw(
