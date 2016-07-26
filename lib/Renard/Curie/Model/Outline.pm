@@ -5,7 +5,7 @@ package Renard::Curie::Model::Outline;
 use Moo;
 use Renard::Curie::Types qw(
 	ArrayRef Dict
-	PositiveOrZeroInt Str PageNumber
+	PositiveOrZeroInt Str LaxPageNumber
 	InstanceOf );
 use Type::Utils qw( declare as where message );
 
@@ -13,7 +13,7 @@ my $Outline = declare
 	as ArrayRef[Dict[
 			level => PositiveOrZeroInt,
 			text => Str,
-			page => PageNumber
+			page => LaxPageNumber
 		]];
 my $OutlineLevelCheck = declare
 	as $Outline,
@@ -53,7 +53,7 @@ Each C<HashRef> element is an element of the outline with the structure:
     text  => Str,
 
     # The page number that the outline item points to.
-    page  => PageNumber,
+    page  => LaxPageNumber,
   }
 
 A complete example is:

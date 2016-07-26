@@ -5,7 +5,7 @@ package Renard::Curie::Component::Outline;
 use Moo;
 use Glib::Object::Subclass 'Gtk3::Revealer';
 use Glib 'TRUE', 'FALSE';
-use Renard::Curie::Types qw(InstanceOf);
+use Renard::Curie::Types qw(InstanceOf PageNumber);
 use Function::Parameters;
 
 =attr tree_view
@@ -124,7 +124,7 @@ fun on_tree_view_row_activate_cb( $tree_view, $path, $column, $self ) {
 	my $iter = $self->model->get_iter( $path );
 	my $page_num = $self->model->get_value($iter, 1);
 
-	$pd->current_page_number( $page_num );
+	PageNumber->check($page_num) and $pd->current_page_number( $page_num );
 }
 
 =method reveal

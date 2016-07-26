@@ -60,7 +60,7 @@ subtest 'Outline item type-checking' => fun {
 		],
 		# problem with page number
 		[
-			{ level => 0, text  => 'Chapter 1', page  => 0, },
+			{ level => 0, text  => 'Chapter 1', page  => -1, },
 		]
 	);
 	my @invalid_message = (
