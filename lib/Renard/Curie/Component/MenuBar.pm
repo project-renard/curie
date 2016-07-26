@@ -50,6 +50,11 @@ Initialises the menu bar signals.
 
 =cut
 method BUILD {
+	# Accelerator group
+	$self->app->window->add_accel_group(
+		$self->builder->get_object('menu-accel-group')
+	);
+
 	# File menu
 	$self->builder->get_object('menu-item-file-open')
 		->signal_connect( activate =>

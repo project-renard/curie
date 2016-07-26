@@ -16,6 +16,7 @@ use Renard::Curie::Component::Outline;
 use Renard::Curie::Component::MenuBar;
 use Renard::Curie::Component::LogWindow;
 use Renard::Curie::Component::FileChooser;
+use Renard::Curie::Component::AccelMap;
 
 use Log::Any::Adapter;
 
@@ -145,6 +146,8 @@ method setup_window() {
 	Log::Any::Adapter->set('+Renard::Curie::Log::Any::Adapter::LogWindow',
 		log_window => $log_win );
 	$self->log_window( $log_win );
+
+	Renard::Curie::Component::AccelMap->new( app => $self );
 }
 
 =method run
