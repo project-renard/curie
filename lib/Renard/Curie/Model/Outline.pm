@@ -3,7 +3,39 @@ package Renard::Curie::Model::Outline;
 # ABSTRACT: Model that represents a document outline
 
 use Moo;
-use Renard::Curie::Types qw(ArrayRef HashRef InstanceOf);
+use Renard::Curie::Types qw(
+	ArrayRef Dict
+	PositiveOrZeroInt Str PageNumber
+	InstanceOf );
+use Type::Utils qw( declare as where message );
+
+my $Outline = declare
+	as ArrayRef[Dict[
+			level => PositiveOrZeroInt,
+			text => Str,
+			page => PageNumber
+		]];
+my $OutlineLevelCheck = declare
+	as $Outline,
+	where {
+		my @outline = @$_;
+		for my $idx (0..@outline-2) {
+			my $current_level = $outline[$idx]{level};
+			my $next_level = $outline[$idx + 1]{level};
+			if(  $current_level < $next_level
+				and $current_level + 1 != $next_level ) {
+				# This is a malformed outline. It should not
+				# be possible to go down multiple levels at
+				# a time.
+				return 0;
+			}
+		}
+		return 1;
+	},
+	message {
+		$Outline->validate($_)
+			or "Outline item data has malformed levels";
+	};
 
 =attr items
 
@@ -54,7 +86,7 @@ which represents the outline
 has items => (
 	is => 'rw',
 	required => 1,
-	isa => ArrayRef[HashRef],
+	isa => $OutlineLevelCheck,
 );
 
 =attr tree_store
@@ -96,16 +128,6 @@ method _build_tree_store {
 			push @parents, $iter;
 			$iter = $data->append($iter);
 			$level++;
-
-			# But if going down one level is not enough, this is a
-			# malformed outline. It should not be possible to go
-			# down multiple levels at a time.
-			if( $item->{level} > @parents ) {
-				die "Something went wrong with the outline data. It may be malformed."
-					." The level for the current item '@{[ $item->{text} ]}'"
-					." is @{[ $item->{level} ]},"
-					." but we are only at @{[ scalar @parents ]}."
-			}
 		} else {
 			# We are still at the same level. Just add a new row to
 			# that last parent (or undef if we are at the root).
