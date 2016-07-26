@@ -74,8 +74,13 @@ method BUILD {
 	$self->builder->get_object('menu-item-view-pagemode-singlepage')
 		->set_active(TRUE);
 
-	# TODO Make sure that the menu-item-view-sidebar object matches
-	# the outline's revealer state.
+	# Make sure that the menu-item-view-sidebar object matches
+	# the outline's revealer state once the application starts.
+	Glib::Timeout->add( 0, sub {
+		$self->builder->get_object('menu-item-view-sidebar')
+			->set_active($self->app->outline->get_reveal_child);
+		return FALSE; # run only once
+	});
 	$self->builder->get_object('menu-item-view-sidebar')
 		->signal_connect( toggled =>
 			\&on_menu_view_sidebar_cb, $self );
