@@ -12,9 +12,11 @@ use Moo 2.001001;
 use Renard::Curie::Helper;
 use Renard::Curie::Model::Document::PDF;
 use Renard::Curie::Component::PageDrawingArea;
+use Renard::Curie::Component::Outline;
 use Renard::Curie::Component::MenuBar;
 use Renard::Curie::Component::LogWindow;
 use Renard::Curie::Component::FileChooser;
+use Renard::Curie::Component::AccelMap;
 
 use Log::Any::Adapter;
 
@@ -61,6 +63,17 @@ has menu_bar => (
 	isa => InstanceOf['Renard::Curie::Component::MenuBar'],
 );
 
+=attr outline
+
+A L<Renard::Curie::Component::Outline> which makes up the outline sidebar for
+this window.
+
+=cut
+has outline => (
+	is => 'rw',
+	isa => InstanceOf['Renard::Curie::Component::Outline'],
+);
+
 =attr log_window
 
 A L<Renard::Curie::Component::LogWindow> for the application's logging.
@@ -69,6 +82,19 @@ A L<Renard::Curie::Component::LogWindow> for the application's logging.
 has log_window => (
 	is => 'rw',
 	isa => InstanceOf['Renard::Curie::Component::LogWindow'],
+);
+
+=attr content_box
+
+A horizontal L<Gtk3::Box> which is used to split the main application area into
+two different regions.
+
+The left region contains L</outline> and the right region contains L</page_document_component>.
+
+=cut
+has content_box => (
+	is => 'rw',
+	isa => InstanceOf['Gtk3::Box'],
 );
 
 =classmethod setup_gtk
@@ -99,6 +125,7 @@ including:
 
 =for :list
 * L</menu_bar>
+* L</content_box>
 * L</log_window>
 
 =cut
@@ -108,10 +135,19 @@ method setup_window() {
 	$self->builder->get_object('application-vbox')
 		->pack_start( $menu, FALSE, TRUE, 0 );
 
+	$self->content_box( Gtk3::Box->new( 'horizontal', 0 ) );
+	$self->builder->get_object('application-vbox')
+		->pack_start( $self->content_box, TRUE, TRUE, 0 );
+
+	$self->outline( Renard::Curie::Component::Outline->new( app => $self ) );
+	$self->content_box->pack_start( $self->outline , FALSE, TRUE, 0 );
+
 	my $log_win = Renard::Curie::Component::LogWindow->new( app => $self );
 	Log::Any::Adapter->set('+Renard::Curie::Log::Any::Adapter::LogWindow',
 		log_window => $log_win );
 	$self->log_window( $log_win );
+
+	Renard::Curie::Component::AccelMap->new( app => $self );
 }
 
 =method run
@@ -206,16 +242,15 @@ Sets the document for the application's L</page_document_component>.
 =cut
 method open_document( (DocumentModel) $doc ) {
 	if( $self->has_page_document_component ) {
-		$self->builder->get_object('application-vbox')
-			->remove( $self->page_document_component );
+		$self->content_box->remove( $self->page_document_component );
 		$self->clear_page_document_component;
 	}
 	my $pd = Renard::Curie::Component::PageDrawingArea->new(
 		document => $doc,
 	);
+	$self->outline->update( $doc );
 	$self->page_document_component($pd);
-	$self->builder->get_object('application-vbox')
-		->pack_start( $pd, TRUE, TRUE, 0 );
+	$self->content_box->pack_start( $pd, TRUE, TRUE, 0 );
 	$pd->show_all;
 }
 

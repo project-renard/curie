@@ -50,6 +50,11 @@ Initialises the menu bar signals.
 
 =cut
 method BUILD {
+	# Accelerator group
+	$self->app->window->add_accel_group(
+		$self->builder->get_object('menu-accel-group')
+	);
+
 	# File menu
 	$self->builder->get_object('menu-item-file-open')
 		->signal_connect( activate =>
@@ -68,6 +73,17 @@ method BUILD {
 	# View menu
 	$self->builder->get_object('menu-item-view-pagemode-singlepage')
 		->set_active(TRUE);
+
+	# Make sure that the menu-item-view-sidebar object matches
+	# the outline's revealer state once the application starts.
+	Glib::Timeout->add( 0, sub {
+		$self->builder->get_object('menu-item-view-sidebar')
+			->set_active($self->app->outline->get_reveal_child);
+		return FALSE; # run only once
+	});
+	$self->builder->get_object('menu-item-view-sidebar')
+		->signal_connect( toggled =>
+			\&on_menu_view_sidebar_cb, $self );
 
 	# Help menu
 	$self->builder->get_object('menu-item-help-logwin')
@@ -137,6 +153,17 @@ Displays the Message log window.
 =cut
 fun on_menu_help_logwin_activate_cb($event, $self) {
 	$self->app->log_window->show_log_window;
+}
+
+=callback on_menu_view_sidebar_cb
+
+Callback for the C<< View -> Sidebar >> menu item.
+
+This toggles whether or not the outline sidebar is visible.
+
+=cut
+fun on_menu_view_sidebar_cb($event_menu_item, $self) {
+	$self->app->outline->reveal( $event_menu_item->get_active );
 }
 
 # }}}

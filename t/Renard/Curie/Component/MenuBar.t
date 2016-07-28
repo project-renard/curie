@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-use Test::Most tests => 5;
+use Test::Most tests => 6;
 
 use lib 't/lib';
 use CurieTestHelper;
@@ -107,6 +107,21 @@ subtest "Menu: File -> Recent files" => fun {
 	$rc->signal_emit('item-activated');
 
 	is path($app->page_document_component->document->filename), $pdf_ref_path, 'File opened from Recent files';
+};
+
+subtest "Menu: View -> Sidebar" => fun {
+	plan tests => 1;
+	my $app = Renard::Curie::App->new;
+
+	my $initial_outline_reveal = $app->outline->get_reveal_child;
+
+	$app->menu_bar->builder
+		->get_object('menu-item-view-sidebar')
+		->signal_emit('activate');
+
+	my $post_outline_reveal = $app->outline->get_reveal_child;
+	isnt( $post_outline_reveal, $initial_outline_reveal,
+		'outline reveal state has been toggled' );
 };
 
 subtest "Menu: Help -> Message log" => fun {

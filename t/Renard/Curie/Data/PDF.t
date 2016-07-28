@@ -16,7 +16,7 @@ my $pdf_ref_path = try {
 	plan skip_all => "$_";
 };
 
-plan tests => 3;
+plan tests => 4;
 
 subtest 'PDF page to PNG' => fun {
 	my $png_data = Renard::Curie::Data::PDF::get_mutool_pdf_page_as_png( $pdf_ref_path, 1 );
@@ -46,6 +46,17 @@ subtest 'Get characters for preface' => fun {
 	like( $text_concat,
 		qr/The origins of the Portable Document Format/,
 		'Page text contains expected substring' );
+};
+
+subtest 'Get outline of PDF document' => fun {
+	my $outline_data = Renard::Curie::Data::PDF::get_mutool_outline_simple( $pdf_ref_path );
+
+	cmp_deeply $outline_data,
+		superbagof({
+			level => 2,
+			text => '1.2.6 General Features',
+			page => 31 }),
+		'has expected outline item';
 };
 
 done_testing;

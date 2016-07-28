@@ -2,6 +2,7 @@
 <!-- Generated with glade 3.20.0 -->
 <interface>
   <requires lib="gtk+" version="3.4"/>
+  <object class="GtkAccelGroup" id="menu-accel-group"/>
   <object class="GtkImage" id="menu-item-help-logwin-image">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -20,6 +21,7 @@
           <object class="GtkMenu" id="menu-file">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="accel_group">menu-accel-group</property>
             <child>
               <object class="GtkImageMenuItem" id="menu-item-file-new">
                 <property name="label">gtk-new</property>
@@ -98,6 +100,7 @@
           <object class="GtkMenu" id="menu-edit">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="accel_group">menu-accel-group</property>
             <child>
               <object class="GtkImageMenuItem" id="menu-item-edit-cut">
                 <property name="label">gtk-cut</property>
@@ -152,6 +155,7 @@
           <object class="GtkMenu" id="menu-view">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="accel_group">menu-accel-group</property>
             <child>
               <object class="GtkCheckMenuItem" id="menu-item-view-continuous">
                 <property name="visible">True</property>
@@ -210,6 +214,15 @@
                 </child>
               </object>
             </child>
+            <child>
+              <object class="GtkCheckMenuItem" id="menu-item-view-sidebar">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="accel_path">&lt;Curie-Main&gt;/View/Sidebar</property>
+                <property name="label">Side_bar</property>
+                <property name="use_underline">True</property>
+              </object>
+            </child>
           </object>
         </child>
       </object>
@@ -224,6 +237,7 @@
           <object class="GtkMenu" id="menu-help">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="accel_group">menu-accel-group</property>
             <child>
               <object class="GtkImageMenuItem" id="menu-item-help-logwin">
                 <property name="label">Message log</property>

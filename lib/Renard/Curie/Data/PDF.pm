@@ -242,5 +242,34 @@ fun get_mutool_page_info_xml($pdf_filename) {
 	return $page_info;
 }
 
+=func get_mutool_outline_simple
+
+  fun get_mutool_outline_simple($pdf_filename)
+
+Returns an array of the outline of the PDF file C<$pdf_filename> as an
+C<ArrayRef[HashRef]> which corresponds to the C<items> attribute of
+L<Renard::Curie::Model::Outline>.
+
+=cut
+fun get_mutool_outline_simple($pdf_filename) {
+	my $outline_text = _call_mutool(
+		qw(show),
+		$pdf_filename,
+		qw(outline)
+	);
+
+	my @outline_items = ();
+	open my $outline_fh, '<:encoding(UTF-8):crlf', \$outline_text;
+	while( defined( my $line = <$outline_fh> ) ) {
+		$line =~ /^(?<indent>\t*)(?<text>.*)\t(?<page>\d+)$/;
+		my %copy = %+;
+		$copy{level} = length $copy{indent};
+		delete $copy{indent};
+		push @outline_items, \%copy;
+	}
+
+	return \@outline_items;
+}
+
 
 1;

@@ -8,13 +8,12 @@ use Type::Library 0.008 -base,
 		RenderableDocumentModel
 		PageNumber
 	)];
-use Type::Utils;
-use Types::Common::Numeric qw(PositiveInt);
+use Type::Utils -all;
 
 # Listed here so that scan-perl-deps can find them
 use Types::Path::Tiny      ();
 use Types::Standard        ();
-use Types::Common::Numeric ();
+use Types::Common::Numeric qw(PositiveInt PositiveOrZeroInt);
 
 use Type::Libraries;
 Type::Libraries->setup_class(
@@ -66,6 +65,14 @@ role_type "RenderablePageModel",
 An alias to L<PositiveInt> that can be used for document page number semantics.
 
 =cut
-declare "PageNumber", as => PositiveInt;
+declare "PageNumber", parent => PositiveInt;
+
+=type LaxPageNumber
+
+An alias to L<PositiveOrZeroInt> that can be used for document page number
+semantics when the source data may contain invalid pages.
+
+=cut
+declare "LaxPageNumber", parent => PositiveOrZeroInt;
 
 1;
