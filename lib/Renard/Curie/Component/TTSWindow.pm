@@ -6,14 +6,19 @@ use Moo;
 use Function::Parameters;
 use Speech::Synthesis;
 use List::AllUtils qw(first);
+use IO::Async::Function;
 
 has playing => (
 	is => 'rw',
 	default => sub { 0 },
 );
 
-has synth => (
-	is => 'lazy', # _build_synth
+has synth_param => (
+	is => 'lazy', # _build_synth_param
+);
+
+has synth_function => (
+	is => 'lazy',
 );
 
 method BUILD(@) {
@@ -36,7 +41,7 @@ method BUILD(@) {
 			\&on_clicked_button_previous_cb, $self );
 
 	$self->builder->get_object('tts-window')->show_all;
-	$self->update;
+	$self->app->loop->add( $self->synth_function );
 }
 
 method speak( $text ) {
@@ -60,16 +65,26 @@ method update() {
 	my $text = $page_doc->current_text_page;
 	$self->builder->get_object('label-sentence-count')
 		->set_text(
-			"@{[ $page_doc->current_sentence_number + 1 ]} / @{[ scalar @$text ]}"
+			"@{[ @$text == 0 ? 0 : $page_doc->current_sentence_number + 1 ]} / @{[ scalar @$text ]}"
 		);
 	my $current_sentence_text =
-		$text->[$page_doc->current_sentence_number]{sentence};
+		$text->[$page_doc->current_sentence_number]{sentence} // '';
 	$self->builder->get_object('tts-text')
 		->get_buffer
 		->set_text($current_sentence_text);
-	if( $self->playing ) {
-		$self->speak( $current_sentence_text );
-		$self->choose_next_sentence;
+	if( $self->playing && @$text > 0 ) {
+		$self->synth_function->call(
+			args => [
+				$self->synth_param,
+				$current_sentence_text
+			],
+			on_result => sub {
+				Glib::Timeout->add(0, sub {
+					$self->choose_next_sentence;
+					return 0;
+				});
+			},
+		);
 	}
 }
 
@@ -93,19 +108,23 @@ method choose_previous_sentence() {
 		$page_doc->current_sentence_number( $page_doc->current_sentence_number - 1 );
 	} elsif( $page_doc->can_move_to_previous_page ) {
 		$page_doc->set_current_page_back;
+		$page_doc->current_sentence_number(
+			$self->num_of_sentences_on_page - 1
+		);
 	}
 }
 
 method choose_next_sentence() {
 	my $page_doc = $self->app->page_document_component;
-	if( $page_doc->current_sentence_number < $self->num_of_sentences_on_page ) {
+	if( $page_doc->current_sentence_number < $self->num_of_sentences_on_page - 1 ) {
 		$page_doc->current_sentence_number( $page_doc->current_sentence_number + 1 );
 	} elsif( $page_doc->can_move_to_next_page ) {
 		$page_doc->set_current_page_forward;
 	}
 }
 
-sub _build_synth {
+sub _build_synth_param {
+	# no $self : subprocess
 	my $engine;
 	my $preferred_voice_name;
 	if( $^O eq 'linux' ) {
@@ -129,7 +148,19 @@ sub _build_synth {
 		voice    => $voice->{id},
 		async    => 0
 	);
-        my $ss = Speech::Synthesis->new( %params );
+	\%params;
+}
+
+sub _build_synth_function {
+	# no $self : subprocess
+	IO::Async::Function->new(
+		code => sub {
+			my ( $synth_param, $text ) = @_;
+			Speech::Synthesis
+				->new(%$synth_param)
+				->speak($text);
+		}
+	);
 }
 
 
