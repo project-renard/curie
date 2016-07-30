@@ -5,6 +5,7 @@ package Renard::Curie::Component::TTSWindow;
 use Moo;
 use Function::Parameters;
 use Speech::Synthesis;
+use Renard::Incunabula::Language::EN;
 use List::AllUtils qw(first);
 use IO::Async::Function;
 
@@ -73,10 +74,16 @@ method update() {
 		->get_buffer
 		->set_text($current_sentence_text);
 	if( $self->playing && @$text > 0 ) {
+		# NOTE This error occurs if you send UTF-8:
+		# ***   Wide character in syswrite at .../Festival/Client/Async.pm line 127.
+
+		my $preproc_tts = Renard::Incunabula::Language::EN::preprocess_for_tts(
+			"" . $current_sentence_text
+		);
 		$self->synth_function->call(
 			args => [
 				$self->synth_param,
-				$current_sentence_text
+				$preproc_tts,
 			],
 			on_result => sub {
 				Glib::Timeout->add(0, sub {
