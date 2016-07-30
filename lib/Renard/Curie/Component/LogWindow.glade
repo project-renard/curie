@@ -7,7 +7,7 @@
     <property name="height_request">200</property>
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Message log</property>
-    <property name="decorated">False</property>
+    <property name="decorated">True</property>
     <child>
       <object class="GtkGrid" id="log-grid">
         <property name="visible">True</property>
