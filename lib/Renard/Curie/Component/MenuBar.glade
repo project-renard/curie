@@ -22,7 +22,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="accel_group">menu-accel-group</property>
-            <child>
+            <!--<child>
               <object class="GtkImageMenuItem" id="menu-item-file-new">
                 <property name="label">gtk-new</property>
                 <property name="visible">True</property>
@@ -31,7 +31,7 @@
                 <property name="use_stock">True</property>
                 <property name="always_show_image">True</property>
               </object>
-            </child>
+            </child>-->
             <child>
               <object class="GtkImageMenuItem" id="menu-item-file-open">
                 <property name="label">gtk-open</property>
@@ -50,7 +50,7 @@
                 <property name="use_underline">True</property>
               </object>
             </child>
-            <child>
+            <!--<child>
               <object class="GtkImageMenuItem" id="menu-item-file-save">
                 <property name="label">gtk-save</property>
                 <property name="visible">True</property>
@@ -69,7 +69,7 @@
                 <property name="use_stock">True</property>
                 <property name="always_show_image">True</property>
               </object>
-            </child>
+            </child>-->
             <child>
               <object class="GtkSeparatorMenuItem" id="separatormenuitem1">
                 <property name="visible">True</property>
@@ -90,7 +90,7 @@
         </child>
       </object>
     </child>
-    <child>
+    <!--<child>
       <object class="GtkMenuItem" id="menu-item-edit">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
@@ -144,7 +144,7 @@
           </object>
         </child>
       </object>
-    </child>
+    </child>-->
     <child>
       <object class="GtkMenuItem" id="menu-item-view">
         <property name="visible">True</property>
@@ -156,7 +156,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="accel_group">menu-accel-group</property>
-            <child>
+            <!--<child>
               <object class="GtkCheckMenuItem" id="menu-item-view-continuous">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -169,8 +169,8 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
               </object>
-            </child>
-            <child>
+            </child>-->
+            <!--<child>
               <object class="GtkMenuItem" id="menu-item-pagemode">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -213,7 +213,7 @@
                   </object>
                 </child>
               </object>
-            </child>
+            </child>-->
             <child>
               <object class="GtkCheckMenuItem" id="menu-item-view-sidebar">
                 <property name="visible">True</property>
@@ -248,7 +248,7 @@
                 <property name="always_show_image">True</property>
               </object>
             </child>
-            <child>
+            <!--<child>
               <object class="GtkImageMenuItem" id="menu-item-help-about">
                 <property name="label">gtk-about</property>
                 <property name="visible">True</property>
@@ -257,7 +257,7 @@
                 <property name="use_stock">True</property>
                 <property name="always_show_image">True</property>
               </object>
-            </child>
+            </child>-->
           </object>
         </child>
       </object>
