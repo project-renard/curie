@@ -37,6 +37,7 @@
                 <property name="label">gtk-open</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="accel_path">&lt;Curie-Main&gt;/File/Open</property>
                 <property name="use_underline">True</property>
                 <property name="use_stock">True</property>
                 <property name="always_show_image">True</property>
@@ -81,6 +82,7 @@
                 <property name="label">gtk-quit</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="accel_path">&lt;Curie-Main&gt;/File/Quit</property>
                 <property name="use_underline">True</property>
                 <property name="use_stock">True</property>
                 <property name="always_show_image">True</property>
