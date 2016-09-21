@@ -71,8 +71,8 @@ method BUILD {
 
 
 	# View menu
-	$self->builder->get_object('menu-item-view-pagemode-singlepage')
-		->set_active(TRUE);
+	#$self->builder->get_object('menu-item-view-pagemode-singlepage')
+		#->set_active(TRUE);
 
 	# Make sure that the menu-item-view-sidebar object matches
 	# the outline's revealer state once the application starts.
