@@ -12,7 +12,7 @@ version 0.001
 
 =head1 AUTHOR
 
-Zakariyya Mughal <zmughal@cpan.org>
+Project Renard
 
 =head1 COPYRIGHT AND LICENSE
 
