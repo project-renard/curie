@@ -5,6 +5,7 @@ requires 'Cairo';
 requires 'Capture::Tiny';
 requires 'Class::Method::Modifiers';
 requires 'Function::Parameters';
+requires 'Getopt::Long::Descriptive';
 requires 'Glib';
 requires 'Glib::Object::Introspection';
 requires 'Glib::Object::Subclass';
