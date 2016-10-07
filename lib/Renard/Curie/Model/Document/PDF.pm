@@ -6,7 +6,7 @@ use Moo;
 use Renard::Curie::Data::PDF;
 use Renard::Curie::Model::Page::RenderedFromPNG;
 use Renard::Curie::Model::Outline;
-use Renard::Curie::Types qw(PageNumber);
+use Renard::Curie::Types qw(PageNumber ZoomLevel);
 use Function::Parameters;
 
 extends qw(Renard::Curie::Model::Document);
@@ -36,16 +36,15 @@ method _build_last_page_number :ReturnType(PageNumber) {
 See L<Renard::Curie::Model::Document::Role::Renderable>.
 
 =cut
-# TODO : need to implement zoom_level option
-method get_rendered_page( (PageNumber) :$page_number ) {
+method get_rendered_page( (PageNumber) :$page_number, (ZoomLevel) :$zoom_level = 1.0 ) {
 	my $png_data = Renard::Curie::Data::PDF::get_mutool_pdf_page_as_png(
-		$self->filename, $page_number,
+		$self->filename, $page_number, $zoom_level
 	);
 
 	return Renard::Curie::Model::Page::RenderedFromPNG->new(
 		page_number => $page_number,
 		png_data => $png_data,
-		zoom_level => 1,
+		zoom_level => $zoom_level,
 	);
 }
 

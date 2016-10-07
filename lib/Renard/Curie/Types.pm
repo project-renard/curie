@@ -13,7 +13,7 @@ use Type::Utils -all;
 # Listed here so that scan-perl-deps can find them
 use Types::Path::Tiny      ();
 use Types::Standard        ();
-use Types::Common::Numeric qw(PositiveInt PositiveOrZeroInt);
+use Types::Common::Numeric qw(PositiveInt PositiveOrZeroInt PositiveNum);
 
 use Type::Libraries;
 Type::Libraries->setup_class(
@@ -74,5 +74,17 @@ semantics when the source data may contain invalid pages.
 
 =cut
 declare "LaxPageNumber", parent => PositiveOrZeroInt;
+
+=type ZoomLevel
+
+The amount to zoom in on a page. This is a multiplier such that
+
+=for :list
+* when the value is C<1.0>, the page area is the standard area
+* when the value is C<2.0>, the page is C<4> times the standard area
+* when the value is C<0.5>, the page is C<0.25> times the standard area
+
+=cut
+declare "ZoomLevel", parent => PositiveNum;
 
 1;

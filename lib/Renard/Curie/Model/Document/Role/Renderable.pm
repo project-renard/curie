@@ -14,20 +14,19 @@ The options for this function are:
 
 =over 4
 
-=item * C<page_number>:
+=item * C<<page_number => PageNumber $page_number>>:
 
 The page number to retrieve.
 
-Required. Value must be an Int which must be between the
+Required. Value must be a C<PageNumber> which must be between the
 C<first_page_number> and C<last_page_number>.
 
-=item * C<zoom_level>:
+=item * C<<zoom_level => ZoomLevel $zoom_level>>:
 
 The amount of zoom to use in order to control the dimensions of the
 rendered PDF page. This is C<1.0> by default.
 
-Optional. Value must be a Float.
-
+Optional. Value must be a C<ZoomLevel>.
 
 =back
 
