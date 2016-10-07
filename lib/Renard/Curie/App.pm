@@ -19,6 +19,7 @@ use Renard::Curie::Component::FileChooser;
 use Renard::Curie::Component::AccelMap;
 
 use Log::Any::Adapter;
+use Getopt::Long::Descriptive;
 
 use Renard::Curie::Types qw(InstanceOf Path Str DocumentModel);
 use Function::Parameters;
@@ -188,6 +189,16 @@ Processes arguments given in C<@ARGV>.
 
 =cut
 method process_arguments() {
+	my ($opt, $usage) = describe_options(
+		"%c %o <filename>",
+		[ 'version',  "print version and exit"       ],
+		[ 'help',     "print usage message and exit" ],
+	);
+
+	print($usage->text), exit if $opt->help;
+
+	say($Renard::Curie::App::VERSION // 'dev'), exit if $opt->version;
+
 	my $pdf_filename = shift @ARGV;
 
 	if( $pdf_filename ) {
