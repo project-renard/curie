@@ -46,6 +46,7 @@ on test => sub {
     requires 'Test::Most';
     requires 'URI::file';
 };
+requires 'Moose';
 requires 'Params::Validate', '!= 1.25';
 
 if( $^O eq 'MSWin32' ) {
