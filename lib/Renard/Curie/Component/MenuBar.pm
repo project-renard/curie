@@ -85,6 +85,31 @@ method BUILD {
 		->signal_connect( toggled =>
 			\&on_menu_view_sidebar_cb, $self );
 
+	## View -> Zoom menu
+	my @zoom_levels = (
+		{ text => "50%",   zoom_level => 0.5 },
+		{ text => "70%",   zoom_level => 0.7071067811 },
+		{ text => "85%",   zoom_level => 0.8408964152 },
+		{ text => "100%",  zoom_level => 1.0 },
+		{ text => "125%",  zoom_level => 1.1892071149 },
+		{ text => "150%",  zoom_level => 1.4142135623 },
+		{ text => "175%",  zoom_level => 1.6817928304 },
+		{ text => "200%",  zoom_level => 2.0 },
+		{ text => "300%",  zoom_level => 2.8284271247 },
+		{ text => "400%",  zoom_level => 4.0 },
+		{ text => "800%",  zoom_level => 8.0 },
+		{ text => "1600%", zoom_level => 16.0 },
+		{ text => "3200%", zoom_level => 32.0 },
+		{ text => "6400%", zoom_level => 64.0 }
+	);
+	my $zoom_submenu = $self->builder->get_object('menu-view-zoom');
+	for my $zoom_menu_info (@zoom_levels) {
+		my $menu_item = Gtk3::MenuItem->new_with_label( $zoom_menu_info->{text} );
+		$zoom_submenu->add( $menu_item );
+		$menu_item->signal_connect( activate =>
+			\&on_menu_view_zoom_item_activate_cb, [ $self, $zoom_menu_info->{zoom_level} ] );
+	}
+
 	# Help menu
 	$self->builder->get_object('menu-item-help-logwin')
 		->signal_connect( activate =>
@@ -164,6 +189,20 @@ This toggles whether or not the outline sidebar is visible.
 =cut
 fun on_menu_view_sidebar_cb($event_menu_item, $self) {
 	$self->app->outline->reveal( $event_menu_item->get_active );
+}
+
+=callback on_menu_view_zoom_item_activate_cb
+
+Callback for zoom level menu items under the C<< View -> Zoom >> submenu.
+
+  fun on_menu_view_zoom_item_activate_cb($event, $data)
+
+where C<$data> is an C<ArrayRef> that contains C<< [ $self, $zoom_level ] >>.
+
+=cut
+fun on_menu_view_zoom_item_activate_cb($event, $data) {
+	my ($self, $zoom_level) = @$data;
+	$self->app->page_document_component->zoom_level( $zoom_level );
 }
 
 # }}}
