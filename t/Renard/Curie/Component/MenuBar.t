@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-use Test::Most tests => 6;
+use Test::Most tests => 7;
 
 use lib 't/lib';
 use CurieTestHelper;
@@ -107,6 +107,49 @@ subtest "Menu: File -> Recent files" => fun {
 	$rc->signal_emit('item-activated');
 
 	is path($app->page_document_component->document->filename), $pdf_ref_path, 'File opened from Recent files';
+};
+
+subtest "Menu: View -> Zoom" => fun {
+	plan tests => 4;
+
+	my $app = Renard::Curie::App->new;
+	my $pdf_ref_path = try {
+		CurieTestHelper->test_data_directory->child(qw(PDF Adobe pdf_reference_1-7.pdf));
+	} catch {
+		plan skip_all => "$_";
+	};
+	$app->open_pdf_document( $pdf_ref_path );
+
+	my $zoom_menu = $app->menu_bar->builder
+		->get_object('menu-view-zoom');
+
+	my @menu_item_zoom_levels = $zoom_menu->get_children;
+	my %zoom_label_to_item = map {
+		( $_->get_property('label') => $_ )
+	} @menu_item_zoom_levels;
+
+	my $get_zoom_level = sub {
+		$app->page_document_component->zoom_level;
+	};
+
+	subtest 'Initial zoom' => sub {
+		is $get_zoom_level->(), 1.0, 'Zoom starts at 100%';
+	};
+
+	subtest 'Select 50% zoom menu item' => sub {
+		$zoom_label_to_item{'50%'}->signal_emit('activate');
+		is $get_zoom_level->(), 0.5, 'Zoom is now 50%';
+	};
+
+	subtest 'Select 200% zoom menu item' => sub {
+		$zoom_label_to_item{'200%'}->signal_emit('activate');
+		is $get_zoom_level->(), 2.0, 'Zoom is now 200%';
+	};
+
+	subtest 'Select 100% zoom menu item' => sub {
+		$zoom_label_to_item{'100%'}->signal_emit('activate');
+		is $get_zoom_level->(), 1.0, 'Zoom is now back at 100%';
+	};
 };
 
 subtest "Menu: View -> Sidebar" => fun {
