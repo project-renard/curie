@@ -6,7 +6,7 @@ use Moo;
 use Glib 'TRUE', 'FALSE';
 use Glib::Object::Subclass 'Gtk3::Bin';
 use Renard::Curie::Types qw(RenderableDocumentModel RenderablePageModel
-	PageNumber Bool InstanceOf);
+	PageNumber ZoomLevel Bool InstanceOf);
 use Function::Parameters;
 
 =attr document
@@ -43,6 +43,19 @@ has current_page_number => (
 	isa => PageNumber,
 	default => 1,
 	trigger => 1 # _trigger_current_page_number
+	);
+
+=attr zoom_level
+
+A L<ZoomLevel|Renard::Curie::Types/ZoomLevel> for the current zoom level for
+the document.
+
+=cut
+has zoom_level => (
+	is => 'rw',
+	isa => ZoomLevel,
+	default => 1.0,
+	trigger => 1 # _trigger_zoom_level
 	);
 
 =attr drawing_area
@@ -196,6 +209,7 @@ method setup_drawing_area() {
 			(InstanceOf['Cairo::Context']) $cr) {
 		my $rp = $self->document->get_rendered_page(
 			page_number => $self->current_page_number,
+			zoom_level => $self->zoom_level,
 		);
 		$self->current_rendered_page( $rp );
 		$self->on_draw_page_cb( $cr );
@@ -338,6 +352,18 @@ the component to retrieve the new page and redraw.
 
 =cut
 method _trigger_current_page_number {
+	$self->refresh_drawing_area;
+}
+
+=method _trigger_zoom_level
+
+  method _trigger_zoom_level
+
+Called whenever the L</zoom_level> is changed. This tells the component to
+redraw the current page at the new zoom level.
+
+=cut
+method _trigger_zoom_level {
 	$self->refresh_drawing_area;
 }
 

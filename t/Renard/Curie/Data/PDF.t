@@ -19,7 +19,7 @@ my $pdf_ref_path = try {
 plan tests => 4;
 
 subtest 'PDF page to PNG' => fun {
-	my $png_data = Renard::Curie::Data::PDF::get_mutool_pdf_page_as_png( $pdf_ref_path, 1 );
+	my $png_data = Renard::Curie::Data::PDF::get_mutool_pdf_page_as_png( $pdf_ref_path, 1, 1.0 );
 	like $png_data, qr/^\x{89}PNG/, 'data has PNG stream magic number';
 };
 

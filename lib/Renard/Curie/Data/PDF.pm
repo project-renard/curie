@@ -9,6 +9,7 @@ use Path::Tiny;
 use Function::Parameters;
 
 use Log::Any qw($log);
+use constant MUPDF_DEFAULT_RESOLUTION => 72; # dpi
 
 BEGIN {
 	our $MUTOOL_PATH = Alien::MuPDF->mutool_path;
@@ -84,9 +85,10 @@ This function returns a PNG stream that renders page number C<$pdf_page_no> of
 the PDF file C<$pdf_filename>.
 
 =cut
-fun get_mutool_pdf_page_as_png($pdf_filename, $pdf_page_no) {
+fun get_mutool_pdf_page_as_png($pdf_filename, $pdf_page_no, $zoom_level) {
 	my $stdout = _call_mutool(
 		qw(draw),
+		qw( -r ), ($zoom_level * MUPDF_DEFAULT_RESOLUTION), # calculate the resolution
 		qw( -F png ),
 		qw( -o -),
 		$pdf_filename,
