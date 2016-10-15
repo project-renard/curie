@@ -39,6 +39,12 @@ Initialises the logging window.
 
 =cut
 method BUILD {
+	my $log_textview = $self->builder->get_object('log-text');
+	if( $log_textview->can('set_monospace') ) {
+		$log_textview->set_monospace(TRUE);
+	} else {
+		warn('Gtk3::TextView monospace property not available for Gtk+ < v3.16.');
+	}
 	$self->builder->get_object('log-window')
 		->signal_connect(
 			'delete-event'
