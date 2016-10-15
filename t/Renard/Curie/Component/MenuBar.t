@@ -110,14 +110,15 @@ subtest "Menu: File -> Recent files" => fun {
 };
 
 subtest "Menu: View -> Zoom" => fun {
-	plan tests => 4;
-
-	my $app = Renard::Curie::App->new;
 	my $pdf_ref_path = try {
 		CurieTestHelper->test_data_directory->child(qw(PDF Adobe pdf_reference_1-7.pdf));
 	} catch {
 		plan skip_all => "$_";
 	};
+
+	plan tests => 4;
+
+	my $app = Renard::Curie::App->new;
 	$app->open_pdf_document( $pdf_ref_path );
 
 	my $zoom_menu = $app->menu_bar->builder
