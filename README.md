@@ -5,6 +5,7 @@
 		<tr>
 			<th>CI build</th>
 			<th>Coverage</th>
+			<th>CPAN</th>
 		</tr>
 	</thead>
 	<tr>
@@ -35,6 +36,10 @@
 		<td>
 			<!-- [![Coverage Status](https://coveralls.io/repos/project-renard/curie/badge.svg?branch=master)](https://coveralls.io/r/project-renard/curie?branch=master) -->
 			<a href="https://coveralls.io/r/project-renard/curie?branch=master"><img src="https://coveralls.io/repos/project-renard/curie/badge.svg?branch=master" alt="Coverage Status" /></a>
+		</td>
+		<td>
+			<!-- [![CPAN version](https://badge.fury.io/pl/Renard-Curie.svg)](https://metacpan.org/pod/Renard::Curie) -->
+            <a href="https://metacpan.org/pod/Renard::Curie"><img src="https://badge.fury.io/pl/Renard-Curie.svg" alt="CPAN version" /></a>
 		</td>
 	</tr>
 </table>
