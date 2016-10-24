@@ -1,8 +1,9 @@
 use Renard::Curie::Setup;
 package Renard::Curie::App;
 # ABSTRACT: A document viewing application
-$Renard::Curie::App::VERSION = '0.001';
-use Gtk3 -init;
+$Renard::Curie::App::VERSION = '0.001_01'; # TRIAL
+
+$Renard::Curie::App::VERSION = '0.00101';use Gtk3 -init;
 use Cairo;
 use Glib::Object::Introspection;
 use Glib 'TRUE', 'FALSE';
@@ -19,6 +20,7 @@ use Renard::Curie::Component::FileChooser;
 use Renard::Curie::Component::AccelMap;
 
 use Log::Any::Adapter;
+use Getopt::Long::Descriptive;
 
 use Renard::Curie::Types qw(InstanceOf Path Str DocumentModel);
 use Function::Parameters;
@@ -102,6 +104,16 @@ method BUILD {
 }
 
 method process_arguments() {
+	my ($opt, $usage) = describe_options(
+		"%c %o <filename>",
+		[ 'version',  "print version and exit"       ],
+		[ 'help',     "print usage message and exit" ],
+	);
+
+	print($usage->text), exit if $opt->help;
+
+	say($Renard::Curie::App::VERSION // 'dev'), exit if $opt->version;
+
 	my $pdf_filename = shift @ARGV;
 
 	if( $pdf_filename ) {
@@ -188,7 +200,7 @@ Renard::Curie::App - A document viewing application
 
 =head1 VERSION
 
-version 0.001
+version 0.001_01
 
 =head1 EXTENDS
 

@@ -4,7 +4,7 @@
       "Project Renard"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Dist::Zilla version 6.007, CPAN::Meta::Converter version 2.150005",
+   "generated_by" : "Dist::Zilla version 6.008, CPAN::Meta::Converter version 2.150005",
    "license" : [
       "perl_5"
    ],
@@ -43,6 +43,7 @@
             "File::Spec" : "0",
             "FindBin" : "0",
             "Function::Parameters" : "0",
+            "Getopt::Long::Descriptive" : "0",
             "Glib" : "0",
             "Glib::Object::Introspection" : "0",
             "Glib::Object::Subclass" : "0",
@@ -72,6 +73,7 @@
             "XML::Simple" : "0",
             "autodie" : "0",
             "autovivification" : "0",
+            "constant" : "0",
             "custom::failures" : "0",
             "lib" : "0",
             "perl" : "5.010",
@@ -92,7 +94,7 @@
          }
       }
    },
-   "release_status" : "stable",
+   "release_status" : "testing",
    "resources" : {
       "homepage" : "https://github.com/project-renard/curie",
       "repository" : {
@@ -101,7 +103,7 @@
          "web" : "https://github.com/project-renard/curie"
       }
    },
-   "version" : "0.001",
+   "version" : "0.001_01",
    "x_contributors" : [
       "Chirag <chiragghanshani@gmail.com>",
       "Stanislav Yotov <yotov.st@gmail.com>",

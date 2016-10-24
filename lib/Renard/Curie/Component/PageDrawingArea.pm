@@ -1,12 +1,13 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Component::PageDrawingArea;
 # ABSTRACT: Component that implements document page navigation
-$Renard::Curie::Component::PageDrawingArea::VERSION = '0.001';
-use Moo;
+$Renard::Curie::Component::PageDrawingArea::VERSION = '0.001_01'; # TRIAL
+
+$Renard::Curie::Component::PageDrawingArea::VERSION = '0.00101';use Moo;
 use Glib 'TRUE', 'FALSE';
 use Glib::Object::Subclass 'Gtk3::Bin';
 use Renard::Curie::Types qw(RenderableDocumentModel RenderablePageModel
-	PageNumber Bool InstanceOf);
+	PageNumber ZoomLevel Bool InstanceOf);
 use Function::Parameters;
 
 has document => (
@@ -25,6 +26,13 @@ has current_page_number => (
 	isa => PageNumber,
 	default => 1,
 	trigger => 1 # _trigger_current_page_number
+	);
+
+has zoom_level => (
+	is => 'rw',
+	isa => ZoomLevel,
+	default => 1.0,
+	trigger => 1 # _trigger_zoom_level
 	);
 
 has drawing_area => (
@@ -100,6 +108,7 @@ method setup_drawing_area() {
 			(InstanceOf['Cairo::Context']) $cr) {
 		my $rp = $self->document->get_rendered_page(
 			page_number => $self->current_page_number,
+			zoom_level => $self->zoom_level,
 		);
 		$self->current_rendered_page( $rp );
 		$self->on_draw_page_cb( $cr );
@@ -183,6 +192,10 @@ method _trigger_current_page_number {
 	$self->refresh_drawing_area;
 }
 
+method _trigger_zoom_level {
+	$self->refresh_drawing_area;
+}
+
 fun on_activate_page_number_entry_cb( $entry, $self ) {
 	my $text = $entry->get_text;
 	if ($text =~ /^[0-9]+$/ and $text <= $self->document->last_page_number
@@ -253,7 +266,7 @@ Renard::Curie::Component::PageDrawingArea - Component that implements document p
 
 =head1 VERSION
 
-version 0.001
+version 0.001_01
 
 =head1 EXTENDS
 
@@ -297,6 +310,11 @@ current page.
 
 A L<PageNumber|Renard:Curie::Types/PageNumber> for the current page being
 drawn.
+
+=head2 zoom_level
+
+A L<ZoomLevel|Renard::Curie::Types/ZoomLevel> for the current zoom level for
+the document.
 
 =head2 drawing_area
 
@@ -350,6 +368,13 @@ Sets up the signals to capture key presses on this component.
   method refresh_drawing_area()
 
 This forces the drawing area to redraw.
+
+=head2 _trigger_zoom_level
+
+  method _trigger_zoom_level
+
+Called whenever the L</zoom_level> is changed. This tells the component to
+redraw the current page at the new zoom level.
 
 =head2 set_current_page_forward
 

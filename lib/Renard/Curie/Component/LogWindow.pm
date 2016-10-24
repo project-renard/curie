@@ -1,8 +1,9 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Component::LogWindow;
 # ABSTRACT: Component that collects log messages
-$Renard::Curie::Component::LogWindow::VERSION = '0.001';
-use Moo;
+$Renard::Curie::Component::LogWindow::VERSION = '0.001_01'; # TRIAL
+
+$Renard::Curie::Component::LogWindow::VERSION = '0.00101';use Moo;
 use MooX::HandlesVia;
 use Glib 'TRUE', 'FALSE';
 use Renard::Curie::Types qw(ArrayRef HashRef Str);
@@ -20,6 +21,12 @@ has log_messages => (
 );
 
 method BUILD {
+	my $log_textview = $self->builder->get_object('log-text');
+	if( $log_textview->can('set_monospace') ) {
+		$log_textview->set_monospace(TRUE);
+	} else {
+		warn('Gtk3::TextView monospace property not available for Gtk+ < v3.16.');
+	}
 	$self->builder->get_object('log-window')
 		->signal_connect(
 			'delete-event'
@@ -87,7 +94,7 @@ Renard::Curie::Component::LogWindow - Component that collects log messages
 
 =head1 VERSION
 
-version 0.001
+version 0.001_01
 
 =head1 EXTENDS
 

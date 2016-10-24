@@ -1,8 +1,9 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Component::Role::FromBuilder;
 # ABSTRACT: Role that loads a Glade UI file into a Gtk3::Builder
-$Renard::Curie::Component::Role::FromBuilder::VERSION = '0.001';
-use Moo::Role;
+$Renard::Curie::Component::Role::FromBuilder::VERSION = '0.001_01'; # TRIAL
+
+$Renard::Curie::Component::Role::FromBuilder::VERSION = '0.00101';use Moo::Role;
 use Renard::Curie::Types qw(InstanceOf);
 
 requires 'ui_file';
@@ -36,7 +37,7 @@ Renard::Curie::Component::Role::FromBuilder - Role that loads a Glade UI file in
 
 =head1 VERSION
 
-version 0.001
+version 0.001_01
 
 =head1 DESCRIPTION
 

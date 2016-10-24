@@ -1,8 +1,9 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Log::Any::Adapter::LogWindow;
 # ABSTRACT: Log::Any adapter that directs messages to the log window component
-$Renard::Curie::Log::Any::Adapter::LogWindow::VERSION = '0.001';
-# These methods are generated for all Log::Any adapters
+$Renard::Curie::Log::Any::Adapter::LogWindow::VERSION = '0.001_01'; # TRIAL
+
+$Renard::Curie::Log::Any::Adapter::LogWindow::VERSION = '0.00101';# These methods are generated for all Log::Any adapters
 
 use Moo;
 
@@ -50,7 +51,7 @@ Renard::Curie::Log::Any::Adapter::LogWindow - Log::Any adapter that directs mess
 
 =head1 VERSION
 
-version 0.001
+version 0.001_01
 
 =head1 EXTENDS
 

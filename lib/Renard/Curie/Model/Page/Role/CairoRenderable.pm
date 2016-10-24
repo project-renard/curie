@@ -1,8 +1,9 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Model::Page::Role::CairoRenderable;
 # ABSTRACT: Role for pages that represented by a Cairo image surface
-$Renard::Curie::Model::Page::Role::CairoRenderable::VERSION = '0.001';
-use Moo::Role;
+$Renard::Curie::Model::Page::Role::CairoRenderable::VERSION = '0.001_01'; # TRIAL
+
+$Renard::Curie::Model::Page::Role::CairoRenderable::VERSION = '0.00101';use Moo::Role;
 use Function::Parameters;
 use Renard::Curie::Types qw(PositiveOrZeroInt);
 use Function::Parameters;
@@ -38,7 +39,7 @@ Renard::Curie::Model::Page::Role::CairoRenderable - Role for pages that represen
 
 =head1 VERSION
 
-version 0.001
+version 0.001_01
 
 =head1 CONSUMES
 

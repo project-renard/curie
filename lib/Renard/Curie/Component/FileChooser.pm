@@ -1,8 +1,9 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Component::FileChooser;
 # ABSTRACT: Component that implements a file chooser dialog
-$Renard::Curie::Component::FileChooser::VERSION = '0.001';
-use Moo;
+$Renard::Curie::Component::FileChooser::VERSION = '0.001_01'; # TRIAL
+
+$Renard::Curie::Component::FileChooser::VERSION = '0.00101';use Moo;
 use Renard::Curie::Types qw(InstanceOf);
 use Function::Parameters;
 
@@ -71,7 +72,7 @@ Renard::Curie::Component::FileChooser - Component that implements a file chooser
 
 =head1 VERSION
 
-version 0.001
+version 0.001_01
 
 =head1 EXTENDS
 

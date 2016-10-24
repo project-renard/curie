@@ -1,8 +1,9 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Component::Outline;
 # ABSTRACT: Component that provides a list of headings for navigating
-$Renard::Curie::Component::Outline::VERSION = '0.001';
-use Moo;
+$Renard::Curie::Component::Outline::VERSION = '0.001_01'; # TRIAL
+
+$Renard::Curie::Component::Outline::VERSION = '0.00101';use Moo;
 use Glib::Object::Subclass 'Gtk3::Revealer';
 use Glib 'TRUE', 'FALSE';
 use Renard::Curie::Types qw(InstanceOf PageNumber);
@@ -100,7 +101,7 @@ Renard::Curie::Component::Outline - Component that provides a list of headings f
 
 =head1 VERSION
 
-version 0.001
+version 0.001_01
 
 =head1 EXTENDS
 

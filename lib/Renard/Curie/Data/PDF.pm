@@ -1,14 +1,16 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Data::PDF;
 # ABSTRACT: Retrieve PDF image and text data via MuPDF's mutool
-$Renard::Curie::Data::PDF::VERSION = '0.001';
-use Capture::Tiny qw(capture_stdout tee_stdout);
+$Renard::Curie::Data::PDF::VERSION = '0.001_01'; # TRIAL
+
+$Renard::Curie::Data::PDF::VERSION = '0.00101';use Capture::Tiny qw(capture_stdout tee_stdout);
 use XML::Simple;
 use Alien::MuPDF 0.005;
 use Path::Tiny;
 use Function::Parameters;
 
 use Log::Any qw($log);
+use constant MUPDF_DEFAULT_RESOLUTION => 72; # dpi
 
 BEGIN {
 	our $MUTOOL_PATH = Alien::MuPDF->mutool_path;
@@ -65,9 +67,10 @@ fun _call_mutool( @mutool_args ) {
 	return $stdout;
 }
 
-fun get_mutool_pdf_page_as_png($pdf_filename, $pdf_page_no) {
+fun get_mutool_pdf_page_as_png($pdf_filename, $pdf_page_no, $zoom_level) {
 	my $stdout = _call_mutool(
 		qw(draw),
+		qw( -r ), ($zoom_level * MUPDF_DEFAULT_RESOLUTION), # calculate the resolution
 		qw( -F png ),
 		qw( -o -),
 		$pdf_filename,
@@ -167,7 +170,7 @@ Renard::Curie::Data::PDF - Retrieve PDF image and text data via MuPDF's mutool
 
 =head1 VERSION
 
-version 0.001
+version 0.001_01
 
 =head1 FUNCTIONS
 

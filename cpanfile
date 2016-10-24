@@ -5,6 +5,7 @@ requires 'Cairo';
 requires 'Capture::Tiny';
 requires 'Class::Method::Modifiers';
 requires 'Function::Parameters';
+requires 'Getopt::Long::Descriptive';
 requires 'Glib';
 requires 'Glib::Object::Introspection';
 requires 'Glib::Object::Subclass';
@@ -45,6 +46,8 @@ on test => sub {
     requires 'Test::Most';
     requires 'URI::file';
 };
+requires 'Moose';
+requires 'Params::Validate', '!= 1.25';
 
 if( $^O eq 'MSWin32' ) {
     requires 'Win32';

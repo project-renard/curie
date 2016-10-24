@@ -1,7 +1,9 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Helper;
-# ABSTRACT: Collection of helper utilities for Gtk3 and Glib
-$Renard::Curie::Helper::VERSION = '0.001';
+$Renard::Curie::Helper::VERSION = '0.001_01'; # TRIAL
+
+$Renard::Curie::Helper::VERSION = '0.00101';# ABSTRACT: Collection of helper utilities for Gtk3 and Glib
+
 
 use Class::Method::Modifiers;
 use Gtk3;
@@ -68,7 +70,7 @@ Renard::Curie::Helper - Collection of helper utilities for Gtk3 and Glib
 
 =head1 VERSION
 
-version 0.001
+version 0.001_01
 
 =head1 CLASS METHODS
 

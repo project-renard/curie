@@ -1,8 +1,9 @@
 use Modern::Perl;
 package Renard::Curie::Setup;
 # ABSTRACT: Packages that can be imported into every module
-$Renard::Curie::Setup::VERSION = '0.001';
-use autodie;
+$Renard::Curie::Setup::VERSION = '0.001_01'; # TRIAL
+
+$Renard::Curie::Setup::VERSION = '0.00101';use autodie;
 
 use Import::Into;
 
@@ -56,7 +57,7 @@ Renard::Curie::Setup - Packages that can be imported into every module
 
 =head1 VERSION
 
-version 0.001
+version 0.001_01
 
 =head1 AUTHOR
 

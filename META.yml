@@ -15,7 +15,7 @@ configure_requires:
   ExtUtils::MakeMaker: '0'
   perl: '5.010'
 dynamic_config: 1
-generated_by: 'Dist::Zilla version 6.007, CPAN::Meta::Converter version 2.150005'
+generated_by: 'Dist::Zilla version 6.008, CPAN::Meta::Converter version 2.150005'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -31,6 +31,7 @@ requires:
   File::Spec: '0'
   FindBin: '0'
   Function::Parameters: '0'
+  Getopt::Long::Descriptive: '0'
   Glib: '0'
   Glib::Object::Introspection: '0'
   Glib::Object::Subclass: '0'
@@ -60,6 +61,7 @@ requires:
   XML::Simple: '0'
   autodie: '0'
   autovivification: '0'
+  constant: '0'
   custom::failures: '0'
   lib: '0'
   perl: '5.010'
@@ -68,7 +70,7 @@ requires:
 resources:
   homepage: https://github.com/project-renard/curie
   repository: https://github.com/project-renard/curie.git
-version: '0.001'
+version: 0.001_01
 x_contributors:
   - 'Chirag <chiragghanshani@gmail.com>'
   - 'Stanislav Yotov <yotov.st@gmail.com>'

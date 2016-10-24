@@ -1,8 +1,9 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Model::Document::CairoImageSurface;
 # ABSTRACT: Document made up of a collection of Cairo image surfaces
-$Renard::Curie::Model::Document::CairoImageSurface::VERSION = '0.001';
-use Renard::Curie::Model::Page::CairoImageSurface;
+$Renard::Curie::Model::Document::CairoImageSurface::VERSION = '0.001_01'; # TRIAL
+
+$Renard::Curie::Model::Document::CairoImageSurface::VERSION = '0.00101';use Renard::Curie::Model::Page::CairoImageSurface;
 use Function::Parameters;
 use Renard::Curie::Types qw(PageNumber InstanceOf ArrayRef);
 
@@ -48,7 +49,7 @@ Renard::Curie::Model::Document::CairoImageSurface - Document made up of a collec
 
 =head1 VERSION
 
-version 0.001
+version 0.001_01
 
 =head1 EXTENDS
 

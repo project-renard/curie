@@ -1,3 +1,14 @@
+0.001_01 2016-10-24 18:01:31-0500
+  - Added menu to select zoom level.
+
+    Fixes <https://github.com/project-renard/curie/issues/14>.
+    See PR <https://github.com/project-renard/curie/pull/161>.
+
+  - Add command line option to print out version number.
+
+    Fixes <https://github.com/project-renard/curie/issues/157>.
+    See PR <https://github.com/project-renard/curie/pull/159>.
+
 0.001 2016-09-22 16:12:43-0500
   - Release notes: <http://project-renard.github.io/blog/posts/2016/09/22/curie-release-v0.001/>.
   - First release.

@@ -1,8 +1,9 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Model::Page::RenderedFromPNG;
 # ABSTRACT: Page generated from PNG data
-$Renard::Curie::Model::Page::RenderedFromPNG::VERSION = '0.001';
-use Moo;
+$Renard::Curie::Model::Page::RenderedFromPNG::VERSION = '0.001_01'; # TRIAL
+
+$Renard::Curie::Model::Page::RenderedFromPNG::VERSION = '0.00101';use Moo;
 use Cairo;
 use Function::Parameters;
 use Renard::Curie::Types qw(Str InstanceOf Int);
@@ -48,7 +49,7 @@ Renard::Curie::Model::Page::RenderedFromPNG - Page generated from PNG data
 
 =head1 VERSION
 
-version 0.001
+version 0.001_01
 
 =head1 EXTENDS
 

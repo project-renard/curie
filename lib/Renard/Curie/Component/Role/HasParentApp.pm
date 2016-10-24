@@ -1,8 +1,9 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Component::Role::HasParentApp;
 # ABSTRACT: Role that links a component to the parent application
-$Renard::Curie::Component::Role::HasParentApp::VERSION = '0.001';
-use Moo::Role;
+$Renard::Curie::Component::Role::HasParentApp::VERSION = '0.001_01'; # TRIAL
+
+$Renard::Curie::Component::Role::HasParentApp::VERSION = '0.00101';use Moo::Role;
 use Renard::Curie::Types qw(InstanceOf);
 
 has app => (
@@ -26,7 +27,7 @@ Renard::Curie::Component::Role::HasParentApp - Role that links a component to th
 
 =head1 VERSION
 
-version 0.001
+version 0.001_01
 
 =head1 ATTRIBUTES
 

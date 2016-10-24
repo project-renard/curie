@@ -1,8 +1,9 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Model::Outline;
 # ABSTRACT: Model that represents a document outline
-$Renard::Curie::Model::Outline::VERSION = '0.001';
-use Moo;
+$Renard::Curie::Model::Outline::VERSION = '0.001_01'; # TRIAL
+
+$Renard::Curie::Model::Outline::VERSION = '0.00101';use Moo;
 use Renard::Curie::Types qw(
 	ArrayRef Dict
 	PositiveOrZeroInt Str LaxPageNumber
@@ -104,7 +105,7 @@ Renard::Curie::Model::Outline - Model that represents a document outline
 
 =head1 VERSION
 
-version 0.001
+version 0.001_01
 
 =head1 EXTENDS
 
