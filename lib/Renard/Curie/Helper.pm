@@ -1,5 +1,6 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Helper;
+
 # ABSTRACT: Collection of helper utilities for Gtk3 and Glib
 
 =for :header
