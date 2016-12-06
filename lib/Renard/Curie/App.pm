@@ -25,6 +25,11 @@ use Getopt::Long::Descriptive;
 use Renard::Curie::Types qw(InstanceOf Path Str DocumentModel);
 use Function::Parameters;
 
+use constant {
+	DND_TARGET_URI_LIST => 0,
+	DND_TARGET_TEXT     => 1,
+};
+
 =attr window
 
 A L<Gtk3::Window> that contains the main window for the application.
@@ -159,8 +164,11 @@ TODO
 =cut
 method setup_dnd() {
 	$self->content_box->drag_dest_set('all', [], 'copy');
-	$self->content_box->drag_dest_set_target_list(undef);
-	$self->content_box->drag_dest_add_text_targets();
+	my $target_list = Gtk3::TargetList->new([
+		Gtk3::TargetEntry->new( 'text/uri-list', 0, DND_TARGET_URI_LIST ),
+		Gtk3::TargetEntry->new( 'text/plain'   , 0, DND_TARGET_TEXT     )
+	]);
+	$self->content_box->drag_dest_set_target_list($target_list);
 
 	$self->content_box->signal_connect('drag-data-received' =>
 		\&on_drag_data_received_cb, $self );
@@ -343,9 +351,9 @@ TODO
 
 =cut
 fun on_drag_data_received_cb( $widget, $context, $x, $y, $data, $info, $time, $app ) {
-	my ($TARGET_ENTRY_TEXT, $TARGET_ENTRY_PIXBUF) = (0, 1);
-	if( $info == $TARGET_ENTRY_TEXT ) {
-		print $data->get_text;
+	if( $info == DND_TARGET_URI_LIST ) {
+		my @uris = @{ $data->get_uris };
+		say $_ for @uris;
 	}
 }
 # }}}
