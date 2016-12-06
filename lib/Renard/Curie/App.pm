@@ -152,6 +152,20 @@ method setup_window() {
 	Renard::Curie::Component::AccelMap->new( app => $self );
 }
 
+=method setup_dnd
+
+TODO
+
+=cut
+method setup_dnd() {
+	$self->content_box->drag_dest_set('all', [], 'copy');
+	$self->content_box->drag_dest_set_target_list(undef);
+	$self->content_box->drag_dest_add_text_targets();
+
+	$self->content_box->signal_connect('drag-data-received' =>
+		\&on_drag_data_received_cb, $self );
+}
+
 =method run
 
   method run()
@@ -176,6 +190,7 @@ method BUILD(@) {
 	$self->setup_gtk;
 
 	$self->setup_window;
+	$self->setup_dnd;
 
 	$self->window->signal_connect(
 		destroy => \&on_application_quit_cb, $self );
@@ -320,6 +335,18 @@ Callback that stops the L<Gtk3> main loop.
 =cut
 callback on_application_quit_cb( $event, $self ) {
 	Gtk3::main_quit;
+}
+
+=callback on_drag_data_received_cb
+
+TODO
+
+=cut
+fun on_drag_data_received_cb( $widget, $context, $x, $y, $data, $info, $time, $app ) {
+	my ($TARGET_ENTRY_TEXT, $TARGET_ENTRY_PIXBUF) = (0, 1);
+	if( $info == $TARGET_ENTRY_TEXT ) {
+		print $data->get_text;
+	}
 }
 # }}}
 
