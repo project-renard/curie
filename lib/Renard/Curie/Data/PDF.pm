@@ -4,7 +4,7 @@ package Renard::Curie::Data::PDF;
 
 use Capture::Tiny qw(capture_stdout tee_stdout);
 use XML::Simple;
-use Alien::MuPDF 0.005;
+use Alien::MuPDF 0.007;
 use Path::Tiny;
 use Function::Parameters;
 
@@ -263,10 +263,12 @@ fun get_mutool_outline_simple($pdf_filename) {
 	my @outline_items = ();
 	open my $outline_fh, '<:encoding(UTF-8):crlf', \$outline_text;
 	while( defined( my $line = <$outline_fh> ) ) {
-		$line =~ /^(?<indent>\t*)(?<text>.*)\t(?<page>\d+)$/;
+		$line =~ /^(?<indent>\t*)(?<text>.*)\t#(?<page>\d+)(,(?<dx>\d+),(?<dy>\d+))?$/;
 		my %copy = %+;
 		$copy{level} = length $copy{indent};
 		delete $copy{indent};
+		# not storing the offsets yet and not every line has offsets
+		delete @copy{qw(dx dy)};
 		push @outline_items, \%copy;
 	}
 
