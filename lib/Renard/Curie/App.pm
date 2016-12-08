@@ -191,13 +191,22 @@ Processes arguments given in C<@ARGV>.
 method process_arguments() {
 	my ($opt, $usage) = describe_options(
 		"%c %o <filename>",
-		[ 'version',  "print version and exit"       ],
-		[ 'help',     "print usage message and exit" ],
+		[ 'version',        "print version and exit"                             ],
+		[ 'short-version',  "print just the version number (if exists) and exit" ],
+		[ 'help',           "print usage message and exit"                       ],
 	);
 
 	print($usage->text), exit if $opt->help;
 
-	say($Renard::Curie::App::VERSION // 'dev'), exit if $opt->version;
+	if($opt->version) {
+		say("Project Renard Curie @{[ _get_version() ]}");
+		say("Distributed under the same terms as Perl 5.");
+		exit;
+	}
+
+	if($opt->short_version) {
+		say(_get_version()), exit
+	}
 
 	my $pdf_filename = shift @ARGV;
 
@@ -205,6 +214,19 @@ method process_arguments() {
 		$self->_logger->infof("opening the file %s", $pdf_filename);
 		$self->open_pdf_document( $pdf_filename );
 	}
+}
+
+=func _get_version
+
+  fun _get_version() :ReturnType(Str)
+
+Returns the version of the application if there is one.
+Otherwise returns the C<Str> C<'dev'> to indicate that this is a
+development version.
+
+=cut
+fun _get_version() :ReturnType(Str) {
+	return $Renard::Curie::App::VERSION // 'dev'
 }
 
 =func main
