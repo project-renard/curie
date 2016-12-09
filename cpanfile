@@ -44,7 +44,9 @@ on test => sub {
     requires 'Test::MockModule';
     requires 'Test::MockObject';
     requires 'Test::Most';
+    requires 'Test::Trap';
     requires 'URI::file';
+    requires 'version', '0.77';
 };
 requires 'Moose';
 requires 'Params::Validate', '!= 1.25';

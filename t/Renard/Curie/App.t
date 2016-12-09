@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 
 use Test::Most tests => 3;
+use Test::Trap;
 
 use lib 't/lib';
 use CurieTestHelper;
@@ -9,6 +10,7 @@ use Renard::Curie::Setup;
 use Renard::Curie::App;
 use File::Temp;
 use Function::Parameters;
+use version 0.77 ();
 
 subtest "Process arguments" => fun {
 	subtest "Process arguments for PDF file" => fun {
@@ -40,6 +42,41 @@ subtest "Process arguments" => fun {
 		throws_ok {
 			$app->process_arguments;
 		} 'Renard::Curie::Error::IO::FileNotFound', "Throws exception when file not found";
+		undef $app;
+	};
+
+	subtest "Process --help flag" => fun {
+		my $app = Renard::Curie::App->new;
+		local @ARGV = qw(--help);
+		trap { $app->process_arguments; };
+		like( $trap->stdout, qr/--help/, 'Shows usage text' );
+		is( $trap->exit, 0, 'Exits successfully after call' );
+		undef $app;
+	};
+
+	subtest "Process --version flag" => fun {
+		my $app = Renard::Curie::App->new;
+		local @ARGV = qw(--version);
+		trap { $app->process_arguments; };
+		like( $trap->stdout, qr/Project Renard Curie/, 'Prints full name of application' );
+		is( $trap->exit, 0, 'Exits successfully after call' );
+		undef $app;
+	};
+
+	subtest "Process --short-version flag" => fun {
+		my $app = Renard::Curie::App->new;
+		local @ARGV = qw(--short-version);
+		trap { $app->process_arguments; };
+		chomp( my $version_or_dev = $trap->stdout );
+		note "Got version: $version_or_dev";
+		if( $version_or_dev =~ qr/^dev$/ ) {
+			pass( 'Prints out dev as version' );
+		} else {
+			lives_ok {
+				version->parse($version_or_dev);
+			} "version parses";
+		}
+		is( $trap->exit, 0, 'Exits successfully after call' );
 		undef $app;
 	};
 };
