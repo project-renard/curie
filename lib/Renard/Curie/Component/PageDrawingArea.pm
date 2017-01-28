@@ -8,55 +8,21 @@ use Glib::Object::Subclass 'Gtk3::Bin';
 use Renard::Curie::Types qw(RenderableDocumentModel RenderablePageModel
 	PageNumber ZoomLevel Bool InstanceOf);
 use Function::Parameters;
+use Renard::Curie::Model::View::SinglePage;
 
-=attr document
+=attr view
 
-The L<RenderableDocumentModel|Renard:Curie::Types/RenderableDocumentModel> that
-this component displays.
+TODO
 
 =cut
-has document => (
+has view => (
 	is => 'rw',
-	isa => (RenderableDocumentModel),
 	required => 1
 );
 
-=attr current_rendered_page
-
-A L<RenderablePageModel|Renard:Curie::Types/RenderablePageModel> for the
-current page.
-
-=cut
-has current_rendered_page => (
-	is => 'rw',
-	isa => (RenderablePageModel),
-);
-
-=attr current_page_number
-
-A L<PageNumber|Renard:Curie::Types/PageNumber> for the current page being
-drawn.
-
-=cut
-has current_page_number => (
-	is => 'rw',
-	isa => PageNumber,
-	default => 1,
-	trigger => 1 # _trigger_current_page_number
-	);
-
-=attr zoom_level
-
-A L<ZoomLevel|Renard::Curie::Types/ZoomLevel> for the current zoom level for
-the document.
-
-=cut
-has zoom_level => (
-	is => 'rw',
-	isa => ZoomLevel,
-	default => 1.0,
-	trigger => 1 # _trigger_zoom_level
-	);
+method document() { $self->view->document }
+method current_page_number() { $self->view->page_number }
+method zoom_level() { $self->view->zoom_level }
 
 =attr drawing_area
 
@@ -78,6 +44,19 @@ has scrolled_window => (
 	isa => InstanceOf['Gtk3::ScrolledWindow'],
 );
 
+around BUILDARGS => sub {
+	my ( $orig, $class, %args ) = @_;
+
+	if( exists $args{document} ) {
+		my $doc = delete $args{document};
+		$args{view} = Renard::Curie::Model::View::SinglePage->new(
+			document => $doc,
+		);
+	}
+
+	return $class->$orig(%args);
+};
+
 =classmethod FOREIGNBUILDARGS
 
   classmethod FOREIGNBUILDARGS(@)
@@ -97,6 +76,7 @@ Initialises the component's contained widgets and signals.
 
 =cut
 method BUILD(@) {
+	$self->view->_pd($self); # HACK TODO
 	# so that the widget can take input
 	$self->set_can_focus( TRUE );
 
@@ -208,11 +188,6 @@ method setup_drawing_area() {
 	$drawing_area->signal_connect( draw => callback(
 			(InstanceOf['Gtk3::DrawingArea']) $widget,
 			(InstanceOf['Cairo::Context']) $cr) {
-		my $rp = $self->document->get_rendered_page(
-			page_number => $self->current_page_number,
-			zoom_level => $self->zoom_level,
-		);
-		$self->current_rendered_page( $rp );
 		$self->on_draw_page_cb( $cr );
 
 		return TRUE;
@@ -239,7 +214,7 @@ Sets up the label that shows the number of pages in the document.
 =cut
 method setup_number_of_pages_label() {
 	$self->builder->get_object("number-of-pages-label")
-		->set_text( $self->document->last_page_number );
+		->set_text( $self->view->document->last_page_number );
 }
 
 =method setup_keybindings
@@ -362,46 +337,20 @@ method on_draw_page_cb( (InstanceOf['Cairo::Context']) $cr ) {
 	# callbacks with $self as the last argument.
 	$self->set_navigation_buttons_sensitivity;
 
-	my $img = $self->current_rendered_page->cairo_image_surface;
+	my $rp = $self->view->rendered_page;
+
+	my $img = $rp->cairo_image_surface;
 
 	$cr->set_source_surface($img, ($self->drawing_area->get_allocated_width -
-		$self->current_rendered_page->width) / 2, 0);
+		$rp->width) / 2, 0);
 	$cr->paint;
 
 	$self->drawing_area->set_size_request(
-		$self->current_rendered_page->width,
-		$self->current_rendered_page->height );
+		$rp->width,
+		$rp->height );
 
 	$self->builder->get_object('page-number-entry')
-		->set_text($self->current_page_number);
-}
-
-=begin comment
-
-=method _trigger_current_page_number
-
-  method _trigger_current_page_number
-
-Called whenever the L</current_page_number> is changed. This allows for telling
-the component to retrieve the new page and redraw.
-
-=end comment
-
-=cut
-method _trigger_current_page_number($new_page_number) {
-	$self->refresh_drawing_area;
-}
-
-=method _trigger_zoom_level
-
-  method _trigger_zoom_level
-
-Called whenever the L</zoom_level> is changed. This tells the component to
-redraw the current page at the new zoom level.
-
-=cut
-method _trigger_zoom_level($new_zoom_level) {
-	$self->refresh_drawing_area;
+		->set_text($self->view->page_number);
 }
 
 =callback on_activate_page_number_entry_cb
@@ -413,8 +362,8 @@ Callback that is called when text has been entered into the page number entry.
 =cut
 callback on_activate_page_number_entry_cb( $entry, $self ) {
 	my $text = $entry->get_text;
-	if( $self->document->is_valid_page_number($text) ) {
-		$self->current_page_number( $text );
+	if( $self->view->document->is_valid_page_number($text) ) {
+		$self->view->page_number( $text );
 	} else {
 		Renard::Curie::Error::User::InvalidPageNumber->throw;
 	}
@@ -429,7 +378,7 @@ Increments the current page number if possible.
 =cut
 method set_current_page_forward() {
 	if( $self->can_move_to_next_page ) {
-		$self->current_page_number( $self->current_page_number + 1 );
+		$self->view->page_number( $self->view->page_number + 1 );
 	}
 }
 
@@ -442,7 +391,7 @@ Decrements the current page number if possible.
 =cut
 method set_current_page_back() {
 	if( $self->can_move_to_previous_page ) {
-		$self->current_page_number( $self->current_page_number - 1 );
+		$self->view->page_number( $self->view->page_number - 1 );
 	}
 }
 
@@ -454,7 +403,7 @@ Sets the page number to the first page of the document.
 
 =cut
 method set_current_page_to_first() {
-	$self->current_page_number( $self->document->first_page_number );
+	$self->view->page_number( $self->view->document->first_page_number );
 }
 
 =method set_current_page_to_last
@@ -465,7 +414,7 @@ Sets the current page to the last page of the document.
 
 =cut
 method set_current_page_to_last() {
-	$self->current_page_number( $self->document->last_page_number );
+	$self->view->page_number( $self->view->document->last_page_number );
 }
 
 =method can_move_to_previous_page
@@ -476,7 +425,7 @@ Predicate to check if we can decrement the current page number.
 
 =cut
 method can_move_to_previous_page() :ReturnType(Bool) {
-	$self->current_page_number > $self->document->first_page_number;
+	$self->view->page_number > $self->view->document->first_page_number;
 }
 
 =method can_move_to_next_page
@@ -487,7 +436,7 @@ Predicate to check if we can increment the current page number.
 
 =cut
 method can_move_to_next_page() :ReturnType(Bool) {
-	$self->current_page_number < $self->document->last_page_number;
+	$self->view->page_number < $self->view->document->last_page_number;
 }
 
 =method set_navigation_buttons_sensitivity

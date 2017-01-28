@@ -36,7 +36,7 @@ subtest 'Check that the first and last buttons work' => sub {
 	is($page_comp->current_page_number, 1, 'Start on page 1' );
 
 	subtest "Check first button" => sub {
-		$page_comp->current_page_number(3);
+		$page_comp->view->page_number(3);
 		is $page_comp->current_page_number, 3, "Setting page to 3";
 
 		$first_button->clicked;
@@ -44,7 +44,7 @@ subtest 'Check that the first and last buttons work' => sub {
 	};
 
 	subtest "Check last button" => sub {
-		$page_comp->current_page_number(2);
+		$page_comp->view->page_number(2);
 		is $page_comp->current_page_number, 2, "Setting page to 2";
 
 		$last_button->clicked;
@@ -98,7 +98,7 @@ subtest 'Check the page entry' => sub {
 
 	my $entry = $page_comp->builder->get_object('page-number-entry');
 
-	$page_comp->current_page_number(2);
+	$page_comp->view->page_number(2);
 
 	$entry->set_text('4foo');
 	$entry->signal_emit('activate');
@@ -117,11 +117,11 @@ subtest 'Page number bound checking' => sub {
 	$page_comp->set_current_page_back;
 	is $page_comp->current_page_number, 1, "Can not go to previous page when on first page";
 
-	$page_comp->current_page_number(2);
+	$page_comp->view->page_number(2);
 	$page_comp->set_current_page_back;
 	is $page_comp->current_page_number, 1, "Can move to previous page when on second page";
 
-	$page_comp->current_page_number(2);
+	$page_comp->view->page_number(2);
 	$page_comp->set_current_page_forward;
 	is $page_comp->current_page_number, 3, "Can move to next page when on second page";
 
