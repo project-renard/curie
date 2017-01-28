@@ -15,16 +15,16 @@ subtest 'Check that moving forward and backward changes the page number' => sub 
 	my $forward_button = $page_comp->builder->get_object('button-forward');
 	my $back_button = $page_comp->builder->get_object('button-back');
 
-	is($page_comp->current_page_number, 1, 'Start on page 1' );
+	is($page_comp->view->page_number, 1, 'Start on page 1' );
 
 	$forward_button->clicked;
-	is($page_comp->current_page_number, 2, 'On page 2 after hitting forward' );
+	is($page_comp->view->page_number, 2, 'On page 2 after hitting forward' );
 
 	$forward_button->clicked;
-	is($page_comp->current_page_number, 3, 'On page 3 after hitting forward' );
+	is($page_comp->view->page_number, 3, 'On page 3 after hitting forward' );
 
 	$back_button->clicked;
-	is($page_comp->current_page_number, 2, 'On page 2 after hitting back' );
+	is($page_comp->view->page_number, 2, 'On page 2 after hitting back' );
 };
 
 subtest 'Check that the first and last buttons work' => sub {
@@ -33,22 +33,22 @@ subtest 'Check that the first and last buttons work' => sub {
 	my $first_button = $page_comp->builder->get_object('button-first');
 	my $last_button = $page_comp->builder->get_object('button-last');
 
-	is($page_comp->current_page_number, 1, 'Start on page 1' );
+	is($page_comp->view->page_number, 1, 'Start on page 1' );
 
 	subtest "Check first button" => sub {
 		$page_comp->view->page_number(3);
-		is $page_comp->current_page_number, 3, "Setting page to 3";
+		is $page_comp->view->page_number, 3, "Setting page to 3";
 
 		$first_button->clicked;
-		is($page_comp->current_page_number, 1, 'On page 1 after hitting first' );
+		is($page_comp->view->page_number, 1, 'On page 1 after hitting first' );
 	};
 
 	subtest "Check last button" => sub {
 		$page_comp->view->page_number(2);
-		is $page_comp->current_page_number, 2, "Setting page to 2";
+		is $page_comp->view->page_number, 2, "Setting page to 2";
 
 		$last_button->clicked;
-		is($page_comp->current_page_number, 4, 'On page 4 after hitting last' );
+		is($page_comp->view->page_number, 4, 'On page 4 after hitting last' );
 	};
 };
 
@@ -61,7 +61,7 @@ subtest 'Check that the current button sensitivity is set on the first and last 
 	my $forward_button = $page_comp->builder->get_object('button-forward');
 	my $back_button = $page_comp->builder->get_object('button-back');
 
-	is($page_comp->current_page_number, 1, 'Start on page 1' );
+	is($page_comp->view->page_number, 1, 'Start on page 1' );
 
 	ok ! $first_button->is_sensitive  , 'button-first is disabled on first page';
 	ok ! $back_button->is_sensitive   , 'button-back is disabled on first page';
@@ -71,7 +71,7 @@ subtest 'Check that the current button sensitivity is set on the first and last 
 	$last_button->clicked;
 	$page_comp->refresh_drawing_area;
 
-	is $page_comp->current_page_number, 4, 'On page 4 after hitting button-last';
+	is $page_comp->view->page_number, 4, 'On page 4 after hitting button-last';
 
 	$page_comp->set_navigation_buttons_sensitivity;
 
@@ -103,11 +103,11 @@ subtest 'Check the page entry' => sub {
 	$entry->set_text('4foo');
 	$entry->signal_emit('activate');
 
-	is $page_comp->current_page_number, 2, "Page number was not changed";
+	is $page_comp->view->page_number, 2, "Page number was not changed";
 
 	$entry->set_text('3');
 	$entry->signal_emit('activate');
-	is $page_comp->current_page_number, 3, "Page number was changed";
+	is $page_comp->view->page_number, 3, "Page number was changed";
 };
 
 subtest 'Page number bound checking' => sub {
@@ -115,19 +115,19 @@ subtest 'Page number bound checking' => sub {
 
 	$page_comp->set_current_page_to_first;
 	$page_comp->set_current_page_back;
-	is $page_comp->current_page_number, 1, "Can not go to previous page when on first page";
+	is $page_comp->view->page_number, 1, "Can not go to previous page when on first page";
 
 	$page_comp->view->page_number(2);
 	$page_comp->set_current_page_back;
-	is $page_comp->current_page_number, 1, "Can move to previous page when on second page";
+	is $page_comp->view->page_number, 1, "Can move to previous page when on second page";
 
 	$page_comp->view->page_number(2);
 	$page_comp->set_current_page_forward;
-	is $page_comp->current_page_number, 3, "Can move to next page when on second page";
+	is $page_comp->view->page_number, 3, "Can move to next page when on second page";
 
 	$page_comp->set_current_page_to_last;
 	$page_comp->set_current_page_forward;
-	is $page_comp->current_page_number, $cairo_doc->last_page_number, "Can not go to next page when on last page";
+	is $page_comp->view->page_number, $cairo_doc->last_page_number, "Can not go to next page when on last page";
 };
 
 done_testing;
