@@ -25,11 +25,11 @@ fun Scroll_Event( (InstanceOf['Renard::Curie::App']) $app,
 subtest 'Check that ctrl+scroll-down zooms out of the page' => sub {
 	my ( $app, $page_comp ) = CurieTestHelper->create_app_with_document($cairo_doc);
 
-	ok($page_comp->zoom_level - 1.0 < .001, 'Start at Zoom Level 1.0' );
+	ok($page_comp->view->zoom_level - 1.0 < .001, 'Start at Zoom Level 1.0' );
 
 	Scroll_Event( $app, 'down' );
 
-	ok($page_comp->zoom_level - .95 < .001, 'Reduce Zoom Level to .95');
+	ok($page_comp->view->zoom_level - .95 < .001, 'Reduce Zoom Level to .95');
 
 	$app->window->destroy;
 };
@@ -37,11 +37,11 @@ subtest 'Check that ctrl+scroll-down zooms out of the page' => sub {
 subtest 'Check that ctrl+scroll-up zooms into the page' => sub {
 	my ( $app, $page_comp ) = CurieTestHelper->create_app_with_document($cairo_doc);
 
-	ok($page_comp->zoom_level - 1.0 < .001, 'Start at Zoom Level 1.0' );
+	ok($page_comp->view->zoom_level - 1.0 < .001, 'Start at Zoom Level 1.0' );
 
 	Scroll_Event( $app, 'up' );
 
-	ok($page_comp->zoom_level - 1.05 < .001, 'Reduce Zoom Level to .95');
+	ok($page_comp->view->zoom_level - 1.05 < .001, 'Reduce Zoom Level to .95');
 
 	$app->window->destroy;
 };
@@ -49,11 +49,11 @@ subtest 'Check that ctrl+scroll-up zooms into the page' => sub {
 subtest 'Check that ctrl+smooth-scroll-down zooms out of the page' => sub {
 	my ( $app, $page_comp ) = CurieTestHelper->create_app_with_document($cairo_doc);
 
-	ok($page_comp->zoom_level - 1.0 < .001, 'Start at Zoom Level 1.0' );
+	ok($page_comp->view->zoom_level - 1.0 < .001, 'Start at Zoom Level 1.0' );
 
 	Scroll_Event( $app, 'smooth', -0.05 );
 
-	ok($page_comp->zoom_level - .95 < .001, 'Reduce Zoom Level to .95');
+	ok($page_comp->view->zoom_level - .95 < .001, 'Reduce Zoom Level to .95');
 
 	$app->window->destroy;
 };
@@ -61,11 +61,11 @@ subtest 'Check that ctrl+smooth-scroll-down zooms out of the page' => sub {
 subtest 'Check that ctrl+smooth-scroll-up zooms into the page' => sub {
 	my ( $app, $page_comp ) = CurieTestHelper->create_app_with_document($cairo_doc);
 
-	ok($page_comp->zoom_level - 1.0 < .001, 'Start at Zoom Level 1.0' );
+	ok($page_comp->view->zoom_level - 1.0 < .001, 'Start at Zoom Level 1.0' );
 
 	Scroll_Event( $app, 'smooth', 0.05 );
 
-	ok($page_comp->zoom_level - 1.05 < .001, 'Reduce Zoom Level to .95');
+	ok($page_comp->view->zoom_level - 1.05 < .001, 'Reduce Zoom Level to .95');
 
 	$app->window->destroy;
 };

@@ -129,7 +129,7 @@ subtest "Menu: View -> Zoom" => sub {
 	} @menu_item_zoom_levels;
 
 	my $get_zoom_level = sub {
-		$app->page_document_component->zoom_level;
+		$app->page_document_component->view->zoom_level;
 	};
 
 	subtest 'Initial zoom' => sub {
