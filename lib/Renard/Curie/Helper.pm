@@ -69,7 +69,7 @@ fun _set_icon_theme( (Str) $icon_theme_name ) {
 	my $i = Gtk3::IconTheme->new;                                       # uncoverable statement
 	$i->set_custom_theme($icon_theme_name);                             # uncoverable statement
 	my $n = $i->choose_icon_for_scale(['gtk-open'], 16, 1, 'no-svg');   # uncoverable statement
-	my $expected_path = m,/$icon_theme_name/.*\Qgtk-open.png\E$,;       # uncoverable statement
+	my $expected_path = qr,/$icon_theme_name/.*\Qgtk-open.png\E$,;      # uncoverable statement
 	if ( defined $n && $n->get_filename =~ $expected_path ) {           # uncoverable statement
 		my $settings = Gtk3::Settings::get_default;                 # uncoverable statement
 		$settings->set_property('gtk-icon-theme-name',              # uncoverable statement
