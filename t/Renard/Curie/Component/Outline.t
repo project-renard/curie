@@ -19,7 +19,7 @@ plan tests => 2;
 subtest 'Check that the outline model is set for the current document' => sub {
 	my $app = Renard::Curie::App->new;
 	$app->open_pdf_document( $pdf_ref_path );
-	my $doc = $app->page_document_component->document;
+	my $doc = $app->page_document_component->view->document;
 	my $outline = $doc->outline;
 
 	is( $app->outline->model, $outline->tree_store,
@@ -32,7 +32,7 @@ subtest 'Check that clicking an outline item sets the page number' => sub {
 	my $app = Renard::Curie::App->new;
 	$app->open_pdf_document( $pdf_ref_path );
 	my $page_comp = $app->page_document_component;
-	my $doc = $app->page_document_component->document;
+	my $doc = $app->page_document_component->view->document;
 	my $outline = $doc->outline;
 
 	# start on first page

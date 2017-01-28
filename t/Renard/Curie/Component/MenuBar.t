@@ -105,7 +105,7 @@ subtest "Menu: File -> Recent files" => sub {
 
 	$rc->signal_emit('item-activated');
 
-	is path($app->page_document_component->document->filename), $pdf_ref_path, 'File opened from Recent files';
+	is path($app->page_document_component->view->document->filename), $pdf_ref_path, 'File opened from Recent files';
 };
 
 subtest "Menu: View -> Zoom" => sub {

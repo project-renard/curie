@@ -20,7 +20,6 @@ has view => (
 	required => 1
 );
 
-method document() { $self->view->document }
 method current_page_number() { $self->view->page_number }
 method zoom_level() { $self->view->zoom_level }
 
