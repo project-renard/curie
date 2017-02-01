@@ -333,17 +333,7 @@ method on_draw_page_cb( (InstanceOf['Cairo::Context']) $cr ) {
 	# callbacks with $self as the last argument.
 	$self->set_navigation_buttons_sensitivity;
 
-	my $rp = $self->view->rendered_page;
-
-	my $img = $rp->cairo_image_surface;
-
-	$cr->set_source_surface($img, ($self->drawing_area->get_allocated_width -
-		$rp->width) / 2, 0);
-	$cr->paint;
-
-	$self->drawing_area->set_size_request(
-		$rp->width,
-		$rp->height );
+	$self->view->draw_page( $self->drawing_area, $cr );
 
 	$self->builder->get_object('page-number-entry')
 		->set_text($self->view->page_number);

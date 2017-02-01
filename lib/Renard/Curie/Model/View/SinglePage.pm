@@ -98,4 +98,21 @@ method _trigger_zoom_level($new_zoom_level) {
 	$self->_pd->refresh_drawing_area;
 }
 
+method draw_page(
+	(InstanceOf['Gtk3::DrawingArea']) $widget,
+	(InstanceOf['Cairo::Context']) $cr
+) {
+	my $rp = $self->rendered_page;
+
+	my $img = $rp->cairo_image_surface;
+
+	$cr->set_source_surface($img, ($widget->get_allocated_width -
+		$rp->width) / 2, 0);
+	$cr->paint;
+
+	$widget->set_size_request(
+		$rp->width,
+		$rp->height );
+}
+
 1;
