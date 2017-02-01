@@ -119,7 +119,7 @@ See L</set_current_page_to_first>.
 
 =cut
 callback on_clicked_button_first_cb($button, $self) {
-	$self->set_current_page_to_first;
+	$self->view->set_current_page_to_first;
 }
 
 =callback on_clicked_button_last_cb
@@ -131,7 +131,7 @@ See L</set_current_page_to_last>.
 
 =cut
 callback on_clicked_button_last_cb($button, $self) {
-	$self->set_current_page_to_last;
+	$self->view->set_current_page_to_last;
 }
 
 =callback on_clicked_button_forward_cb
@@ -143,7 +143,7 @@ See L</set_current_page_forward>.
 
 =cut
 callback on_clicked_button_forward_cb($button, $self) {
-	$self->set_current_page_forward;
+	$self->view->set_current_page_forward;
 }
 
 =callback on_clicked_button_back_cb
@@ -155,7 +155,7 @@ See L</set_current_page_back>.
 
 =cut
 callback on_clicked_button_back_cb($button, $self) {
-	$self->set_current_page_back;
+	$self->view->set_current_page_back;
 }
 
 =method setup_text_entry_events
@@ -234,9 +234,9 @@ handlers.
 =cut
 callback on_key_press_event_cb($window, $event, $self) {
 	if($event->keyval == Gtk3::Gdk::KEY_Page_Down){
-		$self->set_current_page_forward;
+		$self->view->set_current_page_forward;
 	} elsif($event->keyval == Gtk3::Gdk::KEY_Page_Up){
-		$self->set_current_page_back;
+		$self->view->set_current_page_back;
 	} elsif($event->keyval == Gtk3::Gdk::KEY_Up){
 		decrement_scroll($self->scrolled_window->get_vadjustment);
 	} elsif($event->keyval == Gtk3::Gdk::KEY_Down){
@@ -355,76 +355,6 @@ callback on_activate_page_number_entry_cb( $entry, $self ) {
 	}
 }
 
-=method set_current_page_forward
-
-  method set_current_page_forward()
-
-Increments the current page number if possible.
-
-=cut
-method set_current_page_forward() {
-	if( $self->can_move_to_next_page ) {
-		$self->view->page_number( $self->view->page_number + 1 );
-	}
-}
-
-=method set_current_page_back
-
-  method set_current_page_back()
-
-Decrements the current page number if possible.
-
-=cut
-method set_current_page_back() {
-	if( $self->can_move_to_previous_page ) {
-		$self->view->page_number( $self->view->page_number - 1 );
-	}
-}
-
-=method set_current_page_to_first
-
-  method set_current_page_to_first()
-
-Sets the page number to the first page of the document.
-
-=cut
-method set_current_page_to_first() {
-	$self->view->page_number( $self->view->document->first_page_number );
-}
-
-=method set_current_page_to_last
-
-  method set_current_page_to_last()
-
-Sets the current page to the last page of the document.
-
-=cut
-method set_current_page_to_last() {
-	$self->view->page_number( $self->view->document->last_page_number );
-}
-
-=method can_move_to_previous_page
-
-  method can_move_to_previous_page() :ReturnType(Bool)
-
-Predicate to check if we can decrement the current page number.
-
-=cut
-method can_move_to_previous_page() :ReturnType(Bool) {
-	$self->view->page_number > $self->view->document->first_page_number;
-}
-
-=method can_move_to_next_page
-
-  method can_move_to_next_page() :ReturnType(Bool)
-
-Predicate to check if we can increment the current page number.
-
-=cut
-method can_move_to_next_page() :ReturnType(Bool) {
-	$self->view->page_number < $self->view->document->last_page_number;
-}
-
 =method set_navigation_buttons_sensitivity
 
   set_navigation_buttons_sensitivity()
@@ -434,8 +364,8 @@ start of the document respectively.
 
 =cut
 method set_navigation_buttons_sensitivity() {
-	my $can_move_forward = $self->can_move_to_next_page;
-	my $can_move_back = $self->can_move_to_previous_page;
+	my $can_move_forward = $self->view->can_move_to_next_page;
+	my $can_move_back = $self->view->can_move_to_previous_page;
 
 	for my $button_name ( qw(button-last button-forward) ) {
 		$self->builder->get_object($button_name)

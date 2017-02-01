@@ -113,20 +113,20 @@ subtest 'Check the page entry' => sub {
 subtest 'Page number bound checking' => sub {
 	my ($app, $page_comp) = CurieTestHelper->create_app_with_document($cairo_doc);
 
-	$page_comp->set_current_page_to_first;
-	$page_comp->set_current_page_back;
+	$page_comp->view->set_current_page_to_first;
+	$page_comp->view->set_current_page_back;
 	is $page_comp->view->page_number, 1, "Can not go to previous page when on first page";
 
 	$page_comp->view->page_number(2);
-	$page_comp->set_current_page_back;
+	$page_comp->view->set_current_page_back;
 	is $page_comp->view->page_number, 1, "Can move to previous page when on second page";
 
 	$page_comp->view->page_number(2);
-	$page_comp->set_current_page_forward;
+	$page_comp->view->set_current_page_forward;
 	is $page_comp->view->page_number, 3, "Can move to next page when on second page";
 
-	$page_comp->set_current_page_to_last;
-	$page_comp->set_current_page_forward;
+	$page_comp->view->set_current_page_to_last;
+	$page_comp->view->set_current_page_forward;
 	is $page_comp->view->page_number, $cairo_doc->last_page_number, "Can not go to next page when on last page";
 };
 
