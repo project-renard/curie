@@ -72,8 +72,8 @@ Initialises the component's contained widgets and signals.
 
 =cut
 method BUILD(@) {
-	$self->view->_pd($self); # HACK TODO
 	# so that the widget can take input
+	$self->view->signal_connect( 'view-changed', sub { $self->refresh_drawing_area } );
 	$self->set_can_focus( TRUE );
 
 	$self->setup_button_events;

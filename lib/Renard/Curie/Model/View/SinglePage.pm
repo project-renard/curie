@@ -3,13 +3,14 @@ package Renard::Curie::Model::View::SinglePage;
 # ABSTRACT: TODO
 
 use Moo;
-use Renard::Curie::Types qw(RenderableDocumentModel RenderablePageModel
-	PageNumber ZoomLevel Bool InstanceOf);
+use Renard::Curie::Types qw(RenderablePageModel InstanceOf RenderableDocumentModel PageNumber ZoomLevel);
 
-# HACK TODO
-has _pd => (
-	is => 'rw',
-);
+use Glib::Object::Subclass
+	Glib::Object::,
+	signals => { 'view-changed' => {} },
+	;
+
+sub FOREIGNBUILDARGS { () }
 
 
 =attr document
@@ -64,7 +65,6 @@ method rendered_page() :ReturnType(RenderablePageModel) {
 }
 
 
-# HACK TODO
 =begin comment
 
 =method _trigger_page_number
@@ -78,10 +78,9 @@ the component to retrieve the new page and redraw.
 
 =cut
 method _trigger_page_number($new_page_number) {
-	$self->_pd->refresh_drawing_area;
+	$self->signal_emit( 'view-changed' );
 }
 
-# HACK TODO
 =begin comment
 
 =method _trigger_zoom_level
@@ -95,9 +94,14 @@ redraw the current page at the new zoom level.
 
 =cut
 method _trigger_zoom_level($new_zoom_level) {
-	$self->_pd->refresh_drawing_area;
+	$self->signal_emit( 'view-changed' );
 }
 
+=method draw_page
+
+TODO
+
+=cut
 method draw_page(
 	(InstanceOf['Gtk3::DrawingArea']) $widget,
 	(InstanceOf['Cairo::Context']) $cr
