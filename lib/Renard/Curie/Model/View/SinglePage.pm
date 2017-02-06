@@ -10,7 +10,23 @@ use Glib::Object::Subclass
 	signals => { 'view-changed' => {} },
 	;
 
-sub FOREIGNBUILDARGS { () }
+=head1 SIGNALS
+
+=for :list
+* C<view-changed>: called when a view property is changed.
+
+=cut
+
+=classmethod FOREIGNBUILDARGS
+
+  classmethod FOREIGNBUILDARGS(@)
+
+Initialises the L<Glib::Object> super-class.
+
+=cut
+classmethod FOREIGNBUILDARGS(@) {
+	return ();
+}
 
 
 =attr document
