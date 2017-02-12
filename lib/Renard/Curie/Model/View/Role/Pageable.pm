@@ -3,7 +3,34 @@ package Renard::Curie::Model::View::Role::Pageable;
 # ABSTRACT: TODO
 
 use Moo::Role;
-use Renard::Curie::Types qw(Bool);
+use Renard::Curie::Types qw(Bool PageNumber);
+
+=attr page_number
+
+A L<PageNumber|Renard:Curie::Types/PageNumber> for the current page being
+drawn.
+
+=cut
+has page_number => (
+	is => 'rw',
+	isa => PageNumber,
+	default => 1,
+	trigger => 1 # _trigger_page_number
+	);
+
+=begin comment
+
+=method _trigger_page_number
+
+  method _trigger_page_number($new_page_number)
+
+Called whenever the L</page_number> is changed. This allows for telling
+the component to retrieve the new page and redraw.
+
+=end comment
+
+=cut
+requires '_trigger_page_number';
 
 =method set_current_page_to_first
 
