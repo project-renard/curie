@@ -9,6 +9,7 @@ use Renard::Curie::Types qw(RenderableDocumentModel RenderablePageModel
 	PageNumber ZoomLevel Bool InstanceOf);
 use Function::Parameters;
 use Renard::Curie::Model::View::SinglePage;
+use Renard::Curie::Model::View::ContinuousPage;
 
 =attr view
 
@@ -45,7 +46,7 @@ around BUILDARGS => sub {
 
 	if( exists $args{document} ) {
 		my $doc = delete $args{document};
-		$args{view} = Renard::Curie::Model::View::SinglePage->new(
+		$args{view} = Renard::Curie::Model::View::ContinuousPage->new(
 			document => $doc,
 		);
 	}

@@ -56,6 +56,12 @@ method _build_outline() {
 	return Renard::Curie::Model::Outline->new( items => $outline_data );
 }
 
+method get_bounds() {
+	my $info = Renard::Curie::Data::PDF::get_mutool_page_info_xml(
+		$self->filename
+	);
+}
+
 with qw(
 	Renard::Curie::Model::Document::Role::FromFile
 	Renard::Curie::Model::Document::Role::Pageable
