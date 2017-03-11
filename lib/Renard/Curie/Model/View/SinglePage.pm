@@ -3,7 +3,7 @@ package Renard::Curie::Model::View::SinglePage;
 # ABSTRACT: TODO
 
 use Moo;
-use Renard::Curie::Types qw(RenderablePageModel InstanceOf RenderableDocumentModel PageNumber ZoomLevel);
+use Renard::Curie::Types qw(RenderablePageModel InstanceOf);
 
 use Glib::Object::Subclass
 	Glib::Object::,
@@ -70,6 +70,23 @@ method draw_page(
 	$widget->set_size_request(
 		$rp->width,
 		$rp->height );
+}
+
+method update_scroll_adjustment(
+	(InstanceOf['Gtk3::Adjustment']) $hadjustment,
+	(InstanceOf['Gtk3::Adjustment']) $vadjustment,
+	) {
+
+	say join "; ",
+		map {
+			my $list = join ", ", (
+				$_->get_lower,
+				$_->get_value,
+				$_->get_value + $_->get_page_size,
+				$_->get_upper,
+			);
+			"[ $list ]";
+		} ($hadjustment, $vadjustment);
 }
 
 with qw(

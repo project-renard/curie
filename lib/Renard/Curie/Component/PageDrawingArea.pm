@@ -4,7 +4,12 @@ package Renard::Curie::Component::PageDrawingArea;
 
 use Moo;
 use Glib 'TRUE', 'FALSE';
-use Glib::Object::Subclass 'Gtk3::Bin';
+use Glib::Object::Subclass
+	'Gtk3::Bin',
+	signals => {
+		'update-scroll-adjustment' => {},
+	},
+	;
 use Renard::Curie::Types qw(RenderableDocumentModel RenderablePageModel
 	PageNumber ZoomLevel Bool InstanceOf);
 use Function::Parameters;
@@ -41,12 +46,19 @@ has scrolled_window => (
 	isa => InstanceOf['Gtk3::ScrolledWindow'],
 );
 
+=head1 SIGNALS
+
+=for :list
+* C<update-scroll-adjustment>: called when the widget has been horizontally or vertically scrolled
+
+=cut
+
 around BUILDARGS => sub {
 	my ( $orig, $class, %args ) = @_;
 
 	if( exists $args{document} ) {
 		my $doc = delete $args{document};
-		$args{view} = Renard::Curie::Model::View::ContinuousPage->new(
+		$args{view} = Renard::Curie::Model::View::SinglePage->new(
 			document => $doc,
 		);
 	}
@@ -74,7 +86,18 @@ Initialises the component's contained widgets and signals.
 =cut
 method BUILD(@) {
 	# so that the widget can take input
-	$self->view->signal_connect( 'view-changed', sub { $self->refresh_drawing_area } );
+	$self->view->signal_connect( 'view-changed', sub {
+		$self->signal_emit('update-scroll-adjustment');
+		$self->refresh_drawing_area;
+	} );
+	$self->signal_connect( 'update-scroll-adjustment', sub {
+		if( $self->view->can('update_scroll_adjustment') ) {
+			$self->view->update_scroll_adjustment(
+				$self->scrolled_window->get_hadjustment,
+				$self->scrolled_window->get_vadjustment,
+			);
+		}
+	});
 	$self->set_can_focus( TRUE );
 
 	$self->setup_button_events;
@@ -197,6 +220,18 @@ method setup_drawing_area() {
 	$scrolled_window->add($drawing_area);
 	$scrolled_window->set_policy( 'automatic', 'automatic');
 	$self->scrolled_window($scrolled_window);
+
+	my @adjustments = (
+		$self->scrolled_window->get_hadjustment,
+		$self->scrolled_window->get_vadjustment,
+	);
+	my $callback = fun($adjustment) {
+		$self->signal_emit('update-scroll-adjustment');
+	};
+	for my $adjustment (@adjustments) {
+		$adjustment->signal_connect( 'value-changed' => $callback );
+		$adjustment->signal_connect( 'changed' => $callback );
+	}
 
 	my $vbox = $self->builder->get_object('page-drawing-component');
 	$vbox->pack_start( $scrolled_window, TRUE, TRUE, 0);
