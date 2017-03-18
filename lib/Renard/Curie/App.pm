@@ -19,6 +19,7 @@ use Renard::Curie::Component::FileChooser;
 use Renard::Curie::Component::AccelMap;
 
 use Log::Any::Adapter;
+use MooX::Role::Logger ();
 use Getopt::Long::Descriptive;
 
 use Renard::Curie::Types qw(InstanceOf Path Str DocumentModel);
