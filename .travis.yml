@@ -15,20 +15,20 @@ matrix:
     - perl: "5.16"
       os: linux
       dist: trusty
-      sudo: required
+      sudo: false
     - perl: "5.18"
       env: COVERAGE=1   # enables coverage+coveralls reporting
       os: linux
       dist: trusty
-      sudo: required
+      sudo: false
     - perl: "5.20"
       os: linux
       dist: trusty
-      sudo: required
+      sudo: false
     - perl: "blead"
       os: linux
       dist: trusty
-      sudo: required
+      sudo: false
     - perl: "system"
       os: osx
   allow_failures:
