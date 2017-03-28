@@ -12,7 +12,7 @@ use Renard::Curie::App;
 
 use Log::Any qw($log);
 
-subtest "Check log buffer" => fun {
+subtest "Check log buffer" => sub {
 	plan tests => 3;
 	my $app = Renard::Curie::App->new;
 

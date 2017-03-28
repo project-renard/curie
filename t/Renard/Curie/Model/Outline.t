@@ -42,7 +42,7 @@ fun walk_rows($store, $treeiter, $level, $callback) {
 	}
 }
 
-subtest 'Outline item type-checking' => fun {
+subtest 'Outline item type-checking' => sub {
 	my @valid_outlines = (
 		[
 			{ level => 0, text  => 'Chapter 1', page  => 20, },
@@ -82,7 +82,7 @@ subtest 'Outline item type-checking' => fun {
 	}
 };
 
-subtest 'Check that the tree store matches the items' => fun {
+subtest 'Check that the tree store matches the items' => sub {
 	my $doc = Renard::Curie::Model::Document::PDF
 		->new( filename => $pdf_ref_path );
 	my $outline = $doc->outline;

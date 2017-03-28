@@ -113,7 +113,7 @@ the document C<$document>.
 =cut
 classmethod run_app_with_document( (DocumentModel) $document, (CodeRef) $callback) :ReturnType(CodeRef) {
 	my ($app, $page_component) = $class->create_app_with_document($document);
-	return fun {
+	return sub {
 		$callback->( $app, $page_component );
 
 		$app->run;
