@@ -133,34 +133,34 @@ method _build_recent_chooser() :ReturnType(InstanceOf['Gtk3::RecentChooserMenu']
 # Callbacks {{{
 =callback on_menu_file_open_activate_cb
 
-  fun on_menu_file_open_activate_cb($event, $self)
+  callback on_menu_file_open_activate_cb($event, $self)
 
 Callback for the C<< File -> Open >> menu item.
 
 =cut
-fun on_menu_file_open_activate_cb($event, $self) {
+callback on_menu_file_open_activate_cb($event, $self) {
 	Renard::Curie::Helper->callback( $self->app, on_open_file_dialog_cb => $event );
 }
 
 =callback on_menu_file_quit_activate_cb
 
-  fun on_menu_file_quit_activate_cb($event, $self)
+  callback on_menu_file_quit_activate_cb($event, $self)
 
 Callback for the C<< File -> Quit >> menu item.
 
 =cut
-fun on_menu_file_quit_activate_cb($event, $self) {
+callback on_menu_file_quit_activate_cb($event, $self) {
 	Renard::Curie::Helper->callback( $self->app, on_application_quit_cb => $event );
 }
 
 =callback on_menu_file_recentfiles_item_activated_cb
 
-  fun on_menu_file_recentfiles_item_activated_cb( (InstanceOf['Gtk3::RecentChooserMenu']) $recent_chooser, $self )
+  callback on_menu_file_recentfiles_item_activated_cb( (InstanceOf['Gtk3::RecentChooserMenu']) $recent_chooser, $self )
 
 Callback for items under the C<< File -> Recent files >> sub-menu.
 
 =cut
-fun on_menu_file_recentfiles_item_activated_cb( (InstanceOf['Gtk3::RecentChooserMenu']) $recent_chooser, $self ) {
+callback on_menu_file_recentfiles_item_activated_cb( (InstanceOf['Gtk3::RecentChooserMenu']) $recent_chooser, $self ) {
 	my $selected_item = $recent_chooser->get_current_item;
 	my $uri = $selected_item->get_uri;
 	my $file = URI->new( $uri )->file;
@@ -169,14 +169,14 @@ fun on_menu_file_recentfiles_item_activated_cb( (InstanceOf['Gtk3::RecentChooser
 
 =callback on_menu_help_logwin_activate_cb
 
-  fun on_menu_help_logwin_activate_cb($event, $self)
+  callback on_menu_help_logwin_activate_cb($event, $self)
 
 Callback for C<< Help -> Message log >> menu item.
 
 Displays the Message log window.
 
 =cut
-fun on_menu_help_logwin_activate_cb($event, $self) {
+callback on_menu_help_logwin_activate_cb($event, $self) {
 	$self->app->log_window->show_log_window;
 }
 
@@ -187,7 +187,7 @@ Callback for the C<< View -> Sidebar >> menu item.
 This toggles whether or not the outline sidebar is visible.
 
 =cut
-fun on_menu_view_sidebar_cb($event_menu_item, $self) {
+callback on_menu_view_sidebar_cb($event_menu_item, $self) {
 	$self->app->outline->reveal( $event_menu_item->get_active );
 }
 
@@ -195,12 +195,12 @@ fun on_menu_view_sidebar_cb($event_menu_item, $self) {
 
 Callback for zoom level menu items under the C<< View -> Zoom >> submenu.
 
-  fun on_menu_view_zoom_item_activate_cb($event, $data)
+  callback on_menu_view_zoom_item_activate_cb($event, $data)
 
 where C<$data> is an C<ArrayRef> that contains C<< [ $self, $zoom_level ] >>.
 
 =cut
-fun on_menu_view_zoom_item_activate_cb($event, $data) {
+callback on_menu_view_zoom_item_activate_cb($event, $data) {
 	my ($self, $zoom_level) = @$data;
 	$self->app->page_document_component->zoom_level( $zoom_level );
 }

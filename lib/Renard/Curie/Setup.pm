@@ -30,6 +30,7 @@ sub import {
 			fun         => { defaults => 'function_lax'   , %type_tiny_fp_check },
 			classmethod => { defaults => 'classmethod_lax', %type_tiny_fp_check },
 			method      => { defaults => 'method_lax'     , %type_tiny_fp_check },
+			callback    => { defaults => 'function_lax'   , %type_tiny_fp_check, check_argument_count => 0 },
 		}
 	);
 	Return::Type->import::into( $target );

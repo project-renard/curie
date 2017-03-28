@@ -110,13 +110,13 @@ method _trigger_model($new_model) {
 
 =callback on_tree_view_row_activate_cb
 
-  fun on_tree_view_row_activate_cb( $tree_view, $path, $column, $self )
+  callback on_tree_view_row_activate_cb( $tree_view, $path, $column, $self )
 
 Callback that navigates the current document to the position that corresponds
 to a row of the tree that has been clicked.
 
 =cut
-fun on_tree_view_row_activate_cb( $tree_view, $path, $column, $self ) {
+callback on_tree_view_row_activate_cb( $tree_view, $path, $column, $self ) {
 	# NOTE : This needs more error checking.
 
 	my $pd = $self->app->page_document_component;
