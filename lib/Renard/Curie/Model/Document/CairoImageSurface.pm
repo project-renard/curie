@@ -33,7 +33,7 @@ Returns a new L<Renard::Curie::Model::Page::CairoImageSurface> object.
 See L<Renard::Curie::Model::Document::Role::Renderable/get_rendered_page> for more details.
 
 =cut
-method get_rendered_page( (PageNumber) :$page_number ) {
+method get_rendered_page( (PageNumber) :$page_number, @) {
 	my $index = $page_number - 1;
 
 	return Renard::Curie::Model::Page::CairoImageSurface->new(
