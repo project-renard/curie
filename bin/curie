@@ -46,4 +46,4 @@ use lib "$FindBin::Bin/../lib";
 use Renard::Curie::Setup;
 use Renard::Curie::App;
 
-Renard::Curie::App::main;
+Renard::Curie::App->main;

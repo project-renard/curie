@@ -237,8 +237,8 @@ fun _get_version() :ReturnType(Str) {
 Application entry point.
 
 =cut
-fun main() {
-	my $self = __PACKAGE__->new;
+method main() {
+	$self = __PACKAGE__->new unless ref $self;
 	$self->process_arguments;
 	$self->run;
 }
