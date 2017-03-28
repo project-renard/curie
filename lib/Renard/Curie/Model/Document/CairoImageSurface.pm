@@ -20,7 +20,7 @@ has image_surfaces => (
 	required => 1
 );
 
-method _build_last_page_number :ReturnType(PageNumber) {
+method _build_last_page_number() :ReturnType(PageNumber) {
 	return scalar @{ $self->image_surfaces };
 }
 

@@ -20,15 +20,17 @@ contents of C<ui_file> will be C<lib/Foo/Bar.glade>.
 See the C<ui_file> attribute in L<Renard::Curie::Component::Role::FromBuilder>.
 
 =cut
-has ui_file => ( is => 'ro',
+has ui_file => (
+	is => 'ro',
 	isa => File,
 	coerce => 1,
-	default => method {
+	default => method() {
 		my $module_name = ref $self;
 		my $package_last_component = (split(/::/, $module_name))[-1];
 		my $module_file = find_installed($module_name);
 		File::Spec->catfile(dirname($module_file), "@{[ $package_last_component ]}.glade")
-	} );
+	}
+);
 
 1;
 

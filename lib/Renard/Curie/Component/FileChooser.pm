@@ -26,7 +26,7 @@ has pdf_filter => (
 	isa => InstanceOf['Gtk3::FileFilter'],
 );
 
-method _build_all_filter :ReturnType(InstanceOf['Gtk3::FileFilter']) {
+method _build_all_filter() :ReturnType(InstanceOf['Gtk3::FileFilter']) {
 	my $filter = Gtk3::FileFilter->new;
 	$filter->set_name("All files");
 	$filter->add_pattern("*");
@@ -34,7 +34,7 @@ method _build_all_filter :ReturnType(InstanceOf['Gtk3::FileFilter']) {
 	return $filter;
 }
 
-method _build_pdf_filter :ReturnType(InstanceOf['Gtk3::FileFilter']) {
+method _build_pdf_filter() :ReturnType(InstanceOf['Gtk3::FileFilter']) {
 	my $filter = Gtk3::FileFilter->new;
 	$filter->set_name("PDF files");
 	$filter->add_mime_type("application/pdf");

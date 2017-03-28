@@ -38,7 +38,7 @@ has log_messages => (
 Initialises the logging window.
 
 =cut
-method BUILD {
+method BUILD(@) {
 	my $log_textview = $self->builder->get_object('log-text');
 	if( $log_textview->can('set_monospace') ) {
 		$log_textview->set_monospace(TRUE);

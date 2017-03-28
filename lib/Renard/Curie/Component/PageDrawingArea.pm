@@ -96,7 +96,7 @@ classmethod FOREIGNBUILDARGS(@) {
 Initialises the component's contained widgets and signals.
 
 =cut
-method BUILD {
+method BUILD(@) {
 	# so that the widget can take input
 	$self->set_can_focus( TRUE );
 
@@ -351,7 +351,7 @@ the component to retrieve the new page and redraw.
 =end comment
 
 =cut
-method _trigger_current_page_number {
+method _trigger_current_page_number(@) {
 	$self->refresh_drawing_area;
 }
 
@@ -363,7 +363,7 @@ Called whenever the L</zoom_level> is changed. This tells the component to
 redraw the current page at the new zoom level.
 
 =cut
-method _trigger_zoom_level {
+method _trigger_zoom_level() {
 	$self->refresh_drawing_area;
 }
 

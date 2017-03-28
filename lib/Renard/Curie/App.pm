@@ -32,7 +32,7 @@ A L<Gtk3::Window> that contains the main window for the application.
 =cut
 has window => ( is => 'lazy' );
 
-method _build_window :ReturnType(InstanceOf['Gtk3::Window']) {
+method _build_window() :ReturnType(InstanceOf['Gtk3::Window']) {
 	my $window = $self->builder->get_object('main-window');
 }
 
@@ -172,7 +172,7 @@ method run() {
 Initialises the application and sets up signals.
 
 =cut
-method BUILD {
+method BUILD(@) {
 	$self->setup_gtk;
 
 	$self->setup_window;

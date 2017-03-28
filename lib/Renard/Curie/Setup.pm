@@ -27,9 +27,9 @@ sub import {
 	my %type_tiny_fp_check = ( reify_type => sub { Type::Utils::dwim_type($_[0]) }, );
 	Function::Parameters->import::into( $target,
 		{
-			fun         => { defaults => 'function_strict'   , %type_tiny_fp_check },
-			classmethod => { defaults => 'classmethod_strict', %type_tiny_fp_check },
-			method      => { defaults => 'method_strict'     , %type_tiny_fp_check },
+			fun         => { defaults => 'function_lax'   , %type_tiny_fp_check },
+			classmethod => { defaults => 'classmethod_lax', %type_tiny_fp_check },
+			method      => { defaults => 'method_lax'     , %type_tiny_fp_check },
 		}
 	);
 	Return::Type->import::into( $target );

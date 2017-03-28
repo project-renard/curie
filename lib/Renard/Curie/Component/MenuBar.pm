@@ -49,7 +49,7 @@ classmethod FOREIGNBUILDARGS(@) {
 Initialises the menu bar signals.
 
 =cut
-method BUILD {
+method BUILD(@) {
 	# Accelerator group
 	$self->app->window->add_accel_group(
 		$self->builder->get_object('menu-accel-group')
@@ -121,11 +121,11 @@ method BUILD {
 	);
 }
 
-method _build_recent_manager :ReturnType(InstanceOf['Gtk3::RecentManager']) {
+method _build_recent_manager() :ReturnType(InstanceOf['Gtk3::RecentManager']) {
 	Gtk3::RecentManager::get_default;
 }
 
-method _build_recent_chooser :ReturnType(InstanceOf['Gtk3::RecentChooserMenu']) {
+method _build_recent_chooser() :ReturnType(InstanceOf['Gtk3::RecentChooserMenu']) {
 	my $recent_chooser = Gtk3::RecentChooserMenu->new_for_manager( $self->recent_manager );
 }
 

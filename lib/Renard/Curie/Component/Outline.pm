@@ -50,7 +50,7 @@ This class is a subclass of L<Gtk3::Revealer> which allows the visible state to
 be toggled.
 
 =cut
-method BUILD {
+method BUILD(@) {
 	my $frame = Gtk3::Frame->new('Outline');
 	my $scrolled_window = Gtk3::ScrolledWindow->new;
 	$scrolled_window->set_vexpand(TRUE);
