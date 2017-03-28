@@ -12,7 +12,6 @@ use URI::file;
 use List::AllUtils qw(first);
 use Test::MockModule;
 use Test::MockObject;
-use Function::Parameters;
 
 subtest 'Check that the menu item File -> Open exists' => sub {
 	require Renard::Curie::App;

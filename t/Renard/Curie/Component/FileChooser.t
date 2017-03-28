@@ -10,7 +10,6 @@ use Renard::Curie::Helper;
 use Renard::Curie::App;
 use Renard::Curie::Component::FileChooser;
 use Test::MockModule;
-use Function::Parameters;
 
 subtest 'Check that the open file dialog with filters is created' => sub {
 	my $app = Renard::Curie::App->new;

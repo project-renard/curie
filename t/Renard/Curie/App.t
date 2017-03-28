@@ -9,7 +9,6 @@ use CurieTestHelper;
 use Renard::Curie::Setup;
 use Renard::Curie::App;
 use File::Temp;
-use Function::Parameters;
 use version 0.77 ();
 
 subtest "Process arguments" => sub {

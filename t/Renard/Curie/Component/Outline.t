@@ -7,7 +7,6 @@ use CurieTestHelper;
 
 use Renard::Curie::Setup;
 use Renard::Curie::App;
-use Function::Parameters;
 
 my $pdf_ref_path = try {
 	CurieTestHelper->test_data_directory->child(qw(PDF Adobe pdf_reference_1-7.pdf));

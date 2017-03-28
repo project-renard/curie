@@ -6,7 +6,6 @@ use lib 't/lib';
 use CurieTestHelper;
 
 use Renard::Curie::Setup;
-use Function::Parameters;
 use Glib 'TRUE', 'FALSE';
 use Renard::Curie::App;
 

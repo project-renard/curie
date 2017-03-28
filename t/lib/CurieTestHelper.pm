@@ -1,6 +1,5 @@
 use Renard::Curie::Setup;
 package CurieTestHelper;
-use Function::Parameters;
 use Renard::Curie::Types qw(CodeRef InstanceOf Maybe PositiveInt DocumentModel Dir Tuple);
 
 =func test_data_directory

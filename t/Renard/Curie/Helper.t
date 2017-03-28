@@ -9,9 +9,6 @@ use Renard::Curie::Setup;
 # need to import later --- after we initialise the data dirs
 use Renard::Curie::Helper ();
 
-use Function::Parameters;
-
-
 my $temp = Path::Tiny->tempdir;
 # Add to XDG_DATA_DIRS early so that it is available for system data dir lookup.
 $ENV{XDG_DATA_DIRS} .= join(":", "/usr/local/share", "/usr/share", $temp);

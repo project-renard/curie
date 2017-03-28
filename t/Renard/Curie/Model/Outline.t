@@ -8,7 +8,6 @@ use CurieTestHelper;
 use Renard::Curie::Setup;
 use Renard::Curie::Model::Outline;
 use Renard::Curie::Model::Document::PDF;
-use Function::Parameters;
 
 my $pdf_ref_path = try {
 	CurieTestHelper->test_data_directory->child(qw(PDF Adobe pdf_reference_1-7.pdf));

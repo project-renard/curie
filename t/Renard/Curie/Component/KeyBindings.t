@@ -8,7 +8,6 @@ use Renard::Curie::App;
 use Renard::Curie::Model::Document::PDF;
 use CurieTestHelper;
 use Renard::Curie::Types qw(Int InstanceOf);
-use Function::Parameters;
 
 my $cairo_doc = CurieTestHelper->create_cairo_document;
 
