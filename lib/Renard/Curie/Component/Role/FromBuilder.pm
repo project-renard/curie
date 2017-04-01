@@ -25,11 +25,11 @@ has builder => (
 	isa => InstanceOf['Gtk3::Builder'],
 );
 
-method _build_builder :ReturnType(InstanceOf['Gtk3::Builder']) {
+method _build_builder() :ReturnType(InstanceOf['Gtk3::Builder']) {
 	return Gtk3::Builder->new;
 }
 
-before BUILD => method {
+before BUILD => method(@) {
 	$self->builder->add_from_file( $self->ui_file );
 	$self->builder->connect_signals;
 };

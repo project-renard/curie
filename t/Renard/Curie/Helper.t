@@ -9,9 +9,6 @@ use Renard::Curie::Setup;
 # need to import later --- after we initialise the data dirs
 use Renard::Curie::Helper ();
 
-use Function::Parameters;
-
-
 my $temp = Path::Tiny->tempdir;
 # Add to XDG_DATA_DIRS early so that it is available for system data dir lookup.
 $ENV{XDG_DATA_DIRS} .= join(":", "/usr/local/share", "/usr/share", $temp);
@@ -20,7 +17,7 @@ Gtk3::init;
 # we can now import
 Renard::Curie::Helper->import;
 
-subtest "Use helper functions" => fun {
+subtest "Use helper functions" => sub {
 	my $val = Renard::Curie::Helper->gval(int => 512);
 	isa_ok( $val, 'Glib::Object::Introspection::GValueWrapper' );
 
@@ -29,22 +26,22 @@ subtest "Use helper functions" => fun {
 	is( $enum, 0 );
 };
 
-subtest "Theming" => fun {
+subtest "Theming" => sub {
 	plan skip_all => "Do not need to test theming on Windows"
 		unless Renard::Curie::Helper::_can_set_theme();
 
 	my $settings = Gtk3::Settings::get_default;
 	my $default_theme = 'Adwaita';
 
-	subtest "Check that system data dirs are set properly" => fun {
+	subtest "Check that system data dirs are set properly" => sub {
 		my @data_dirs = Glib::get_system_data_dirs();
 		cmp_deeply( \@data_dirs, supersetof("$temp"), 'Has the temprary data directory');
 	};
 
-	subtest "Set theme" => fun {
+	subtest "Set theme" => sub {
 		my $theme_property = 'gtk-theme-name';
 
-		subtest "Try non-existent theme" => fun {
+		subtest "Try non-existent theme" => sub {
 			$settings->set_property($theme_property, $default_theme);
 
 			my $try_theme = 'Does-Not-Exist';
@@ -53,7 +50,7 @@ subtest "Theming" => fun {
 				$try_theme, 'Theme has not changed' );
 		};
 
-		subtest "Try existing theme" => fun {
+		subtest "Try existing theme" => sub {
 			$settings->set_property($theme_property, $default_theme);
 
 			my $try_theme = 'My-Custom-Theme';
@@ -80,10 +77,10 @@ EOF
 		}
 	};
 
-	subtest "Set icon-theme" => fun {
+	subtest "Set icon-theme" => sub {
 		my $icon_theme_property = 'gtk-icon-theme-name';
 
-		subtest "Try non-existent icon theme" => fun {
+		subtest "Try non-existent icon theme" => sub {
 			$settings->set_property($icon_theme_property, $default_theme);
 
 			my $try_icon_theme = 'Does-Not-Exist';
@@ -92,7 +89,7 @@ EOF
 				$try_icon_theme, 'Icon theme has not changed' );
 		};
 
-		subtest "Try existing icon theme" => fun {
+		subtest "Try existing icon theme" => sub {
 			$settings->set_property($icon_theme_property, $default_theme);
 
 			my $try_theme = 'My-Custom-Icon-Theme';

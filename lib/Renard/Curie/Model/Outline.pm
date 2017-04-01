@@ -101,7 +101,7 @@ has tree_store => (
 );
 
 
-method _build_tree_store {
+method _build_tree_store() {
 	# load Gtk3 dynamically if used outside Gtk3 context
 	require Gtk3;
 	Gtk3->import(qw(-init));

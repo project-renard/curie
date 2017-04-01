@@ -10,7 +10,7 @@ use Function::Parameters;
 Constructor that sets up the keybindings for the default accelerator map.
 
 =cut
-method BUILD {
+method BUILD(@) {
 	Gtk3::AccelMap::add_entry(
 		'<Curie-Main>/File/Open',
 		Gtk3::Gdk::KEY_O,

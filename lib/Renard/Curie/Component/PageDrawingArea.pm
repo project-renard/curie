@@ -96,7 +96,7 @@ classmethod FOREIGNBUILDARGS(@) {
 Initialises the component's contained widgets and signals.
 
 =cut
-method BUILD {
+method BUILD(@) {
 	# so that the widget can take input
 	$self->set_can_focus( TRUE );
 
@@ -135,49 +135,49 @@ method setup_button_events() {
 
 =callback on_clicked_button_first_cb
 
-  fun on_clicked_button_first_cb($button, $self)
+  callback on_clicked_button_first_cb($button, $self)
 
 Callback for when the "First" button is pressed.
 See L</set_current_page_to_first>.
 
 =cut
-fun on_clicked_button_first_cb($button, $self) {
+callback on_clicked_button_first_cb($button, $self) {
 	$self->set_current_page_to_first;
 }
 
 =callback on_clicked_button_last_cb
 
-  fun on_clicked_button_last_cb($button, $self)
+  callback on_clicked_button_last_cb($button, $self)
 
 Callback for when the "Last" button is pressed.
 See L</set_current_page_to_last>.
 
 =cut
-fun on_clicked_button_last_cb($button, $self) {
+callback on_clicked_button_last_cb($button, $self) {
 	$self->set_current_page_to_last;
 }
 
 =callback on_clicked_button_forward_cb
 
-  fun on_clicked_button_forward_cb($button, $self)
+  callback on_clicked_button_forward_cb($button, $self)
 
 Callback for when the "Forward" button is pressed.
 See L</set_current_page_forward>.
 
 =cut
-fun on_clicked_button_forward_cb($button, $self) {
+callback on_clicked_button_forward_cb($button, $self) {
 	$self->set_current_page_forward;
 }
 
 =callback on_clicked_button_back_cb
 
-  fun on_clicked_button_back_cb($button, $self)
+  callback on_clicked_button_back_cb($button, $self)
 
 Callback for when the "Back" button is pressed.
 See L</set_current_page_back>.
 
 =cut
-fun on_clicked_button_back_cb($button, $self) {
+callback on_clicked_button_back_cb($button, $self) {
 	$self->set_current_page_back;
 }
 
@@ -204,7 +204,7 @@ Sets up the L</drawing_area> so that it draws the current page.
 method setup_drawing_area() {
 	my $drawing_area = Gtk3::DrawingArea->new();
 	$self->drawing_area( $drawing_area );
-	$drawing_area->signal_connect( draw => fun (
+	$drawing_area->signal_connect( draw => callback(
 			(InstanceOf['Gtk3::DrawingArea']) $widget,
 			(InstanceOf['Cairo::Context']) $cr) {
 		my $rp = $self->document->get_rendered_page(
@@ -254,13 +254,13 @@ method setup_keybindings() {
 
 =callback on_key_press_event_cb
 
-  fun on_key_press_event_cb($window, $event, $self)
+  callback on_key_press_event_cb($window, $event, $self)
 
 Callback that responds to specific key events and dispatches to the appropriate
 handlers.
 
 =cut
-fun on_key_press_event_cb($window, $event, $self) {
+callback on_key_press_event_cb($window, $event, $self) {
 	if($event->keyval == Gtk3::Gdk::KEY_Page_Down){
 		$self->set_current_page_forward;
 	} elsif($event->keyval == Gtk3::Gdk::KEY_Page_Up){
@@ -351,7 +351,7 @@ the component to retrieve the new page and redraw.
 =end comment
 
 =cut
-method _trigger_current_page_number {
+method _trigger_current_page_number($new_page_number) {
 	$self->refresh_drawing_area;
 }
 
@@ -363,18 +363,18 @@ Called whenever the L</zoom_level> is changed. This tells the component to
 redraw the current page at the new zoom level.
 
 =cut
-method _trigger_zoom_level {
+method _trigger_zoom_level($new_zoom_level) {
 	$self->refresh_drawing_area;
 }
 
 =callback on_activate_page_number_entry_cb
 
-  fun on_activate_page_number_entry_cb( $entry, $self )
+  callback on_activate_page_number_entry_cb( $entry, $self )
 
 Callback that is called when text has been entered into the page number entry.
 
 =cut
-fun on_activate_page_number_entry_cb( $entry, $self ) {
+callback on_activate_page_number_entry_cb( $entry, $self ) {
 	my $text = $entry->get_text;
 	if ($text =~ /^[0-9]+$/ and $text <= $self->document->last_page_number
 			and $text >= $self->document->first_page_number) {

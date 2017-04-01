@@ -9,11 +9,10 @@ use CurieTestHelper;
 use Renard::Curie::Setup;
 use Renard::Curie::App;
 use File::Temp;
-use Function::Parameters;
 use version 0.77 ();
 
-subtest "Process arguments" => fun {
-	subtest "Process arguments for PDF file" => fun {
+subtest "Process arguments" => sub {
+	subtest "Process arguments for PDF file" => sub {
 		my $pdf_ref_path = try {
 			CurieTestHelper->test_data_directory->child(qw(PDF Adobe pdf_reference_1-7.pdf));
 		} catch {
@@ -26,7 +25,7 @@ subtest "Process arguments" => fun {
 		undef $app;
 	};
 
-	subtest "Process no arguments" => fun {
+	subtest "Process no arguments" => sub {
 		my $app = Renard::Curie::App->new;
 		local @ARGV = ();
 		lives_ok {
@@ -35,7 +34,7 @@ subtest "Process arguments" => fun {
 		undef $app;
 	};
 
-	subtest "Process arguments for non-existent file" => fun {
+	subtest "Process arguments for non-existent file" => sub {
 		my $non_existent_filename = File::Temp::tmpnam();
 		local @ARGV = ($non_existent_filename);
 		my $app = Renard::Curie::App->new;
@@ -45,7 +44,7 @@ subtest "Process arguments" => fun {
 		undef $app;
 	};
 
-	subtest "Process --help flag" => fun {
+	subtest "Process --help flag" => sub {
 		my $app = Renard::Curie::App->new;
 		local @ARGV = qw(--help);
 		trap { $app->process_arguments; };
@@ -54,7 +53,7 @@ subtest "Process arguments" => fun {
 		undef $app;
 	};
 
-	subtest "Process --version flag" => fun {
+	subtest "Process --version flag" => sub {
 		my $app = Renard::Curie::App->new;
 		local @ARGV = qw(--version);
 		trap { $app->process_arguments; };
@@ -63,7 +62,7 @@ subtest "Process arguments" => fun {
 		undef $app;
 	};
 
-	subtest "Process --short-version flag" => fun {
+	subtest "Process --short-version flag" => sub {
 		my $app = Renard::Curie::App->new;
 		local @ARGV = qw(--short-version);
 		trap { $app->process_arguments; };
@@ -81,11 +80,11 @@ subtest "Process arguments" => fun {
 	};
 };
 
-subtest "Run app and destroy" => fun {
+subtest "Run app and destroy" => sub {
 	plan tests => 2;
 	my $app = Renard::Curie::App->new;
 
-	Glib::Timeout->add(100, fun {
+	Glib::Timeout->add(100, sub {
 		cmp_ok( Gtk3::main_level, '>', 0, 'Main loop is running');
 		$app->window->destroy;
 	});
@@ -97,7 +96,7 @@ subtest "Run app and destroy" => fun {
 	undef $app;
 };
 
-subtest "Open document twice" => fun {
+subtest "Open document twice" => sub {
 	my $app = Renard::Curie::App->new;
 	my $cairo_doc_a = CurieTestHelper->create_cairo_document;
 	my $cairo_doc_b = CurieTestHelper->create_cairo_document;

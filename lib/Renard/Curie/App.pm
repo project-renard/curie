@@ -32,7 +32,7 @@ A L<Gtk3::Window> that contains the main window for the application.
 =cut
 has window => ( is => 'lazy' );
 
-method _build_window :ReturnType(InstanceOf['Gtk3::Window']) {
+method _build_window() :ReturnType(InstanceOf['Gtk3::Window']) {
 	my $window = $self->builder->get_object('main-window');
 }
 
@@ -172,7 +172,7 @@ method run() {
 Initialises the application and sets up signals.
 
 =cut
-method BUILD {
+method BUILD(@) {
 	$self->setup_gtk;
 
 	$self->setup_window;
@@ -237,8 +237,8 @@ fun _get_version() :ReturnType(Str) {
 Application entry point.
 
 =cut
-fun main() {
-	my $self = __PACKAGE__->new;
+method main() {
+	$self = __PACKAGE__->new unless ref $self;
 	$self->process_arguments;
 	$self->run;
 }
@@ -291,12 +291,12 @@ method open_document( (DocumentModel) $doc ) {
 # Callbacks {{{
 =callback on_open_file_dialog_cb
 
-  fun on_open_file_dialog_cb( $event, $self )
+  callback on_open_file_dialog_cb( $event, $self )
 
 Callback that opens a L<Renard::Curie::Component::FileChooser> component.
 
 =cut
-fun on_open_file_dialog_cb( $event, $self ) {
+callback on_open_file_dialog_cb( $event, $self ) {
 	my $file_chooser = Renard::Curie::Component::FileChooser->new( app => $self );
 	my $dialog = $file_chooser->get_open_file_dialog_with_filters;
 
@@ -313,12 +313,12 @@ fun on_open_file_dialog_cb( $event, $self ) {
 
 =callback on_application_quit_cb
 
-  fun on_application_quit_cb( $event, $self )
+  callback on_application_quit_cb( $event, $self )
 
 Callback that stops the L<Gtk3> main loop.
 
 =cut
-fun on_application_quit_cb( $event, $self ) {
+callback on_application_quit_cb( $event, $self ) {
 	Gtk3::main_quit;
 }
 # }}}

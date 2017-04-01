@@ -31,7 +31,7 @@ fun _scrolled_window_viewport_shim() {
 		# - <https://developer.gnome.org/gtk3/3.8/GtkScrolledWindow.html>
 		Class::Method::Modifiers::install_modifier
 			"Gtk3::ScrolledWindow",
-			around => add => fun {
+			around => add => fun(@) {
 				# uncoverable subroutine
 				my $orig = shift;             # uncoverable statement
 				my $self = shift;             # uncoverable statement
@@ -40,7 +40,7 @@ fun _scrolled_window_viewport_shim() {
 	}
 }
 
-fun _can_set_theme {
+fun _can_set_theme() {
 	# uncoverable branch true
 	return $^O ne 'MSWin32' && Gtk3::CHECK_VERSION('3', '20', '1');
 }
@@ -79,7 +79,7 @@ fun _set_icon_theme( (Str) $icon_theme_name ) {
 	}                                                                   # uncoverable statement
 }
 
-fun import {
+sub import {
 	_scrolled_window_viewport_shim;
 	_set_theme('Flat-Plat');
 	_set_icon_theme('Arc');

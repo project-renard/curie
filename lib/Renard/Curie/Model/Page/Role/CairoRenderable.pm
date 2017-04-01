@@ -32,11 +32,11 @@ has [ qw(width height) ] => (
 	isa => PositiveOrZeroInt,
 );
 
-method _build_width :ReturnType(PositiveOrZeroInt) {
+method _build_width() :ReturnType(PositiveOrZeroInt) {
 	$self->cairo_image_surface->get_width;
 }
 
-method _build_height :ReturnType(PositiveOrZeroInt) {
+method _build_height() :ReturnType(PositiveOrZeroInt) {
 	$self->cairo_image_surface->get_height;
 }
 

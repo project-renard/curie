@@ -21,7 +21,7 @@ C<mutool>.
 =end comment
 
 =cut
-method _build_last_page_number :ReturnType(PageNumber) {
+method _build_last_page_number() :ReturnType(PageNumber) {
 	my $info = Renard::Curie::Data::PDF::get_mutool_page_info_xml(
 		$self->filename
 	);
@@ -48,7 +48,7 @@ method get_rendered_page( (PageNumber) :$page_number, (ZoomLevel) :$zoom_level =
 	);
 }
 
-method _build_outline {
+method _build_outline() {
 	my $outline_data = Renard::Curie::Data::PDF::get_mutool_outline_simple(
 		$self->filename
 	);
