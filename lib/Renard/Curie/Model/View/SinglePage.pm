@@ -6,7 +6,7 @@ use Moo;
 use Renard::Curie::Types qw(RenderablePageModel InstanceOf);
 
 use Glib::Object::Subclass
-	Glib::Object::,
+	'Glib::Object',
 	signals => { 'view-changed' => {} },
 	;
 

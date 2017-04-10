@@ -8,7 +8,7 @@ use Math::Trig;
 use Math::Polygon;
 
 use Glib::Object::Subclass
-	Glib::Object::,
+	'Glib::Object',
 	signals => { 'view-changed' => {} },
 	;
 
