@@ -288,6 +288,8 @@ method open_pdf_document( (Path->coercibles) $pdf_filename ) {
 		filename => $pdf_filename,
 	);
 
+	my $rm_added = $self->menu_bar->recent_manager->add_item( $doc->filename_uri );
+
 	# set window title
 	$self->window->set_title( $pdf_filename );
 

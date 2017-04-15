@@ -12,6 +12,7 @@ use Type::Utils -all;
 
 # Listed here so that scan-perl-deps can find them
 use Types::Path::Tiny      ();
+use Types::URI             ();
 use Types::Standard        ();
 use Types::Common::Numeric qw(PositiveInt PositiveOrZeroInt PositiveNum);
 
@@ -21,6 +22,7 @@ Type::Libraries->setup_class(
 	qw(
 		Types::Standard
 		Types::Path::Tiny
+		Types::URI
 		Types::Common::Numeric
 	)
 );
