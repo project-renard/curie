@@ -127,6 +127,9 @@ method _build_recent_manager() :ReturnType(InstanceOf['Gtk3::RecentManager']) {
 
 method _build_recent_chooser() :ReturnType(InstanceOf['Gtk3::RecentChooserMenu']) {
 	my $recent_chooser = Gtk3::RecentChooserMenu->new_for_manager( $self->recent_manager );
+	$recent_chooser->set_sort_type('mru');
+
+	$recent_chooser;
 }
 
 
