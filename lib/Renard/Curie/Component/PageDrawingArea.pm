@@ -413,9 +413,10 @@ Callback that is called when text has been entered into the page number entry.
 =cut
 callback on_activate_page_number_entry_cb( $entry, $self ) {
 	my $text = $entry->get_text;
-	if ($text =~ /^[0-9]+$/ and $text <= $self->document->last_page_number
-			and $text >= $self->document->first_page_number) {
+	if( $self->document->is_valid_page_number($text) ) {
 		$self->current_page_number( $text );
+	} else {
+		Renard::Curie::Error::User::InvalidPageNumber->throw;
 	}
 }
 
