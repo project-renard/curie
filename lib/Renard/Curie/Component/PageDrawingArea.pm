@@ -105,6 +105,7 @@ method BUILD(@) {
 	$self->setup_drawing_area;
 	$self->setup_number_of_pages_label;
 	$self->setup_keybindings;
+	$self->setup_scroll_bindings;
 
 	# add as child for this L<Gtk3::Bin>
 	$self->add(
@@ -274,6 +275,42 @@ callback on_key_press_event_cb($window, $event, $self) {
 	} elsif($event->keyval == Gtk3::Gdk::KEY_Left){
 		decrement_scroll($self->scrolled_window->get_hadjustment);
 	}
+}
+
+=method setup_scroll_bindings
+
+  method setup_scroll_bindings()
+
+Sets up the signals to capture scroll events on this component.
+
+=cut
+method setup_scroll_bindings() {
+	$self->scrolled_window->signal_connect(
+		'scroll-event' => \&on_scroll_event_cb, $self );
+}
+
+=callback on_scroll_event_cb
+
+  callback on_scroll_event_cb($window, $event, $self)
+
+Callback that responds to specific scroll events and dispatches the associated
+handlers.
+
+=cut
+callback on_scroll_event_cb($window, $event, $self) {
+	if ( $event->state == 'control-mask' && $event->direction eq 'smooth') {
+		my ($delta_x, $delta_y) =  $event->get_scroll_deltas();
+		if ( $delta_y < 0 ) { $self->zoom_level ( $self->zoom_level - .05 ); }
+		elsif ( $delta_y > 0 ) { $self->zoom_level ( $self->zoom_level + .05 ); }
+		return 1;
+	} elsif ( $event->state == 'control-mask' && $event->direction eq 'up' ) {
+		$self->zoom_level ( $self->zoom_level + .05 );
+		return 1;
+	} elsif ( $event->state == 'control-mask' && $event->direction eq 'down' ) {
+		$self->zoom_level ( $self->zoom_level - .05 );
+		return 1;
+	}
+	return 0;
 }
 
 =func increment_scroll
