@@ -18,14 +18,14 @@ my $pdf_ref_path = try {
 plan tests => 2;
 
 fun print_tree_store($store, $callback) {
-    walk_tree_store($store, fun( $level, $data ) {
-	say "\t"x$level . join ":", @$data;
-    });
+	walk_tree_store($store, fun( $level, $data ) {
+		say "\t"x$level . join ":", @$data;
+	});
 }
 
 fun walk_tree_store($store, $callback) {
-    my $rootiter = $store->get_iter_first();
-    walk_rows($store, $rootiter, 0, $callback);
+	my $rootiter = $store->get_iter_first();
+	walk_rows($store, $rootiter, 0, $callback);
 }
 
 fun walk_rows($store, $treeiter, $level, $callback) {
