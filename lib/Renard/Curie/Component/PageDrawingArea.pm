@@ -88,7 +88,13 @@ method BUILD(@) {
 	# so that the widget can take input
 	$self->view->signal_connect( 'view-changed', sub {
 		$self->signal_emit('update-scroll-adjustment');
-		$self->refresh_drawing_area;
+		if( $self->view->can('get_size_request') ) {
+			$self->drawing_area->set_size_request(
+				$self->view->get_size_request
+			);
+		} else {
+			$self->refresh_drawing_area;
+		}
 	} );
 	$self->signal_connect( 'update-scroll-adjustment', sub {
 		if( $self->view->can('update_scroll_adjustment') ) {

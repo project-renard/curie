@@ -63,29 +63,16 @@ method draw_page(
 	(InstanceOf['Gtk3::DrawingArea']) $widget,
 	(InstanceOf['Cairo::Context']) $cr
 ) {
-	say "called draw";
+	my $rp = $self->rendered_page;
+	my $img = $rp->cairo_image_surface;
 
+	# get the widget dimensions so that the position is correct
 	$self->widget_dims([
 		$widget->get_allocated_width,
 		$widget->get_allocated_height,
 	]);
-
-	my @previous_size_request = $widget->get_size_request;
-	my @current_size_request  = $self->get_size_request;
-	unless( $current_size_request[0] == $previous_size_request[0]
-		&& $current_size_request[1] == $previous_size_request[1] ) {
-
-		$widget->set_size_request( $self->get_size_request );
-
-		# Do not draw this time. Draw the next time after the size is
-		# changed.
-		return;
-	}
-
-	my $rp = $self->rendered_page;
-	my $img = $rp->cairo_image_surface;
-
 	$cr->set_source_surface($img, $self->get_page_pos );
+
 	$cr->paint;
 }
 
@@ -111,13 +98,7 @@ has widget_dims => (
 );
 
 method page_bbox() {
-	my $page_identity = $self->document
-		->identity_bounds
-		->[ $self->page_number - 1 ];
-
-	# multiply to account for zoom-level
-	my $w = ceil($page_identity->{dims}{w} * $self->zoom_level);
-	my $h = ceil($page_identity->{dims}{h} * $self->zoom_level);
+	my ($w, $h) = $self->get_size_request;
 
 	# centre the page
 	my $x = ($self->widget_dims->[0] - $w) / 2;
@@ -136,7 +117,15 @@ method get_page_pos() {
 }
 
 method get_size_request() {
-	return ($self->page_bbox->width, $self->page_bbox->height);
+	my $page_identity = $self->document
+		->identity_bounds
+		->[ $self->page_number - 1 ];
+
+	# multiply to account for zoom-level
+	my $w = ceil($page_identity->{dims}{w} * $self->zoom_level);
+	my $h = ceil($page_identity->{dims}{h} * $self->zoom_level);
+
+	return ($w, $h);
 }
 
 
