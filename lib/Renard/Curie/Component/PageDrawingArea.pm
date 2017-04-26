@@ -23,7 +23,8 @@ TODO
 =cut
 has view => (
 	is => 'rw',
-	required => 1
+	required => 1,
+	trigger => 1,
 );
 
 =attr drawing_area
@@ -85,17 +86,6 @@ Initialises the component's contained widgets and signals.
 
 =cut
 method BUILD(@) {
-	# so that the widget can take input
-	$self->view->signal_connect( 'view-changed', sub {
-		$self->signal_emit('update-scroll-adjustment');
-		if( $self->view->can('get_size_request') ) {
-			$self->drawing_area->set_size_request(
-				$self->view->get_size_request
-			);
-		} else {
-			$self->refresh_drawing_area;
-		}
-	} );
 	$self->signal_connect( 'update-scroll-adjustment', sub {
 		if( $self->view->can('update_scroll_adjustment') ) {
 			$self->view->update_scroll_adjustment(
@@ -418,6 +408,25 @@ method set_navigation_buttons_sensitivity() {
 		$self->builder->get_object($button_name)
 			->set_sensitive($can_move_back);
 	}
+}
+
+method _trigger_view($new_view) {
+	# so that the widget can take input
+	$self->view->signal_connect( 'view-changed', sub {
+		$self->signal_emit('update-scroll-adjustment');
+		if( $self->view->can('get_size_request') ) {
+			if( $self->drawing_area ) {
+				$self->drawing_area->set_size_request(
+					$self->view->get_size_request
+				);
+				$self->refresh_drawing_area;
+			}
+		} else {
+			$self->refresh_drawing_area;
+		}
+	} );
+
+	$self->view->signal_emit('view-changed');
 }
 
 with qw(
