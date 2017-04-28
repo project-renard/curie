@@ -7,6 +7,8 @@ use Cairo;
 use Glib::Object::Introspection;
 use Glib 'TRUE', 'FALSE';
 
+use URI::file;
+
 use Moo 2.001001;
 
 use Renard::Curie::Helper;
@@ -159,7 +161,9 @@ method setup_window() {
 
 =method setup_dnd
 
-TODO
+  method setup_dnd()
+
+Setup drag and drop.
 
 =cut
 method setup_dnd() {
@@ -347,13 +351,16 @@ callback on_application_quit_cb( $event, $self ) {
 
 =callback on_drag_data_received_cb
 
-TODO
+  on_drag_data_received_cb
+
+Whenever the drag and drop data is received by the application.
 
 =cut
-fun on_drag_data_received_cb( $widget, $context, $x, $y, $data, $info, $time, $app ) {
+callback on_drag_data_received_cb( $widget, $context, $x, $y, $data, $info, $time, $app ) {
 	if( $info == DND_TARGET_URI_LIST ) {
 		my @uris = @{ $data->get_uris };
-		say $_ for @uris;
+		my $pdf_filename =  URI->new($uris[0])->file;
+		$app->open_pdf_document( $pdf_filename );
 	}
 }
 # }}}
