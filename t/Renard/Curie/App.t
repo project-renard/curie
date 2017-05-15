@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-use Test::Most tests => 3;
+use Test::Most tests => 4;
 use Test::Trap;
 
 use lib 't/lib';
@@ -9,6 +9,8 @@ use CurieTestHelper;
 use Renard::Curie::Setup;
 use Renard::Curie::App;
 use File::Temp;
+use URI::file;
+use Test::MockObject;
 use version 0.77 ();
 
 subtest "Process arguments" => sub {
@@ -106,6 +108,38 @@ subtest "Open document twice" => sub {
 
 	$app->open_document($cairo_doc_b);
 	cmp_deeply $app->page_document_component->document, $cairo_doc_b, 'Second document loaded';
+
+	undef $app;
+};
+
+subtest "Drag and drop of file" => sub {
+	my $pdf_ref_path = try {
+		CurieTestHelper->test_data_directory->child(qw(PDF Adobe pdf_reference_1-7.pdf));
+	} catch {
+		plan skip_all => "$_";
+	};
+
+	my $pdf_ref_uri = URI::file->new($pdf_ref_path);
+
+	my $app = Renard::Curie::App->new;
+	my $data = Test::MockObject->new( ); # mocking Gtk3::SelectionData
+	$data->mock( get_uris => sub { [ "$pdf_ref_uri" ] } );
+
+	my $info = Renard::Curie::App::DND_TARGET_URI_LIST;
+
+	my @signal_args = (
+		undef, # $context
+		0,     # $x
+		0,     # $y
+		$data, # $data
+		$info, # $info
+		0, # $time
+		$app, # $app
+	);
+
+	Renard::Curie::App::on_drag_data_received_cb( $app->content_box, @signal_args);
+
+	is(  $app->page_document_component->document->filename, "$pdf_ref_path", "Drag and drop opened correct file" );
 
 	undef $app;
 };

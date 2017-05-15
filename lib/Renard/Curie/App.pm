@@ -7,6 +7,8 @@ use Cairo;
 use Glib::Object::Introspection;
 use Glib 'TRUE', 'FALSE';
 
+use URI::file;
+
 use Moo 2.001001;
 
 use Renard::Curie::Helper;
@@ -24,6 +26,11 @@ use Getopt::Long::Descriptive;
 
 use Renard::Curie::Types qw(InstanceOf Path Str DocumentModel);
 use Function::Parameters;
+
+use constant {
+	DND_TARGET_URI_LIST => 0,
+	DND_TARGET_TEXT     => 1,
+};
 
 =attr window
 
@@ -152,6 +159,25 @@ method setup_window() {
 	Renard::Curie::Component::AccelMap->new( app => $self );
 }
 
+=method setup_dnd
+
+  method setup_dnd()
+
+Setup drag and drop.
+
+=cut
+method setup_dnd() {
+	$self->content_box->drag_dest_set('all', [], 'copy');
+	my $target_list = Gtk3::TargetList->new([
+		Gtk3::TargetEntry->new( 'text/uri-list', 0, DND_TARGET_URI_LIST ),
+		Gtk3::TargetEntry->new( 'text/plain'   , 0, DND_TARGET_TEXT     )
+	]);
+	$self->content_box->drag_dest_set_target_list($target_list);
+
+	$self->content_box->signal_connect('drag-data-received' =>
+		\&on_drag_data_received_cb, $self );
+}
+
 =method run
 
   method run()
@@ -176,6 +202,7 @@ method BUILD(@) {
 	$self->setup_gtk;
 
 	$self->setup_window;
+	$self->setup_dnd;
 
 	$self->window->signal_connect(
 		destroy => \&on_application_quit_cb, $self );
@@ -320,6 +347,21 @@ Callback that stops the L<Gtk3> main loop.
 =cut
 callback on_application_quit_cb( $event, $self ) {
 	Gtk3::main_quit;
+}
+
+=callback on_drag_data_received_cb
+
+  on_drag_data_received_cb
+
+Whenever the drag and drop data is received by the application.
+
+=cut
+callback on_drag_data_received_cb( $widget, $context, $x, $y, $data, $info, $time, $app ) {
+	if( $info == DND_TARGET_URI_LIST ) {
+		my @uris = @{ $data->get_uris };
+		my $pdf_filename =  URI->new($uris[0])->file;
+		$app->open_pdf_document( $pdf_filename );
+	}
 }
 # }}}
 
