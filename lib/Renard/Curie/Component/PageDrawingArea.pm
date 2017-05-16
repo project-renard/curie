@@ -107,6 +107,8 @@ method BUILD(@) {
 	$self->add(
 		$self->builder->get_object('page-drawing-component')
 	);
+
+	$self->view->signal_emit('view-changed');
 }
 
 =method setup_button_events
