@@ -1,9 +1,8 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Model::Document::Role::Renderable;
 # ABSTRACT: Role for documents that can render their pages
-$Renard::Curie::Model::Document::Role::Renderable::VERSION = '0.001_01'; # TRIAL
-
-$Renard::Curie::Model::Document::Role::Renderable::VERSION = '0.00101';use Moo::Role;
+$Renard::Curie::Model::Document::Role::Renderable::VERSION = '0.002';
+use Moo::Role;
 
 requires 'get_rendered_page';
 
@@ -23,7 +22,7 @@ Renard::Curie::Model::Document::Role::Renderable - Role for documents that can r
 
 =head1 VERSION
 
-version 0.001_01
+version 0.002
 
 =head1 METHODS
 

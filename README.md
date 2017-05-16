@@ -43,3 +43,9 @@
 		</td>
 	</tr>
 </table>
+
+# Screenshot
+
+Curie v0.001 displaying an excerpt from "Ways of coloring: Comparative color vision as a case study for cognitive science"
+
+<img caption="" src="https://project-renard.github.io/blog/posts/2016/09/22/gfx/curie-v0.001-ways-of-colouring.png"/>

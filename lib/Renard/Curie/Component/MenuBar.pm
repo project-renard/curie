@@ -1,9 +1,8 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Component::MenuBar;
 # ABSTRACT: Component that provides a menu bar for the application
-$Renard::Curie::Component::MenuBar::VERSION = '0.001_01'; # TRIAL
-
-$Renard::Curie::Component::MenuBar::VERSION = '0.00101';use Moo;
+$Renard::Curie::Component::MenuBar::VERSION = '0.002';
+use Moo;
 use URI;
 use Glib::Object::Subclass 'Gtk3::Bin';
 use Glib 'TRUE', 'FALSE';
@@ -25,7 +24,7 @@ classmethod FOREIGNBUILDARGS(@) {
 	return ();
 }
 
-method BUILD {
+method BUILD(@) {
 	# Accelerator group
 	$self->app->window->add_accel_group(
 		$self->builder->get_object('menu-accel-group')
@@ -97,40 +96,40 @@ method BUILD {
 	);
 }
 
-method _build_recent_manager :ReturnType(InstanceOf['Gtk3::RecentManager']) {
+method _build_recent_manager() :ReturnType(InstanceOf['Gtk3::RecentManager']) {
 	Gtk3::RecentManager::get_default;
 }
 
-method _build_recent_chooser :ReturnType(InstanceOf['Gtk3::RecentChooserMenu']) {
+method _build_recent_chooser() :ReturnType(InstanceOf['Gtk3::RecentChooserMenu']) {
 	my $recent_chooser = Gtk3::RecentChooserMenu->new_for_manager( $self->recent_manager );
 }
 
 
 # Callbacks {{{
-fun on_menu_file_open_activate_cb($event, $self) {
+callback on_menu_file_open_activate_cb($event, $self) {
 	Renard::Curie::Helper->callback( $self->app, on_open_file_dialog_cb => $event );
 }
 
-fun on_menu_file_quit_activate_cb($event, $self) {
+callback on_menu_file_quit_activate_cb($event, $self) {
 	Renard::Curie::Helper->callback( $self->app, on_application_quit_cb => $event );
 }
 
-fun on_menu_file_recentfiles_item_activated_cb( (InstanceOf['Gtk3::RecentChooserMenu']) $recent_chooser, $self ) {
+callback on_menu_file_recentfiles_item_activated_cb( (InstanceOf['Gtk3::RecentChooserMenu']) $recent_chooser, $self ) {
 	my $selected_item = $recent_chooser->get_current_item;
 	my $uri = $selected_item->get_uri;
 	my $file = URI->new( $uri )->file;
 	$self->app->open_pdf_document( $file );
 }
 
-fun on_menu_help_logwin_activate_cb($event, $self) {
+callback on_menu_help_logwin_activate_cb($event, $self) {
 	$self->app->log_window->show_log_window;
 }
 
-fun on_menu_view_sidebar_cb($event_menu_item, $self) {
+callback on_menu_view_sidebar_cb($event_menu_item, $self) {
 	$self->app->outline->reveal( $event_menu_item->get_active );
 }
 
-fun on_menu_view_zoom_item_activate_cb($event, $data) {
+callback on_menu_view_zoom_item_activate_cb($event, $data) {
 	my ($self, $zoom_level) = @$data;
 	$self->app->page_document_component->zoom_level( $zoom_level );
 }
@@ -158,7 +157,7 @@ Renard::Curie::Component::MenuBar - Component that provides a menu bar for the a
 
 =head1 VERSION
 
-version 0.001_01
+version 0.002
 
 =head1 EXTENDS
 
@@ -199,14 +198,6 @@ A lazy attribute that holds the default instance of L<Gtk3::RecentManager>.
 Instance of L<Gtk3::RecentChooserMenu> which is placed under the C<<File ->
 Recent files>> sub-menu.
 
-=head1 METHODS
-
-=head2 BUILD
-
-  method BUILD
-
-Initialises the menu bar signals.
-
 =head1 CLASS METHODS
 
 =head2 FOREIGNBUILDARGS
@@ -215,29 +206,37 @@ Initialises the menu bar signals.
 
 Builds the L<Gtk3::Bin> super-class.
 
+=head1 METHODS
+
+=head2 BUILD
+
+  method BUILD
+
+Initialises the menu bar signals.
+
 =head1 CALLBACKS
 
 =head2 on_menu_file_open_activate_cb
 
-  fun on_menu_file_open_activate_cb($event, $self)
+  callback on_menu_file_open_activate_cb($event, $self)
 
 Callback for the C<< File -> Open >> menu item.
 
 =head2 on_menu_file_quit_activate_cb
 
-  fun on_menu_file_quit_activate_cb($event, $self)
+  callback on_menu_file_quit_activate_cb($event, $self)
 
 Callback for the C<< File -> Quit >> menu item.
 
 =head2 on_menu_file_recentfiles_item_activated_cb
 
-  fun on_menu_file_recentfiles_item_activated_cb( (InstanceOf['Gtk3::RecentChooserMenu']) $recent_chooser, $self )
+  callback on_menu_file_recentfiles_item_activated_cb( (InstanceOf['Gtk3::RecentChooserMenu']) $recent_chooser, $self )
 
 Callback for items under the C<< File -> Recent files >> sub-menu.
 
 =head2 on_menu_help_logwin_activate_cb
 
-  fun on_menu_help_logwin_activate_cb($event, $self)
+  callback on_menu_help_logwin_activate_cb($event, $self)
 
 Callback for C<< Help -> Message log >> menu item.
 
@@ -253,7 +252,7 @@ This toggles whether or not the outline sidebar is visible.
 
 Callback for zoom level menu items under the C<< View -> Zoom >> submenu.
 
-  fun on_menu_view_zoom_item_activate_cb($event, $data)
+  callback on_menu_view_zoom_item_activate_cb($event, $data)
 
 where C<$data> is an C<ArrayRef> that contains C<< [ $self, $zoom_level ] >>.
 

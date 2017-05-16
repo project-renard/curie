@@ -1,12 +1,11 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Component::AccelMap;
 # ABSTRACT: Set up the accelerator map (global keybindings)
-$Renard::Curie::Component::AccelMap::VERSION = '0.001_01'; # TRIAL
-
-$Renard::Curie::Component::AccelMap::VERSION = '0.00101';use Moo;
+$Renard::Curie::Component::AccelMap::VERSION = '0.002';
+use Moo;
 use Function::Parameters;
 
-method BUILD {
+method BUILD(@) {
 	Gtk3::AccelMap::add_entry(
 		'<Curie-Main>/File/Open',
 		Gtk3::Gdk::KEY_O,
@@ -44,7 +43,7 @@ Renard::Curie::Component::AccelMap - Set up the accelerator map (global keybindi
 
 =head1 VERSION
 
-version 0.001_01
+version 0.002
 
 =head1 EXTENDS
 

@@ -1,9 +1,8 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Model::Document::PDF;
 # ABSTRACT: document that represents a PDF file
-$Renard::Curie::Model::Document::PDF::VERSION = '0.001_01'; # TRIAL
-
-$Renard::Curie::Model::Document::PDF::VERSION = '0.00101';use Moo;
+$Renard::Curie::Model::Document::PDF::VERSION = '0.002';
+use Moo;
 use Renard::Curie::Data::PDF;
 use Renard::Curie::Model::Page::RenderedFromPNG;
 use Renard::Curie::Model::Outline;
@@ -12,7 +11,7 @@ use Function::Parameters;
 
 extends qw(Renard::Curie::Model::Document);
 
-method _build_last_page_number :ReturnType(PageNumber) {
+method _build_last_page_number() :ReturnType(PageNumber) {
 	my $info = Renard::Curie::Data::PDF::get_mutool_page_info_xml(
 		$self->filename
 	);
@@ -32,7 +31,7 @@ method get_rendered_page( (PageNumber) :$page_number, (ZoomLevel) :$zoom_level =
 	);
 }
 
-method _build_outline {
+method _build_outline() {
 	my $outline_data = Renard::Curie::Data::PDF::get_mutool_outline_simple(
 		$self->filename
 	);
@@ -62,7 +61,7 @@ Renard::Curie::Model::Document::PDF - document that represents a PDF file
 
 =head1 VERSION
 
-version 0.001_01
+version 0.002
 
 =head1 EXTENDS
 

@@ -1,9 +1,8 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Types;
 # ABSTRACT: Type library
-$Renard::Curie::Types::VERSION = '0.001_01'; # TRIAL
-
-$Renard::Curie::Types::VERSION = '0.00101';use Type::Library 0.008 -base,
+$Renard::Curie::Types::VERSION = '0.002';
+use Type::Library 0.008 -base,
 	-declare => [qw(
 		DocumentModel
 		RenderableDocumentModel
@@ -56,7 +55,7 @@ Renard::Curie::Types - Type library
 
 =head1 VERSION
 
-version 0.001_01
+version 0.002
 
 =head1 EXTENDS
 

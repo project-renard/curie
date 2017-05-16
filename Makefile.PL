@@ -20,7 +20,7 @@ my %WriteMakefileArgs = (
   "MIN_PERL_VERSION" => "5.010",
   "NAME" => "Renard::Curie",
   "PREREQ_PM" => {
-    "Alien::MuPDF" => "0.005",
+    "Alien::MuPDF" => "0.007",
     "CHI" => 0,
     "Cairo" => 0,
     "Capture::Tiny" => 0,
@@ -56,6 +56,7 @@ my %WriteMakefileArgs = (
     "Types::Path::Tiny" => 0,
     "Types::Standard" => 0,
     "URI" => 0,
+    "URI::file" => 0,
     "XML::Simple" => 0,
     "autodie" => 0,
     "autovivification" => 0,
@@ -72,9 +73,10 @@ my %WriteMakefileArgs = (
     "Test::MockModule" => 0,
     "Test::MockObject" => 0,
     "Test::Most" => 0,
-    "URI::file" => 0
+    "Test::Trap" => 0,
+    "version" => "0.77"
   },
-  "VERSION" => "0.001_01",
+  "VERSION" => "0.002",
   "test" => {
     "TESTS" => "t/Renard/Curie/*.t t/Renard/Curie/Component/*.t t/Renard/Curie/Data/*.t t/Renard/Curie/Model/*.t t/Renard/Curie/Model/Document/*.t t/Renard/Curie/Model/Document/Role/*.t t/Renard/Curie/Model/Page/*.t"
   }
@@ -82,7 +84,7 @@ my %WriteMakefileArgs = (
 
 
 my %FallbackPrereqs = (
-  "Alien::MuPDF" => "0.005",
+  "Alien::MuPDF" => "0.007",
   "CHI" => 0,
   "Cairo" => 0,
   "Capture::Tiny" => 0,
@@ -116,6 +118,7 @@ my %FallbackPrereqs = (
   "Test::MockModule" => 0,
   "Test::MockObject" => 0,
   "Test::Most" => 0,
+  "Test::Trap" => 0,
   "Try::Tiny" => 0,
   "Type::Libraries" => 0,
   "Type::Library" => "0.008",
@@ -132,6 +135,7 @@ my %FallbackPrereqs = (
   "custom::failures" => 0,
   "lib" => 0,
   "strict" => 0,
+  "version" => "0.77",
   "warnings" => 0
 );
 

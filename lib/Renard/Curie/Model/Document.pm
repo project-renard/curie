@@ -1,9 +1,8 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Model::Document;
 # ABSTRACT: Base class for representing documents
-$Renard::Curie::Model::Document::VERSION = '0.001_01'; # TRIAL
-
-$Renard::Curie::Model::Document::VERSION = '0.00101';use Moo;
+$Renard::Curie::Model::Document::VERSION = '0.002';
+use Moo;
 
 1;
 
@@ -19,7 +18,7 @@ Renard::Curie::Model::Document - Base class for representing documents
 
 =head1 VERSION
 
-version 0.001_01
+version 0.002
 
 =head1 EXTENDS
 

@@ -1,9 +1,8 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Component::PageDrawingArea;
 # ABSTRACT: Component that implements document page navigation
-$Renard::Curie::Component::PageDrawingArea::VERSION = '0.001_01'; # TRIAL
-
-$Renard::Curie::Component::PageDrawingArea::VERSION = '0.00101';use Moo;
+$Renard::Curie::Component::PageDrawingArea::VERSION = '0.002';
+use Moo;
 use Glib 'TRUE', 'FALSE';
 use Glib::Object::Subclass 'Gtk3::Bin';
 use Renard::Curie::Types qw(RenderableDocumentModel RenderablePageModel
@@ -49,7 +48,7 @@ classmethod FOREIGNBUILDARGS(@) {
 	return ();
 }
 
-method BUILD {
+method BUILD(@) {
 	# so that the widget can take input
 	$self->set_can_focus( TRUE );
 
@@ -58,6 +57,7 @@ method BUILD {
 	$self->setup_drawing_area;
 	$self->setup_number_of_pages_label;
 	$self->setup_keybindings;
+	$self->setup_scroll_bindings;
 
 	# add as child for this L<Gtk3::Bin>
 	$self->add(
@@ -79,19 +79,19 @@ method setup_button_events() {
 	$self->set_navigation_buttons_sensitivity;
 }
 
-fun on_clicked_button_first_cb($button, $self) {
+callback on_clicked_button_first_cb($button, $self) {
 	$self->set_current_page_to_first;
 }
 
-fun on_clicked_button_last_cb($button, $self) {
+callback on_clicked_button_last_cb($button, $self) {
 	$self->set_current_page_to_last;
 }
 
-fun on_clicked_button_forward_cb($button, $self) {
+callback on_clicked_button_forward_cb($button, $self) {
 	$self->set_current_page_forward;
 }
 
-fun on_clicked_button_back_cb($button, $self) {
+callback on_clicked_button_back_cb($button, $self) {
 	$self->set_current_page_back;
 }
 
@@ -103,7 +103,7 @@ method setup_text_entry_events() {
 method setup_drawing_area() {
 	my $drawing_area = Gtk3::DrawingArea->new();
 	$self->drawing_area( $drawing_area );
-	$drawing_area->signal_connect( draw => fun (
+	$drawing_area->signal_connect( draw => callback(
 			(InstanceOf['Gtk3::DrawingArea']) $widget,
 			(InstanceOf['Cairo::Context']) $cr) {
 		my $rp = $self->document->get_rendered_page(
@@ -137,7 +137,7 @@ method setup_keybindings() {
 	$self->signal_connect( key_press_event => \&on_key_press_event_cb, $self );
 }
 
-fun on_key_press_event_cb($window, $event, $self) {
+callback on_key_press_event_cb($window, $event, $self) {
 	if($event->keyval == Gtk3::Gdk::KEY_Page_Down){
 		$self->set_current_page_forward;
 	} elsif($event->keyval == Gtk3::Gdk::KEY_Page_Up){
@@ -151,6 +151,27 @@ fun on_key_press_event_cb($window, $event, $self) {
 	} elsif($event->keyval == Gtk3::Gdk::KEY_Left){
 		decrement_scroll($self->scrolled_window->get_hadjustment);
 	}
+}
+
+method setup_scroll_bindings() {
+	$self->scrolled_window->signal_connect(
+		'scroll-event' => \&on_scroll_event_cb, $self );
+}
+
+callback on_scroll_event_cb($window, $event, $self) {
+	if ( $event->state == 'control-mask' && $event->direction eq 'smooth') {
+		my ($delta_x, $delta_y) =  $event->get_scroll_deltas();
+		if ( $delta_y < 0 ) { $self->zoom_level ( $self->zoom_level - .05 ); }
+		elsif ( $delta_y > 0 ) { $self->zoom_level ( $self->zoom_level + .05 ); }
+		return 1;
+	} elsif ( $event->state == 'control-mask' && $event->direction eq 'up' ) {
+		$self->zoom_level ( $self->zoom_level + .05 );
+		return 1;
+	} elsif ( $event->state == 'control-mask' && $event->direction eq 'down' ) {
+		$self->zoom_level ( $self->zoom_level - .05 );
+		return 1;
+	}
+	return 0;
 }
 
 fun increment_scroll( (InstanceOf['Gtk3::Adjustment']) $current ) {
@@ -188,15 +209,15 @@ method on_draw_page_cb( (InstanceOf['Cairo::Context']) $cr ) {
 		->set_text($self->current_page_number);
 }
 
-method _trigger_current_page_number {
+method _trigger_current_page_number($new_page_number) {
 	$self->refresh_drawing_area;
 }
 
-method _trigger_zoom_level {
+method _trigger_zoom_level($new_zoom_level) {
 	$self->refresh_drawing_area;
 }
 
-fun on_activate_page_number_entry_cb( $entry, $self ) {
+callback on_activate_page_number_entry_cb( $entry, $self ) {
 	my $text = $entry->get_text;
 	if ($text =~ /^[0-9]+$/ and $text <= $self->document->last_page_number
 			and $text >= $self->document->first_page_number) {
@@ -266,7 +287,7 @@ Renard::Curie::Component::PageDrawingArea - Component that implements document p
 
 =head1 VERSION
 
-version 0.001_01
+version 0.002
 
 =head1 EXTENDS
 
@@ -293,6 +314,20 @@ version 0.001_01
 =item * L<Renard::Curie::Component::Role::UIFileFromPackageName>
 
 =back
+
+=head1 FUNCTIONS
+
+=head2 increment_scroll
+
+  fun increment_scroll( (InstanceOf['Gtk3::Adjustment']) $current )
+
+Helper function that scrolls down by the scrollbar's step increment.
+
+=head2 decrement_scroll
+
+  fun decrement_scroll( (InstanceOf['Gtk3::Adjustment']) $current )
+
+Helper function that scrolls up by the scrollbar's step increment.
 
 =head1 ATTRIBUTES
 
@@ -323,6 +358,14 @@ The L<Gtk3::DrawingArea> that is used to draw the document on.
 =head2 scrolled_window
 
 The L<Gtk3::ScrolledWindow> container for the L</drawing_area>.
+
+=head1 CLASS METHODS
+
+=head2 FOREIGNBUILDARGS
+
+  classmethod FOREIGNBUILDARGS(@)
+
+Initialises the L<Gtk3::Bin> super-class.
 
 =head1 METHODS
 
@@ -362,6 +405,12 @@ Sets up the label that shows the number of pages in the document.
   method setup_keybindings()
 
 Sets up the signals to capture key presses on this component.
+
+=head2 setup_scroll_bindings
+
+  method setup_scroll_bindings()
+
+Sets up the signals to capture scroll events on this component.
 
 =head2 refresh_drawing_area
 
@@ -419,63 +468,48 @@ Predicate to check if we can increment the current page number.
 Enables and disables forward and back navigation buttons when at the end and
 start of the document respectively.
 
-=head1 CLASS METHODS
-
-=head2 FOREIGNBUILDARGS
-
-  classmethod FOREIGNBUILDARGS(@)
-
-Initialises the L<Gtk3::Bin> super-class.
-
-=head1 FUNCTIONS
-
-=head2 increment_scroll
-
-  fun increment_scroll( (InstanceOf['Gtk3::Adjustment']) $current )
-
-Helper function that scrolls down by the scrollbar's step increment.
-
-=head2 decrement_scroll
-
-  fun decrement_scroll( (InstanceOf['Gtk3::Adjustment']) $current )
-
-Helper function that scrolls up by the scrollbar's step increment.
-
 =head1 CALLBACKS
 
 =head2 on_clicked_button_first_cb
 
-  fun on_clicked_button_first_cb($button, $self)
+  callback on_clicked_button_first_cb($button, $self)
 
 Callback for when the "First" button is pressed.
 See L</set_current_page_to_first>.
 
 =head2 on_clicked_button_last_cb
 
-  fun on_clicked_button_last_cb($button, $self)
+  callback on_clicked_button_last_cb($button, $self)
 
 Callback for when the "Last" button is pressed.
 See L</set_current_page_to_last>.
 
 =head2 on_clicked_button_forward_cb
 
-  fun on_clicked_button_forward_cb($button, $self)
+  callback on_clicked_button_forward_cb($button, $self)
 
 Callback for when the "Forward" button is pressed.
 See L</set_current_page_forward>.
 
 =head2 on_clicked_button_back_cb
 
-  fun on_clicked_button_back_cb($button, $self)
+  callback on_clicked_button_back_cb($button, $self)
 
 Callback for when the "Back" button is pressed.
 See L</set_current_page_back>.
 
 =head2 on_key_press_event_cb
 
-  fun on_key_press_event_cb($window, $event, $self)
+  callback on_key_press_event_cb($window, $event, $self)
 
 Callback that responds to specific key events and dispatches to the appropriate
+handlers.
+
+=head2 on_scroll_event_cb
+
+  callback on_scroll_event_cb($window, $event, $self)
+
+Callback that responds to specific scroll events and dispatches the associated
 handlers.
 
 =head2 on_draw_page_cb
@@ -486,7 +520,7 @@ Callback that draws the current page on to the L</drawing_area>.
 
 =head2 on_activate_page_number_entry_cb
 
-  fun on_activate_page_number_entry_cb( $entry, $self )
+  callback on_activate_page_number_entry_cb( $entry, $self )
 
 Callback that is called when text has been entered into the page number entry.
 

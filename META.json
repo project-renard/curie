@@ -23,18 +23,16 @@
       "develop" : {
          "requires" : {
             "English" : "0",
-            "Perl::Critic::Policy::CodeLayout::TabIndentSpaceAlign" : "0",
             "Pod::Coverage::TrustPod" : "0",
             "Pod::Wordlist" : "0",
             "Test::More" : "0",
-            "Test::Perl::Critic" : "0",
             "Test::Pod::Coverage" : "1.08",
             "Test::Spelling" : "0.12"
          }
       },
       "runtime" : {
          "requires" : {
-            "Alien::MuPDF" : "0.005",
+            "Alien::MuPDF" : "0.007",
             "CHI" : "0",
             "Cairo" : "0",
             "Capture::Tiny" : "0",
@@ -70,6 +68,7 @@
             "Types::Path::Tiny" : "0",
             "Types::Standard" : "0",
             "URI" : "0",
+            "URI::file" : "0",
             "XML::Simple" : "0",
             "autodie" : "0",
             "autovivification" : "0",
@@ -89,12 +88,13 @@
             "Test::MockModule" : "0",
             "Test::MockObject" : "0",
             "Test::Most" : "0",
-            "URI::file" : "0",
-            "perl" : "5.010"
+            "Test::Trap" : "0",
+            "perl" : "5.010",
+            "version" : "0.77"
          }
       }
    },
-   "release_status" : "testing",
+   "release_status" : "stable",
    "resources" : {
       "homepage" : "https://github.com/project-renard/curie",
       "repository" : {
@@ -103,9 +103,10 @@
          "web" : "https://github.com/project-renard/curie"
       }
    },
-   "version" : "0.001_01",
+   "version" : "0.002",
    "x_contributors" : [
       "Chirag <chiragghanshani@gmail.com>",
+      "Helen Bach <haydeez.emma.roydz@gmail.com>",
       "Stanislav Yotov <yotov.st@gmail.com>",
       "Zakariyya Mughal <zaki.mughal@gmail.com>"
    ],

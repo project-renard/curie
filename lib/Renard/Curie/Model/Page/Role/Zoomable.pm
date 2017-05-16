@@ -1,8 +1,7 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Model::Page::Role::Zoomable;
-$Renard::Curie::Model::Page::Role::Zoomable::VERSION = '0.001_01'; # TRIAL
-
-$Renard::Curie::Model::Page::Role::Zoomable::VERSION = '0.00101';# TODO
+$Renard::Curie::Model::Page::Role::Zoomable::VERSION = '0.002';
+# TODO
 
 1;
 
@@ -18,7 +17,7 @@ Renard::Curie::Model::Page::Role::Zoomable
 
 =head1 VERSION
 
-version 0.001_01
+version 0.002
 
 =head1 AUTHOR
 

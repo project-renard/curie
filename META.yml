@@ -9,8 +9,9 @@ build_requires:
   Test::MockModule: '0'
   Test::MockObject: '0'
   Test::Most: '0'
-  URI::file: '0'
+  Test::Trap: '0'
   perl: '5.010'
+  version: '0.77'
 configure_requires:
   ExtUtils::MakeMaker: '0'
   perl: '5.010'
@@ -22,7 +23,7 @@ meta-spec:
   version: '1.4'
 name: Renard-Curie
 requires:
-  Alien::MuPDF: '0.005'
+  Alien::MuPDF: '0.007'
   CHI: '0'
   Cairo: '0'
   Capture::Tiny: '0'
@@ -58,6 +59,7 @@ requires:
   Types::Path::Tiny: '0'
   Types::Standard: '0'
   URI: '0'
+  URI::file: '0'
   XML::Simple: '0'
   autodie: '0'
   autovivification: '0'
@@ -70,9 +72,10 @@ requires:
 resources:
   homepage: https://github.com/project-renard/curie
   repository: https://github.com/project-renard/curie.git
-version: 0.001_01
+version: '0.002'
 x_contributors:
   - 'Chirag <chiragghanshani@gmail.com>'
+  - 'Helen Bach <haydeez.emma.roydz@gmail.com>'
   - 'Stanislav Yotov <yotov.st@gmail.com>'
   - 'Zakariyya Mughal <zaki.mughal@gmail.com>'
 x_serialization_backend: 'YAML::Tiny version 1.69'
