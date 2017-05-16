@@ -7,14 +7,13 @@ use CurieTestHelper;
 
 use Renard::Curie::Setup;
 use Renard::Curie::Helper;
-use Gtk3;
+use Renard::Curie::App;
 use URI::file;
 use List::AllUtils qw(first);
 use Test::MockModule;
 use Test::MockObject;
 
 subtest 'Check that the menu item File -> Open exists' => sub {
-	require Renard::Curie::App;
 	my $app = Renard::Curie::App->new;
 
 	my $menu_bar = $app->menu_bar->get_child;
