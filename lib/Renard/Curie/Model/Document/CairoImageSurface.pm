@@ -20,6 +20,16 @@ has image_surfaces => (
 	required => 1
 );
 
+
+=attr identity_bounds
+
+TODO
+
+=cut
+has identity_bounds => (
+	is => 'lazy', # _build_identity_bounds
+);
+
 method _build_last_page_number() :ReturnType(PageNumber) {
 	return scalar @{ $self->image_surfaces };
 }
@@ -40,6 +50,22 @@ method get_rendered_page( (PageNumber) :$page_number, @) {
 		page_number => $page_number,
 		cairo_image_surface => $self->image_surfaces->[$index],
 	);
+}
+
+method _build_identity_bounds() {
+	my $surfaces = $self->image_surfaces;
+	return [ map {
+		{
+			x => $surfaces->[$_]->get_height,
+			y => $surfaces->[$_]->get_width,
+			rotate => 0,
+			pageno => $_ + 1,
+			dims => {
+				w => $surfaces->[$_]->get_width,
+				h => $surfaces->[$_]->get_height,
+			},
+		}
+	} 0..@$surfaces-1 ];
 }
 
 extends qw(Renard::Curie::Model::Document);
