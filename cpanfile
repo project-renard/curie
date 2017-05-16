@@ -32,6 +32,7 @@ requires 'Types::Common::Numeric';
 requires 'Types::Path::Tiny';
 requires 'Types::Standard';
 requires 'URI';
+requires 'URI::file';
 requires 'XML::Simple';
 requires 'autodie';
 requires 'autovivification';
@@ -45,7 +46,6 @@ on test => sub {
     requires 'Test::MockObject';
     requires 'Test::Most';
     requires 'Test::Trap';
-    requires 'URI::file';
     requires 'version', '0.77';
 };
 requires 'Moose';
