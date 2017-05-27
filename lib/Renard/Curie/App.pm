@@ -359,7 +359,7 @@ Whenever the drag and drop data is received by the application.
 callback on_drag_data_received_cb( $widget, $context, $x, $y, $data, $info, $time, $app ) {
 	if( $info == DND_TARGET_URI_LIST ) {
 		my @uris = @{ $data->get_uris };
-		my $pdf_filename =  URI->new($uris[0])->file;
+		my $pdf_filename =  URI->new($uris[0], 'file')->file;
 		$app->open_pdf_document( $pdf_filename );
 	}
 }
