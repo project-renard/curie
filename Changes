@@ -1,3 +1,15 @@
+NEXT
+  Features
+   - Add opened documents to `Gtk3::RecentManager` so that the
+     `File -> Recent files` menu is updated.
+     Fixes <https://github.com/project-renard/curie/issues/192>.
+     See PR <https://github.com/project-renard/curie/pull/193>.
+
+  Refactoring
+   - Add method to check for valid page numbers.
+     Fixes <https://github.com/project-renard/curie/issues/179>.
+     See PR <https://github.com/project-renard/curie/pull/195>.
+
 0.002 2017-05-16 10:33:20-0500
   Features
    - Zooming using the scrollwheel.
