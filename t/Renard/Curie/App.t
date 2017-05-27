@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-use Test::Most tests => 4;
+use Test::Most tests => 5;
 use Test::Trap;
 
 use lib 't/lib';
@@ -11,6 +11,7 @@ use Renard::Curie::App;
 use File::Temp;
 use URI::file;
 use Test::MockObject;
+use Test::MockModule;
 use version 0.77 ();
 
 subtest "Process arguments" => sub {
@@ -142,4 +143,23 @@ subtest "Drag and drop of file" => sub {
 	is(  $app->page_document_component->document->filename, "$pdf_ref_path", "Drag and drop opened correct file" );
 
 	undef $app;
+};
+
+subtest "Opening document adds to recent manager" => sub {
+	my $pdf_ref_path = try {
+		CurieTestHelper->test_data_directory->child(qw(PDF Adobe pdf_reference_1-7.pdf));
+	} catch {
+		plan skip_all => "$_";
+	};
+
+	my $pdf_ref_uri = URI::file->new($pdf_ref_path);
+
+	my $added_item;
+	my $rm = Test::MockModule->new('Gtk3::RecentManager', no_auto => 1);
+	$rm->mock( add_item => method($item) { $added_item = $item; 1; } );
+
+	my $app = Renard::Curie::App->new;
+	$app->open_pdf_document( $pdf_ref_path );
+
+	is( $added_item, $pdf_ref_uri, "Got the expected item URI" );
 };

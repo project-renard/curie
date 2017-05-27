@@ -31,6 +31,7 @@ requires 'Type::Utils';
 requires 'Types::Common::Numeric';
 requires 'Types::Path::Tiny';
 requires 'Types::Standard';
+requires 'Types::URI';
 requires 'URI';
 requires 'URI::file';
 requires 'XML::Simple';
