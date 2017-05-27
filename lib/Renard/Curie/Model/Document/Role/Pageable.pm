@@ -3,7 +3,7 @@ package Renard::Curie::Model::Document::Role::Pageable;
 # ABSTRACT: Role for documents that have numbered pages
 
 use Moo::Role;
-use Renard::Curie::Types qw(PageNumber);
+use Renard::Curie::Types qw(PageNumber Bool);
 
 =attr first_page_number
 
@@ -27,6 +27,20 @@ has last_page_number => (
 	is => 'lazy', # _build_last_page_number
 	isa => PageNumber,
 );
+
+=method is_valid_page_number
+
+  method is_valid_page_number( $page_number ) :ReturnType(Bool)
+
+Returns true if C<$page_number> is a valid C<PageNumber> and is between the
+first and last page numbers inclusive.
+
+=cut
+method is_valid_page_number( $page_number ) :ReturnType(Bool) {
+	PageNumber->check($page_number)
+		&& $page_number >= $self->first_page_number
+		&& $page_number <= $self->last_page_number
+}
 
 
 1;

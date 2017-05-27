@@ -4,6 +4,7 @@ package Renard::Curie::Error;
 
 use custom::failures qw/
 	IO::FileNotFound
+	User::InvalidPageNumber
 	/;
 
 1;
