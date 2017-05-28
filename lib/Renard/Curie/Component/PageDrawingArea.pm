@@ -228,6 +228,9 @@ method setup_drawing_area() {
 
 	my $vbox = $self->builder->get_object('page-drawing-component');
 	$vbox->pack_start( $scrolled_window, TRUE, TRUE, 0);
+
+	$scrolled_window->add_events([ 'scroll-mask', 'smooth-scroll-mask' ]);
+	$scrolled_window->signal_connect( 'scroll-event', \&on_scroll_event_cb, $self );
 }
 
 =method setup_number_of_pages_label
@@ -335,6 +338,32 @@ Helper function that scrolls up by the scrollbar's step increment.
 fun decrement_scroll( (InstanceOf['Gtk3::Adjustment']) $current ) {
 	my $adjustment = $current->get_value - $current->get_step_increment;
 	$current->set_value($adjustment);
+}
+
+=callback on_scroll_event_cb
+
+TODO
+
+=cut
+fun on_scroll_event_cb( $widget, $event, $self ) {
+	my ($dx, $dy) = $event->get_scroll_deltas;
+	if( $event->get_state == 'control-mask' ) {
+		if( defined $dx && defined $dy && ($dx != 0 || $dy != 0) ) {
+			say "$dx, $dy"; # Smooth scrolling
+			say "smooth scroll and control";
+			return TRUE;
+		} elsif( defined (my $direction = $event->get_scroll_direction) ) {
+			if( $direction eq 'up' ) {
+				say "scrolling up and control";
+				return TRUE;
+			} elsif( $direction eq 'down' ) {
+				say "scrolling down and control";
+				return TRUE;
+			}
+		}
+	}
+
+	return FALSE;
 }
 
 =method refresh_drawing_area
