@@ -1,0 +1,3 @@
+requires 'Alien::MuPDF',
+	git => 'https://github.com/project-renard/p5-Alien-MuPDF.git',
+	branch => 'master';
