@@ -1,0 +1,8 @@
+# 1
+glib2-devel
+# 2
+cairo-devel
+cairo-gobject-devel
+gobject-introspection-devel
+# Net::SSLeay
+openssl-devel
