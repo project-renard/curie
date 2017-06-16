@@ -20,16 +20,6 @@ has image_surfaces => (
 	required => 1
 );
 
-
-=attr identity_bounds
-
-TODO
-
-=cut
-has identity_bounds => (
-	is => 'lazy', # _build_identity_bounds
-);
-
 method _build_last_page_number() :ReturnType(PageNumber) {
 	return scalar @{ $self->image_surfaces };
 }
@@ -73,6 +63,7 @@ extends qw(Renard::Curie::Model::Document);
 with qw(
 	Renard::Curie::Model::Document::Role::Pageable
 	Renard::Curie::Model::Document::Role::Renderable
+	Renard::Curie::Model::Document::Role::Boundable
 );
 
 1;

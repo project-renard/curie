@@ -144,7 +144,7 @@ Simplified, the high-level structure looks like:
               <span> -> [list of spans] (horizontal spaces over a line)
                 <char> -> [list of chars]
         - image
-            TODO
+            # TODO document the image data from mutool
 
 =cut
 fun get_mutool_text_stext_raw($pdf_filename, $pdf_page_no) {
@@ -175,15 +175,6 @@ fun get_mutool_text_stext_xml($pdf_filename, $pdf_page_no) {
 		$pdf_filename,
 		$pdf_page_no,
 	);
-	# page -> [list of blocks]
-	#   block -> [list of blocks]
-	#     block is either:
-	#       - stext
-	#           line -> [list of lines] (all have same baseline)
-	#             span -> [list of spans] (horizontal spaces over a line)
-	#               char -> [list of chars]
-	#       - image
-	#           TODO
 
 	my $stext = XMLin( $stext_xml,
 		ForceArray => [ qw(page block line span char) ] );

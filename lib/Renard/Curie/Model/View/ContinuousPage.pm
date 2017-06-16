@@ -1,9 +1,9 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Model::View::ContinuousPage;
-# ABSTRACT: TODO
+# ABSTRACT: A view model for continuous page views
 
 use Moo;
-use Renard::Curie::Types qw(RenderablePageModel InstanceOf);
+use Renard::Curie::Types qw(RenderablePageModel InstanceOf SizeRequest);
 use POSIX qw(ceil);
 
 use Glib::Object::Subclass
@@ -31,7 +31,7 @@ classmethod FOREIGNBUILDARGS(@) {
 
 =method draw_page
 
-TODO
+See L<Renard::Curie::Model::View::Role::Renderable/draw_page>.
 
 =cut
 method draw_page(
@@ -44,7 +44,7 @@ method draw_page(
 	my $view_y_min = $v->get_value;
 	my $view_y_max = $v->get_value + $v->get_page_size;
 
-	$self->widget_dims([
+	$self->_widget_dims([
 		$widget->get_allocated_width,
 		$widget->get_allocated_height,
 	]);
@@ -68,20 +68,6 @@ method draw_page(
 
 		$cr->paint;
 	}
-
-=begin comment
-
-	my $img = $rp->cairo_image_surface;
-
-	$cr->set_source_surface($img, ($widget->get_allocated_width -
-		$rp->width) / 2, 0);
-	$cr->paint;
-
-	$widget->set_size_request(
-		$rp->width,
-		$rp->height );
-
-=cut
 }
 
 method _trigger_page_number($new_page_number) {
@@ -93,7 +79,7 @@ method _trigger_zoom_level($new_zoom_level) {
 	$self->signal_emit( 'view-changed' );
 }
 
-has widget_dims => (
+has _widget_dims => (
 	is => 'rw',
 	default => sub { [0, 0] },
 );
@@ -116,7 +102,7 @@ method _build__page_info() {
 		$page->{bbox} = [-1, -1, -1, -1];
 
 		# xmin
-		$page->{bbox}[0] = ($self->widget_dims->[0] - $w) / 2;
+		$page->{bbox}[0] = ($self->_widget_dims->[0] - $w) / 2;
 		# ymin
 		$page->{bbox}[1] = $y_so_far;
 		# xmax
@@ -139,7 +125,12 @@ method _build__page_info() {
 	};
 }
 
-method get_size_request() {
+=method get_size_request
+
+See L<Renard::Curie::Model::View::Role::Renderable/get_size_request>.
+
+=cut
+method get_size_request() :ReturnType( list => SizeRequest) {
 	my $page_info = $self->_page_info;
 	return ( $page_info->{largest_x}, $page_info->{total_y} );
 }
@@ -148,6 +139,7 @@ with qw(
 	Renard::Curie::Model::View::Role::ForDocument
 	Renard::Curie::Model::View::Role::Pageable
 	Renard::Curie::Model::View::Role::Zoomable
+	Renard::Curie::Model::View::Role::Renderable
 );
 
 1;

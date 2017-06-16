@@ -1,6 +1,6 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Model::View::Role::Pageable;
-# ABSTRACT: TODO
+# ABSTRACT: Role for view models that are paged
 
 use Moo::Role;
 use Renard::Curie::Types qw(Bool PageNumber);

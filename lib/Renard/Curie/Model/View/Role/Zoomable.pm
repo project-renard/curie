@@ -1,6 +1,6 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Model::View::Role::Zoomable;
-# ABSTRACT: TODO
+# ABSTRACT: Role for view models that support zooming
 
 use Moo::Role;
 use Renard::Curie::Types qw(ZoomLevel);

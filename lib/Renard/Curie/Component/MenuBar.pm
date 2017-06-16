@@ -193,7 +193,9 @@ callback on_menu_help_logwin_activate_cb($event, $self) {
 
 =callback on_menu_view_continuous_cb
 
-TODO
+Callback for C<< View -> Continuous >> menu item.
+
+Toggles the view between a continuous page view and single page view.
 
 =cut
 callback on_menu_view_continuous_cb( $event_menu_item, $self ) {

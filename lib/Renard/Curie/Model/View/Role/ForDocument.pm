@@ -1,6 +1,6 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Model::View::Role::ForDocument;
-# ABSTRACT: TODO
+# ABSTRACT: Role for view model based on a document
 
 use Moo::Role;
 use Renard::Curie::Types qw(RenderableDocumentModel);
@@ -8,7 +8,7 @@ use Renard::Curie::Types qw(RenderableDocumentModel);
 =attr document
 
 The L<RenderableDocumentModel|Renard:Curie::Types/RenderableDocumentModel> that
-this component displays.
+this view model represents.
 
 =cut
 has document => (

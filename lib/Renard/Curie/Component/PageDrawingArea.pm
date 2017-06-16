@@ -18,7 +18,7 @@ use Renard::Curie::Model::View::ContinuousPage;
 
 =attr view
 
-TODO
+The view model that is used to render pages.
 
 =cut
 has view => (
@@ -54,6 +54,13 @@ has scrolled_window => (
 
 =cut
 
+=method BUILDARGS
+
+If an object is created with the C<document> argument, a
+L<Renard::Curie::Model::View::SinglePage> view model is created for that
+document.
+
+=cut
 around BUILDARGS => sub {
 	my ( $orig, $class, %args ) = @_;
 

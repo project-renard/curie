@@ -19,10 +19,6 @@ has _raw_bounds => (
 	is => 'lazy', # _build_raw_bounds
 );
 
-has identity_bounds => (
-	is => 'lazy', # _build_identity_bounds
-);
-
 =begin comment
 
 =method _build_last_page_number
@@ -125,6 +121,7 @@ with qw(
 	Renard::Curie::Model::Document::Role::Renderable
 	Renard::Curie::Model::Document::Role::Cacheable
 	Renard::Curie::Model::Document::Role::Outlineable
+	Renard::Curie::Model::Document::Role::Boundable
 );
 
 1;

@@ -7,13 +7,16 @@ use Type::Library 0.008 -base,
 		DocumentModel
 		RenderableDocumentModel
 		PageNumber
+		LaxPageNumber
+		ZoomLevel
+		SizeRequest
 	)];
 use Type::Utils -all;
 
 # Listed here so that scan-perl-deps can find them
 use Types::Path::Tiny      ();
 use Types::URI             ();
-use Types::Standard        ();
+use Types::Standard        qw(Tuple);
 use Types::Common::Numeric qw(PositiveInt PositiveOrZeroInt PositiveNum);
 
 use Type::Libraries;
@@ -88,5 +91,13 @@ The amount to zoom in on a page. This is a multiplier such that
 
 =cut
 declare "ZoomLevel", parent => PositiveNum;
+
+=type SizeRequest
+
+A tuple that represents a size request for a widget.
+
+=cut
+declare "SizeRequest",
+	parent => Tuple[PositiveInt,PositiveInt];
 
 1;

@@ -1,13 +1,13 @@
 use Renard::Curie::Setup;
 package Renard::Curie::Model::View::SinglePage;
-# ABSTRACT: TODO
+# ABSTRACT: A view model for single page views
 
 use Moo;
 use MooX::Struct
 	BBox => [ qw( width height x y) ]
 ;
 use POSIX qw(ceil);
-use Renard::Curie::Types qw(RenderablePageModel InstanceOf);
+use Renard::Curie::Types qw(RenderablePageModel InstanceOf SizeRequest);
 
 use Glib::Object::Subclass
 	'Glib::Object',
@@ -56,7 +56,7 @@ method _trigger_zoom_level($new_zoom_level) {
 
 =method draw_page
 
-TODO
+See L<Renard::Curie::Model::View::Role::Renderable/draw_page>.
 
 =cut
 method draw_page(
@@ -67,15 +67,20 @@ method draw_page(
 	my $img = $rp->cairo_image_surface;
 
 	# get the widget dimensions so that the position is correct
-	$self->widget_dims([
+	$self->_widget_dims([
 		$widget->get_allocated_width,
 		$widget->get_allocated_height,
 	]);
-	$cr->set_source_surface($img, $self->get_page_pos );
+	$cr->set_source_surface($img, $self->_get_page_pos );
 
 	$cr->paint;
 }
 
+=method update_scroll_adjustment
+
+Updates the position of the scrollbar for the view.
+
+=cut
 method update_scroll_adjustment(
 	(InstanceOf['Gtk3::Adjustment']) $hadjustment,
 	(InstanceOf['Gtk3::Adjustment']) $vadjustment,
@@ -93,15 +98,15 @@ method update_scroll_adjustment(
 		#} ($hadjustment, $vadjustment);
 }
 
-has widget_dims => (
+has _widget_dims => (
 	is => 'rw',
 );
 
-method page_bbox() {
+method _page_bbox() {
 	my ($w, $h) = $self->get_size_request;
 
 	# centre the page
-	my $x = ($self->widget_dims->[0] - $w) / 2;
+	my $x = ($self->_widget_dims->[0] - $w) / 2;
 	my $y = 0;
 
 	my $bbox = BBox->new(
@@ -112,11 +117,16 @@ method page_bbox() {
 	return $bbox;
 }
 
-method get_page_pos() {
-	return ($self->page_bbox->x, $self->page_bbox->y);
+method _get_page_pos() {
+	return ($self->_page_bbox->x, $self->_page_bbox->y);
 }
 
-method get_size_request() {
+=method get_size_request
+
+See L<Renard::Curie::Model::View::Role::Renderable/get_size_request>.
+
+=cut
+method get_size_request() :ReturnType( list => SizeRequest) {
 	my $page_identity = $self->document
 		->identity_bounds
 		->[ $self->page_number - 1 ];
@@ -125,14 +135,14 @@ method get_size_request() {
 	my $w = ceil($page_identity->{dims}{w} * $self->zoom_level);
 	my $h = ceil($page_identity->{dims}{h} * $self->zoom_level);
 
-	return ($w, $h);
+	return ( $w, $h );
 }
-
 
 with qw(
 	Renard::Curie::Model::View::Role::ForDocument
 	Renard::Curie::Model::View::Role::Pageable
 	Renard::Curie::Model::View::Role::Zoomable
+	Renard::Curie::Model::View::Role::Renderable
 );
 
 1;
