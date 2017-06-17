@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-use Test::Most tests => 7;
+use Test::Most tests => 8;
 
 use lib 't/lib';
 use CurieTestHelper;
@@ -12,6 +12,7 @@ use URI::file;
 use List::AllUtils qw(first);
 use Test::MockModule;
 use Test::MockObject;
+use Glib qw(TRUE FALSE);
 
 subtest 'Check that the menu item File -> Open exists' => sub {
 	my $app = Renard::Curie::App->new;
@@ -105,6 +106,40 @@ subtest "Menu: File -> Recent files" => sub {
 	$rc->signal_emit('item-activated');
 
 	is path($app->page_document_component->view->document->filename), $pdf_ref_path, 'File opened from Recent files';
+};
+
+subtest "Menu: View -> Continuous" => sub {
+	my $pdf_ref_path = try {
+		CurieTestHelper->test_data_directory->child(qw(PDF Adobe pdf_reference_1-7.pdf));
+	} catch {
+		plan skip_all => "$_";
+	};
+
+	plan tests => 4;
+
+	my $app = Renard::Curie::App->new;
+	$app->open_pdf_document( $pdf_ref_path );
+
+	my $continuous_item = $app->menu_bar->builder
+		->get_object('menu-item-view-continuous');
+
+	subtest "Menu item state" => sub {
+		ok( ! $continuous_item->get_active, "initially not active" );
+	};
+
+	subtest "View is single page" => sub {
+		isa_ok $app->page_document_component->view, 'Renard::Curie::Model::View::SinglePage';
+	};
+
+	$continuous_item->set_active(TRUE);
+
+	subtest "Menu item state" => sub {
+		ok( $continuous_item->get_active, "now active" );
+	};
+
+	subtest "View is continuous page" => sub {
+		isa_ok $app->page_document_component->view, 'Renard::Curie::Model::View::ContinuousPage';
+	};
 };
 
 subtest "Menu: View -> Zoom" => sub {
