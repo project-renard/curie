@@ -37,6 +37,7 @@ first and last page numbers inclusive.
 
 =cut
 method is_valid_page_number( $page_number ) :ReturnType(Bool) {
+	# uncoverable condition right
 	PageNumber->check($page_number)
 		&& $page_number >= $self->first_page_number
 		&& $page_number <= $self->last_page_number

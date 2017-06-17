@@ -38,6 +38,7 @@ method draw_page(
 	(InstanceOf['Gtk3::DrawingArea']) $widget,
 	(InstanceOf['Cairo::Context']) $cr
 ) {
+	# uncoverable subroutine
 	my $p =  $widget->get_parent;
 	my $v = $p->get_vadjustment;
 

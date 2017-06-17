@@ -14,7 +14,8 @@ method draw_page(
 	(InstanceOf['Gtk3::DrawingArea']) $widget,
 	(InstanceOf['Cairo::Context']) $cr
 ) {
-	...
+	# uncoverable subroutine
+	... # uncoverable statement
 }
 
 =method get_size_request
@@ -23,7 +24,8 @@ Determines the size request for the current view.
 
 =cut
 method get_size_request() :ReturnType( list => SizeRequest) {
-	...
+	# uncoverable subroutine
+	... # uncoverable statement
 }
 
 1;
