@@ -4,60 +4,11 @@ package Renard::Curie::Model::View::ContinuousPage;
 
 use Moo;
 use Renard::Curie::Types qw(RenderablePageModel InstanceOf);
-use Math::Trig;
-use Math::Polygon;
 
 use Glib::Object::Subclass
 	'Glib::Object',
 	signals => { 'view-changed' => {} },
 	;
-
-has bounds => ( is => 'lazy' ); # _build_bounds
-
-method _build_bounds() {
-	my $compute_rotate_dim = sub {
-		my ($info) = @_;
-		my $theta_deg = $info->{rotate} // 0;
-		my $theta_rad = $theta_deg * pi / 180;
-
-		my ($x, $y) = ($info->{x}, $info->{y});
-		my $poly = Math::Polygon->new(
-			points => [
-				[0, 0],
-				[$x, 0],
-				[$x, $y],
-				[0, $y],
-			],
-		);
-
-		my $rotated_poly = $poly->rotate(
-			degrees => $theta_deg,
-			center => [ $x/2, $y/2 ],
-		);
-
-		my ($xmin, $ymin, $xmax, $ymax) = $rotated_poly->bbox;
-
-
-		return { w => $xmax - $xmin, h => $ymax - $ymin };
-	};
-
-	my $bounds = $self->document->get_bounds;
-	my @page_xy = map {
-		my $p = {
-			x => $_->{MediaBox}{r},
-			y => $_->{MediaBox}{t},
-			rotate => $_->{Rotate}{v} // 0,
-			pageno => $_->{pagenum},
-		};
-		if( exists $p->{rotate} ) {
-			$p->{dims} = $compute_rotate_dim->( $p );
-		}
-
-		$p;
-	} @{ $bounds->{page} };
-
-	return \@page_xy;
-}
 
 =head1 SIGNALS
 
@@ -93,7 +44,7 @@ method draw_page(
 	my $view_y_max = $v->get_value + $v->get_page_size;
 
 	my $interpage = 10;
-	my $page_xy = $self->bounds;
+	my $page_xy = $self->document->identity_bounds;
 	my $largest_x = 0;
 	my $y_so_far = 0;
 	for my $page (@$page_xy) {

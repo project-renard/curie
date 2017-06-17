@@ -7,9 +7,21 @@ use Renard::Curie::Data::PDF;
 use Renard::Curie::Model::Page::RenderedFromPNG;
 use Renard::Curie::Model::Outline;
 use Renard::Curie::Types qw(PageNumber ZoomLevel);
+
+use Math::Trig;
+use Math::Polygon;
+
 use Function::Parameters;
 
 extends qw(Renard::Curie::Model::Document);
+
+has _raw_bounds => (
+	is => 'lazy', # _build_raw_bounds
+);
+
+has identity_bounds => (
+	is => 'lazy', # _build_identity_bounds
+);
 
 =begin comment
 
@@ -56,10 +68,55 @@ method _build_outline() {
 	return Renard::Curie::Model::Outline->new( items => $outline_data );
 }
 
-method get_bounds() {
+method _build__raw_bounds() {
 	my $info = Renard::Curie::Data::PDF::get_mutool_page_info_xml(
 		$self->filename
 	);
+}
+
+method _build_identity_bounds() {
+	my $compute_rotate_dim = sub {
+		my ($info) = @_;
+		my $theta_deg = $info->{rotate} // 0;
+		my $theta_rad = $theta_deg * pi / 180;
+
+		my ($x, $y) = ($info->{x}, $info->{y});
+		my $poly = Math::Polygon->new(
+			points => [
+				[0, 0],
+				[$x, 0],
+				[$x, $y],
+				[0, $y],
+			],
+		);
+
+		my $rotated_poly = $poly->rotate(
+			degrees => $theta_deg,
+			center => [ $x/2, $y/2 ],
+		);
+
+		my ($xmin, $ymin, $xmax, $ymax) = $rotated_poly->bbox;
+
+
+		return { w => $xmax - $xmin, h => $ymax - $ymin };
+	};
+
+	my $bounds = $self->_raw_bounds;
+	my @page_xy = map {
+		my $p = {
+			x => $_->{MediaBox}{r},
+			y => $_->{MediaBox}{t},
+			rotate => $_->{Rotate}{v} // 0,
+			pageno => $_->{pagenum},
+		};
+		if( exists $p->{rotate} ) {
+			$p->{dims} = $compute_rotate_dim->( $p );
+		}
+
+		$p;
+	} @{ $bounds->{page} };
+
+	return \@page_xy;
 }
 
 with qw(

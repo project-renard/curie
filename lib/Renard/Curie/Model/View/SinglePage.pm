@@ -3,6 +3,10 @@ package Renard::Curie::Model::View::SinglePage;
 # ABSTRACT: TODO
 
 use Moo;
+use MooX::Struct
+	BBox => [ qw( width height x y) ]
+;
+use POSIX qw(ceil);
 use Renard::Curie::Types qw(RenderablePageModel InstanceOf);
 
 use Glib::Object::Subclass
@@ -59,17 +63,30 @@ method draw_page(
 	(InstanceOf['Gtk3::DrawingArea']) $widget,
 	(InstanceOf['Cairo::Context']) $cr
 ) {
-	my $rp = $self->rendered_page;
+	say "called draw";
 
+	$self->widget_dims([
+		$widget->get_allocated_width,
+		$widget->get_allocated_height,
+	]);
+
+	my @previous_size_request = $widget->get_size_request;
+	my @current_size_request  = $self->get_size_request;
+	unless( $current_size_request[0] == $previous_size_request[0]
+		&& $current_size_request[1] == $previous_size_request[1] ) {
+
+		$widget->set_size_request( $self->get_size_request );
+
+		# Do not draw this time. Draw the next time after the size is
+		# changed.
+		return;
+	}
+
+	my $rp = $self->rendered_page;
 	my $img = $rp->cairo_image_surface;
 
-	$cr->set_source_surface($img, ($widget->get_allocated_width -
-		$rp->width) / 2, 0);
+	$cr->set_source_surface($img, $self->get_page_pos );
 	$cr->paint;
-
-	$widget->set_size_request(
-		$rp->width,
-		$rp->height );
 }
 
 method update_scroll_adjustment(
@@ -77,17 +94,51 @@ method update_scroll_adjustment(
 	(InstanceOf['Gtk3::Adjustment']) $vadjustment,
 	) {
 
-	say join "; ",
-		map {
-			my $list = join ", ", (
-				$_->get_lower,
-				$_->get_value,
-				$_->get_value + $_->get_page_size,
-				$_->get_upper,
-			);
-			"[ $list ]";
-		} ($hadjustment, $vadjustment);
+	#say join "; ",
+		#map {
+			#my $list = join ", ", (
+				#$_->get_lower,
+				#$_->get_value,
+				#$_->get_value + $_->get_page_size,
+				#$_->get_upper,
+			#);
+			#"[ $list ]";
+		#} ($hadjustment, $vadjustment);
 }
+
+has widget_dims => (
+	is => 'rw',
+);
+
+method page_bbox() {
+	my $page_identity = $self->document
+		->identity_bounds
+		->[ $self->page_number - 1 ];
+
+	# multiply to account for zoom-level
+	my $w = ceil($page_identity->{dims}{w} * $self->zoom_level);
+	my $h = ceil($page_identity->{dims}{h} * $self->zoom_level);
+
+	# centre the page
+	my $x = ($self->widget_dims->[0] - $w) / 2;
+	my $y = 0;
+
+	my $bbox = BBox->new(
+		width => $w, height => $h,
+		x => $x, y => $y,
+	);
+
+	return $bbox;
+}
+
+method get_page_pos() {
+	return ($self->page_bbox->x, $self->page_bbox->y);
+}
+
+method get_size_request() {
+	return ($self->page_bbox->width, $self->page_bbox->height);
+}
+
 
 with qw(
 	Renard::Curie::Model::View::Role::ForDocument
