@@ -105,10 +105,10 @@ subtest "Open document twice" => sub {
 	my $cairo_doc_b = CurieTestHelper->create_cairo_document;
 
 	$app->open_document($cairo_doc_a);
-	cmp_deeply $app->page_document_component->document, $cairo_doc_a, 'First document loaded';
+	cmp_deeply $app->page_document_component->view->document, $cairo_doc_a, 'First document loaded';
 
 	$app->open_document($cairo_doc_b);
-	cmp_deeply $app->page_document_component->document, $cairo_doc_b, 'Second document loaded';
+	cmp_deeply $app->page_document_component->view->document, $cairo_doc_b, 'Second document loaded';
 
 	undef $app;
 };
@@ -140,7 +140,7 @@ subtest "Drag and drop of file" => sub {
 
 	Renard::Curie::App::on_drag_data_received_cb( $app->content_box, @signal_args);
 
-	is(  $app->page_document_component->document->filename, "$pdf_ref_path", "Drag and drop opened correct file" );
+	is(  $app->page_document_component->view->document->filename, "$pdf_ref_path", "Drag and drop opened correct file" );
 
 	undef $app;
 };

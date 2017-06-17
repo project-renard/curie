@@ -20,6 +20,18 @@ subtest 'Cairo document model' => sub {
 	my $first_page = $cairo_doc->get_rendered_page( page_number => 1 );
 	is  $first_page->width, 5000, "Check width of first page";
 	is  $first_page->height, 5000, "Check height of first page";
+
+	cmp_deeply(
+		$cairo_doc->identity_bounds,
+		superbagof({
+			dims  =>  { h => 5000, w =>5000 },
+			pageno => 1,
+			rotate => 0,
+			x      => 5000,
+			y      => 5000,
+		}),
+		'Identity bounds contains correct data'
+	);
 };
 
 

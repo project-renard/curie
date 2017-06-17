@@ -42,11 +42,28 @@ method get_rendered_page( (PageNumber) :$page_number, @) {
 	);
 }
 
+method _build_identity_bounds() {
+	my $surfaces = $self->image_surfaces;
+	return [ map {
+		{
+			x => $surfaces->[$_]->get_height,
+			y => $surfaces->[$_]->get_width,
+			rotate => 0,
+			pageno => $_ + 1,
+			dims => {
+				w => $surfaces->[$_]->get_width,
+				h => $surfaces->[$_]->get_height,
+			},
+		}
+	} 0..@$surfaces-1 ];
+}
+
 extends qw(Renard::Curie::Model::Document);
 
 with qw(
 	Renard::Curie::Model::Document::Role::Pageable
 	Renard::Curie::Model::Document::Role::Renderable
+	Renard::Curie::Model::Document::Role::Boundable
 );
 
 1;

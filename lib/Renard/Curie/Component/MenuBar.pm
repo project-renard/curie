@@ -10,6 +10,9 @@ use Function::Parameters;
 use Renard::Curie::Types qw(InstanceOf);
 use Renard::Curie::Helper;
 
+use Renard::Curie::Model::View::ContinuousPage;
+use Renard::Curie::Model::View::SinglePage;
+
 =attr recent_manager
 
 A lazy attribute that holds the default instance of L<Gtk3::RecentManager>.
@@ -73,6 +76,11 @@ method BUILD(@) {
 	# View menu
 	#$self->builder->get_object('menu-item-view-pagemode-singlepage')
 		#->set_active(TRUE);
+	## View -> Continuous
+
+	$self->builder->get_object('menu-item-view-continuous')
+		->signal_connect( toggled =>
+			\&on_menu_view_continuous_cb, $self );
 
 	# Make sure that the menu-item-view-sidebar object matches
 	# the outline's revealer state once the application starts.
@@ -183,6 +191,28 @@ callback on_menu_help_logwin_activate_cb($event, $self) {
 	$self->app->log_window->show_log_window;
 }
 
+=callback on_menu_view_continuous_cb
+
+Callback for C<< View -> Continuous >> menu item.
+
+Toggles the view between a continuous page view and single page view.
+
+=cut
+callback on_menu_view_continuous_cb( $event_menu_item, $self ) {
+	my $document = $self->app->page_document_component->view->document;
+	my $view;
+	if( $event_menu_item->get_active ) {
+		$view = Renard::Curie::Model::View::ContinuousPage->new(
+			document => $document
+		);
+	} else {
+		$view = Renard::Curie::Model::View::SinglePage->new(
+			document => $document
+		);
+	}
+	$self->app->page_document_component->view( $view );
+}
+
 =callback on_menu_view_sidebar_cb
 
 Callback for the C<< View -> Sidebar >> menu item.
@@ -205,7 +235,7 @@ where C<$data> is an C<ArrayRef> that contains C<< [ $self, $zoom_level ] >>.
 =cut
 callback on_menu_view_zoom_item_activate_cb($event, $data) {
 	my ($self, $zoom_level) = @$data;
-	$self->app->page_document_component->zoom_level( $zoom_level );
+	$self->app->page_document_component->view->zoom_level( $zoom_level );
 }
 
 # }}}

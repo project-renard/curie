@@ -4,59 +4,28 @@ package Renard::Curie::Component::PageDrawingArea;
 
 use Moo;
 use Glib 'TRUE', 'FALSE';
-use Glib::Object::Subclass 'Gtk3::Bin';
+use Glib::Object::Subclass
+	'Gtk3::Bin',
+	signals => {
+		'update-scroll-adjustment' => {},
+	},
+	;
 use Renard::Curie::Types qw(RenderableDocumentModel RenderablePageModel
 	PageNumber ZoomLevel Bool InstanceOf);
 use Function::Parameters;
+use Renard::Curie::Model::View::SinglePage;
+use Renard::Curie::Model::View::ContinuousPage;
 
-=attr document
+=attr view
 
-The L<RenderableDocumentModel|Renard:Curie::Types/RenderableDocumentModel> that
-this component displays.
+The view model that is used to render pages.
 
 =cut
-has document => (
+has view => (
 	is => 'rw',
-	isa => (RenderableDocumentModel),
-	required => 1
+	required => 1,
+	trigger => 1,
 );
-
-=attr current_rendered_page
-
-A L<RenderablePageModel|Renard:Curie::Types/RenderablePageModel> for the
-current page.
-
-=cut
-has current_rendered_page => (
-	is => 'rw',
-	isa => (RenderablePageModel),
-);
-
-=attr current_page_number
-
-A L<PageNumber|Renard:Curie::Types/PageNumber> for the current page being
-drawn.
-
-=cut
-has current_page_number => (
-	is => 'rw',
-	isa => PageNumber,
-	default => 1,
-	trigger => 1 # _trigger_current_page_number
-	);
-
-=attr zoom_level
-
-A L<ZoomLevel|Renard::Curie::Types/ZoomLevel> for the current zoom level for
-the document.
-
-=cut
-has zoom_level => (
-	is => 'rw',
-	isa => ZoomLevel,
-	default => 1.0,
-	trigger => 1 # _trigger_zoom_level
-	);
 
 =attr drawing_area
 
@@ -78,6 +47,33 @@ has scrolled_window => (
 	isa => InstanceOf['Gtk3::ScrolledWindow'],
 );
 
+=head1 SIGNALS
+
+=for :list
+* C<update-scroll-adjustment>: called when the widget has been horizontally or vertically scrolled
+
+=cut
+
+=method BUILDARGS
+
+If an object is created with the C<document> argument, a
+L<Renard::Curie::Model::View::SinglePage> view model is created for that
+document.
+
+=cut
+around BUILDARGS => sub {
+	my ( $orig, $class, %args ) = @_;
+
+	if( exists $args{document} ) {
+		my $doc = delete $args{document};
+		$args{view} = Renard::Curie::Model::View::SinglePage->new(
+			document => $doc,
+		);
+	}
+
+	return $class->$orig(%args);
+};
+
 =classmethod FOREIGNBUILDARGS
 
   classmethod FOREIGNBUILDARGS(@)
@@ -97,7 +93,14 @@ Initialises the component's contained widgets and signals.
 
 =cut
 method BUILD(@) {
-	# so that the widget can take input
+	$self->signal_connect( 'update-scroll-adjustment', sub {
+		if( $self->view->can('update_scroll_adjustment') ) {
+			$self->view->update_scroll_adjustment(
+				$self->scrolled_window->get_hadjustment,
+				$self->scrolled_window->get_vadjustment,
+			);
+		}
+	});
 	$self->set_can_focus( TRUE );
 
 	$self->setup_button_events;
@@ -111,6 +114,8 @@ method BUILD(@) {
 	$self->add(
 		$self->builder->get_object('page-drawing-component')
 	);
+
+	$self->view->signal_emit('view-changed');
 }
 
 =method setup_button_events
@@ -143,7 +148,7 @@ See L</set_current_page_to_first>.
 
 =cut
 callback on_clicked_button_first_cb($button, $self) {
-	$self->set_current_page_to_first;
+	$self->view->set_current_page_to_first;
 }
 
 =callback on_clicked_button_last_cb
@@ -155,7 +160,7 @@ See L</set_current_page_to_last>.
 
 =cut
 callback on_clicked_button_last_cb($button, $self) {
-	$self->set_current_page_to_last;
+	$self->view->set_current_page_to_last;
 }
 
 =callback on_clicked_button_forward_cb
@@ -167,7 +172,7 @@ See L</set_current_page_forward>.
 
 =cut
 callback on_clicked_button_forward_cb($button, $self) {
-	$self->set_current_page_forward;
+	$self->view->set_current_page_forward;
 }
 
 =callback on_clicked_button_back_cb
@@ -179,7 +184,7 @@ See L</set_current_page_back>.
 
 =cut
 callback on_clicked_button_back_cb($button, $self) {
-	$self->set_current_page_back;
+	$self->view->set_current_page_back;
 }
 
 =method setup_text_entry_events
@@ -208,11 +213,6 @@ method setup_drawing_area() {
 	$drawing_area->signal_connect( draw => callback(
 			(InstanceOf['Gtk3::DrawingArea']) $widget,
 			(InstanceOf['Cairo::Context']) $cr) {
-		my $rp = $self->document->get_rendered_page(
-			page_number => $self->current_page_number,
-			zoom_level => $self->zoom_level,
-		);
-		$self->current_rendered_page( $rp );
 		$self->on_draw_page_cb( $cr );
 
 		return TRUE;
@@ -225,6 +225,18 @@ method setup_drawing_area() {
 	$scrolled_window->add($drawing_area);
 	$scrolled_window->set_policy( 'automatic', 'automatic');
 	$self->scrolled_window($scrolled_window);
+
+	my @adjustments = (
+		$self->scrolled_window->get_hadjustment,
+		$self->scrolled_window->get_vadjustment,
+	);
+	my $callback = fun($adjustment) {
+		$self->signal_emit('update-scroll-adjustment');
+	};
+	for my $adjustment (@adjustments) {
+		$adjustment->signal_connect( 'value-changed' => $callback );
+		$adjustment->signal_connect( 'changed' => $callback );
+	}
 
 	my $vbox = $self->builder->get_object('page-drawing-component');
 	$vbox->pack_start( $scrolled_window, TRUE, TRUE, 0);
@@ -239,7 +251,7 @@ Sets up the label that shows the number of pages in the document.
 =cut
 method setup_number_of_pages_label() {
 	$self->builder->get_object("number-of-pages-label")
-		->set_text( $self->document->last_page_number );
+		->set_text( $self->view->document->last_page_number );
 }
 
 =method setup_keybindings
@@ -263,9 +275,9 @@ handlers.
 =cut
 callback on_key_press_event_cb($window, $event, $self) {
 	if($event->keyval == Gtk3::Gdk::KEY_Page_Down){
-		$self->set_current_page_forward;
+		$self->view->set_current_page_forward;
 	} elsif($event->keyval == Gtk3::Gdk::KEY_Page_Up){
-		$self->set_current_page_back;
+		$self->view->set_current_page_back;
 	} elsif($event->keyval == Gtk3::Gdk::KEY_Up){
 		decrement_scroll($self->scrolled_window->get_vadjustment);
 	} elsif($event->keyval == Gtk3::Gdk::KEY_Down){
@@ -300,14 +312,14 @@ handlers.
 callback on_scroll_event_cb($window, $event, $self) {
 	if ( $event->state == 'control-mask' && $event->direction eq 'smooth') {
 		my ($delta_x, $delta_y) =  $event->get_scroll_deltas();
-		if ( $delta_y < 0 ) { $self->zoom_level ( $self->zoom_level - .05 ); }
-		elsif ( $delta_y > 0 ) { $self->zoom_level ( $self->zoom_level + .05 ); }
+		if ( $delta_y < 0 ) { $self->view->zoom_level ( $self->view->zoom_level - .05 ); }
+		elsif ( $delta_y > 0 ) { $self->view->zoom_level ( $self->view->zoom_level + .05 ); }
 		return 1;
 	} elsif ( $event->state == 'control-mask' && $event->direction eq 'up' ) {
-		$self->zoom_level ( $self->zoom_level + .05 );
+		$self->view->zoom_level ( $self->view->zoom_level + .05 );
 		return 1;
 	} elsif ( $event->state == 'control-mask' && $event->direction eq 'down' ) {
-		$self->zoom_level ( $self->zoom_level - .05 );
+		$self->view->zoom_level ( $self->view->zoom_level - .05 );
 		return 1;
 	}
 	return 0;
@@ -362,46 +374,10 @@ method on_draw_page_cb( (InstanceOf['Cairo::Context']) $cr ) {
 	# callbacks with $self as the last argument.
 	$self->set_navigation_buttons_sensitivity;
 
-	my $img = $self->current_rendered_page->cairo_image_surface;
-
-	$cr->set_source_surface($img, ($self->drawing_area->get_allocated_width -
-		$self->current_rendered_page->width) / 2, 0);
-	$cr->paint;
-
-	$self->drawing_area->set_size_request(
-		$self->current_rendered_page->width,
-		$self->current_rendered_page->height );
+	$self->view->draw_page( $self->drawing_area, $cr );
 
 	$self->builder->get_object('page-number-entry')
-		->set_text($self->current_page_number);
-}
-
-=begin comment
-
-=method _trigger_current_page_number
-
-  method _trigger_current_page_number
-
-Called whenever the L</current_page_number> is changed. This allows for telling
-the component to retrieve the new page and redraw.
-
-=end comment
-
-=cut
-method _trigger_current_page_number($new_page_number) {
-	$self->refresh_drawing_area;
-}
-
-=method _trigger_zoom_level
-
-  method _trigger_zoom_level
-
-Called whenever the L</zoom_level> is changed. This tells the component to
-redraw the current page at the new zoom level.
-
-=cut
-method _trigger_zoom_level($new_zoom_level) {
-	$self->refresh_drawing_area;
+		->set_text($self->view->page_number);
 }
 
 =callback on_activate_page_number_entry_cb
@@ -413,81 +389,11 @@ Callback that is called when text has been entered into the page number entry.
 =cut
 callback on_activate_page_number_entry_cb( $entry, $self ) {
 	my $text = $entry->get_text;
-	if( $self->document->is_valid_page_number($text) ) {
-		$self->current_page_number( $text );
+	if( $self->view->document->is_valid_page_number($text) ) {
+		$self->view->page_number( $text );
 	} else {
 		Renard::Curie::Error::User::InvalidPageNumber->throw;
 	}
-}
-
-=method set_current_page_forward
-
-  method set_current_page_forward()
-
-Increments the current page number if possible.
-
-=cut
-method set_current_page_forward() {
-	if( $self->can_move_to_next_page ) {
-		$self->current_page_number( $self->current_page_number + 1 );
-	}
-}
-
-=method set_current_page_back
-
-  method set_current_page_back()
-
-Decrements the current page number if possible.
-
-=cut
-method set_current_page_back() {
-	if( $self->can_move_to_previous_page ) {
-		$self->current_page_number( $self->current_page_number - 1 );
-	}
-}
-
-=method set_current_page_to_first
-
-  method set_current_page_to_first()
-
-Sets the page number to the first page of the document.
-
-=cut
-method set_current_page_to_first() {
-	$self->current_page_number( $self->document->first_page_number );
-}
-
-=method set_current_page_to_last
-
-  method set_current_page_to_last()
-
-Sets the current page to the last page of the document.
-
-=cut
-method set_current_page_to_last() {
-	$self->current_page_number( $self->document->last_page_number );
-}
-
-=method can_move_to_previous_page
-
-  method can_move_to_previous_page() :ReturnType(Bool)
-
-Predicate to check if we can decrement the current page number.
-
-=cut
-method can_move_to_previous_page() :ReturnType(Bool) {
-	$self->current_page_number > $self->document->first_page_number;
-}
-
-=method can_move_to_next_page
-
-  method can_move_to_next_page() :ReturnType(Bool)
-
-Predicate to check if we can increment the current page number.
-
-=cut
-method can_move_to_next_page() :ReturnType(Bool) {
-	$self->current_page_number < $self->document->last_page_number;
 }
 
 =method set_navigation_buttons_sensitivity
@@ -499,8 +405,8 @@ start of the document respectively.
 
 =cut
 method set_navigation_buttons_sensitivity() {
-	my $can_move_forward = $self->can_move_to_next_page;
-	my $can_move_back = $self->can_move_to_previous_page;
+	my $can_move_forward = $self->view->can_move_to_next_page;
+	my $can_move_back = $self->view->can_move_to_previous_page;
 
 	for my $button_name ( qw(button-last button-forward) ) {
 		$self->builder->get_object($button_name)
@@ -511,6 +417,25 @@ method set_navigation_buttons_sensitivity() {
 		$self->builder->get_object($button_name)
 			->set_sensitive($can_move_back);
 	}
+}
+
+method _trigger_view($new_view) {
+	# so that the widget can take input
+	$self->view->signal_connect( 'view-changed', sub {
+		$self->signal_emit('update-scroll-adjustment');
+		if( $self->view->can('get_size_request') ) {
+			if( $self->drawing_area ) {
+				$self->drawing_area->set_size_request(
+					$self->view->get_size_request
+				);
+				$self->refresh_drawing_area;
+			}
+		} else {
+			$self->refresh_drawing_area;
+		}
+	} );
+
+	$self->view->signal_emit('view-changed');
 }
 
 with qw(
