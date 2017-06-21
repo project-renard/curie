@@ -2,212 +2,30 @@ use Renard::Curie::Setup;
 package Renard::Curie::App;
 # ABSTRACT: A document viewing application
 
-use Gtk3 -init;
-use Cairo;
-use Glib::Object::Introspection;
-use Glib 'TRUE', 'FALSE';
-
-use URI::file;
-
 use Moo 2.001001;
 
-use Renard::Curie::Helper;
-use Renard::Curie::Model::Document::PDF;
-use Renard::Curie::Component::PageDrawingArea;
-use Renard::Curie::Component::Outline;
-use Renard::Curie::Component::MenuBar;
-use Renard::Curie::Component::LogWindow;
-use Renard::Curie::Component::FileChooser;
-use Renard::Curie::Component::AccelMap;
+extends q(Renard::Curie::Component::MainWindow);
 
-use Log::Any::Adapter;
-use MooX::Role::Logger ();
+use File::Spec;
+use File::Basename;
+use Module::Util qw(:all);
+use Renard::Curie::Types qw(InstanceOf Path Str DocumentModel File);
 use Getopt::Long::Descriptive;
 
-use Renard::Curie::Types qw(InstanceOf Path Str DocumentModel);
-use Function::Parameters;
-
-use constant {
-	DND_TARGET_URI_LIST => 0,
-	DND_TARGET_TEXT     => 1,
-};
-
-=attr window
-
-A L<Gtk3::Window> that contains the main window for the application.
+=for Pod::Coverage ui_file
 
 =cut
-has window => ( is => 'lazy' );
-
-method _build_window() :ReturnType(InstanceOf['Gtk3::Window']) {
-	my $window = $self->builder->get_object('main-window');
-}
-
-=attr page_document_component
-
-A L<Renard::Curie::Component::PageDrawingArea> that holds the currently
-displayed document.
-
-=for :list
-* Predicate: C<has_page_document_component>
-* Clearer: C<clear_page_document_component>
-
-=for Pod::Coverage has_page_document_component clear_page_document_component
-
-=cut
-has page_document_component => (
-	is => 'rw',
-	isa => InstanceOf['Renard::Curie::Component::PageDrawingArea'],
-	predicate => 1, # has_page_document_component
-	clearer => 1 # clear_page_document_component
+has ui_file => (
+	is => 'ro',
+	isa => File,
+	coerce => 1,
+	default => sub {
+		my $module_name = 'Renard::Curie::Component::MainWindow';
+		my $package_last_component = (split(/::/, $module_name))[-1];
+		my $module_file = find_installed($module_name);
+		File::Spec->catfile(dirname($module_file), "@{[ $package_last_component ]}.glade")
+	},
 );
-
-=attr menu_bar
-
-A L<Renard::Curie::Component::MenuBar> for the application's menu-bar.
-
-=cut
-has menu_bar => (
-	is => 'rw',
-	isa => InstanceOf['Renard::Curie::Component::MenuBar'],
-);
-
-=attr outline
-
-A L<Renard::Curie::Component::Outline> which makes up the outline sidebar for
-this window.
-
-=cut
-has outline => (
-	is => 'rw',
-	isa => InstanceOf['Renard::Curie::Component::Outline'],
-);
-
-=attr log_window
-
-A L<Renard::Curie::Component::LogWindow> for the application's logging.
-
-=cut
-has log_window => (
-	is => 'rw',
-	isa => InstanceOf['Renard::Curie::Component::LogWindow'],
-);
-
-=attr content_box
-
-A horizontal L<Gtk3::Box> which is used to split the main application area into
-two different regions.
-
-The left region contains L</outline> and the right region contains L</page_document_component>.
-
-=cut
-has content_box => (
-	is => 'rw',
-	isa => InstanceOf['Gtk3::Box'],
-);
-
-=classmethod setup_gtk
-
-  classmethod setup_gtk()
-
-Sets up any of the L<Glib::Object::Introspection>-based libraries needed for
-the application.
-
-Currently loads nothing, but will load the Gnome Docking Library (C<libgdl>) in
-the future.
-
-=cut
-classmethod setup_gtk() {
-	# stub out the GDL loading for now. Docking is not yet used.
-	##Glib::Object::Introspection->setup(
-		##basename => 'Gdl',
-		##version => '3',
-		##package => 'Gdl', );
-}
-
-=method setup_window
-
-  method setup_window()
-
-Sets up components that make up the window shell for the application
-including:
-
-=for :list
-* L</menu_bar>
-* L</content_box>
-* L</log_window>
-
-=cut
-method setup_window() {
-	my $menu = Renard::Curie::Component::MenuBar->new( app => $self );
-	$self->menu_bar( $menu );
-	$self->builder->get_object('application-vbox')
-		->pack_start( $menu, FALSE, TRUE, 0 );
-
-	$self->content_box( Gtk3::Box->new( 'horizontal', 0 ) );
-	$self->builder->get_object('application-vbox')
-		->pack_start( $self->content_box, TRUE, TRUE, 0 );
-
-	$self->outline( Renard::Curie::Component::Outline->new( app => $self ) );
-	$self->content_box->pack_start( $self->outline , FALSE, TRUE, 0 );
-
-	my $log_win = Renard::Curie::Component::LogWindow->new( app => $self );
-	Log::Any::Adapter->set('+Renard::Curie::Log::Any::Adapter::LogWindow',
-		log_window => $log_win );
-	$self->log_window( $log_win );
-
-	Renard::Curie::Component::AccelMap->new( app => $self );
-}
-
-=method setup_dnd
-
-  method setup_dnd()
-
-Setup drag and drop.
-
-=cut
-method setup_dnd() {
-	$self->content_box->drag_dest_set('all', [], 'copy');
-	my $target_list = Gtk3::TargetList->new([
-		Gtk3::TargetEntry->new( 'text/uri-list', 0, DND_TARGET_URI_LIST ),
-		Gtk3::TargetEntry->new( 'text/plain'   , 0, DND_TARGET_TEXT     )
-	]);
-	$self->content_box->drag_dest_set_target_list($target_list);
-
-	$self->content_box->signal_connect('drag-data-received' =>
-		\&on_drag_data_received_cb, $self );
-}
-
-=method run
-
-  method run()
-
-Displays L</window> and starts the L<Gtk3> event loop.
-
-=cut
-method run() {
-	$self->window->show_all;
-	$self->_logger->info("starting the Gtk main event loop");
-	Gtk3::main;
-}
-
-=method BUILD
-
-  method BUILD
-
-Initialises the application and sets up signals.
-
-=cut
-method BUILD(@) {
-	$self->setup_gtk;
-
-	$self->setup_window;
-	$self->setup_dnd;
-
-	$self->window->signal_connect(
-		destroy => \&on_application_quit_cb, $self );
-	$self->window->set_default_size( 800, 600 );
-}
 
 =method process_arguments
 
@@ -244,19 +62,6 @@ method process_arguments() {
 	}
 }
 
-=func _get_version
-
-  fun _get_version() :ReturnType(Str)
-
-Returns the version of the application if there is one.
-Otherwise returns the C<Str> C<'dev'> to indicate that this is a
-development version.
-
-=cut
-fun _get_version() :ReturnType(Str) {
-	return $Renard::Curie::App::VERSION // 'dev'
-}
-
 =func main
 
   fun main()
@@ -270,107 +75,17 @@ method main() {
 	$self->run;
 }
 
-=method open_pdf_document
+=func _get_version
 
-  method open_pdf_document( (Path->coercibles) $pdf_filename )
+  fun _get_version() :ReturnType(Str)
 
-Opens a PDF file stored on the disk.
-
-=cut
-method open_pdf_document( (Path->coercibles) $pdf_filename ) {
-	$pdf_filename = Path->coerce( $pdf_filename );
-	if( not -f $pdf_filename ) {
-		Renard::Curie::Error::IO::FileNotFound
-			->throw("PDF filename does not exist: $pdf_filename");
-	}
-
-	my $doc = Renard::Curie::Model::Document::PDF->new(
-		filename => $pdf_filename,
-	);
-
-	my $rm_added = $self->menu_bar->recent_manager->add_item( $doc->filename_uri );
-
-	# set window title
-	$self->window->set_title( $pdf_filename );
-
-	$self->open_document( $doc );
-}
-
-=method open_document
-
-  method open_document( (DocumentModel) $doc )
-
-Sets the document for the application's L</page_document_component>.
+Returns the version of the application if there is one.
+Otherwise returns the C<Str> C<'dev'> to indicate that this is a
+development version.
 
 =cut
-method open_document( (DocumentModel) $doc ) {
-	if( $self->has_page_document_component ) {
-		$self->content_box->remove( $self->page_document_component );
-		$self->clear_page_document_component;
-	}
-	my $pd = Renard::Curie::Component::PageDrawingArea->new(
-		document => $doc,
-	);
-	$self->outline->update( $doc );
-	$self->page_document_component($pd);
-	$self->content_box->pack_start( $pd, TRUE, TRUE, 0 );
-	$pd->show_all;
+fun _get_version() :ReturnType(Str) {
+	return $Renard::Curie::App::VERSION // 'dev'
 }
-
-# Callbacks {{{
-=callback on_open_file_dialog_cb
-
-  callback on_open_file_dialog_cb( $event, $self )
-
-Callback that opens a L<Renard::Curie::Component::FileChooser> component.
-
-=cut
-callback on_open_file_dialog_cb( $event, $self ) {
-	my $file_chooser = Renard::Curie::Component::FileChooser->new( app => $self );
-	my $dialog = $file_chooser->get_open_file_dialog_with_filters;
-
-	my $result = $dialog->run;
-
-	if ( $result eq 'accept' ) {
-		my $filename = $dialog->get_filename;
-		$dialog->destroy;
-		$self->open_pdf_document($filename);
-	} else {
-		$dialog->destroy;
-	}
-}
-
-=callback on_application_quit_cb
-
-  callback on_application_quit_cb( $event, $self )
-
-Callback that stops the L<Gtk3> main loop.
-
-=cut
-callback on_application_quit_cb( $event, $self ) {
-	Gtk3::main_quit;
-}
-
-=callback on_drag_data_received_cb
-
-  on_drag_data_received_cb
-
-Whenever the drag and drop data is received by the application.
-
-=cut
-callback on_drag_data_received_cb( $widget, $context, $x, $y, $data, $info, $time, $app ) {
-	if( $info == DND_TARGET_URI_LIST ) {
-		my @uris = @{ $data->get_uris };
-		my $pdf_filename =  URI->new($uris[0], 'file')->file;
-		$app->open_pdf_document( $pdf_filename );
-	}
-}
-# }}}
-
-with qw(
-	Renard::Curie::Component::Role::FromBuilder
-	Renard::Curie::Component::Role::UIFileFromPackageName
-	MooX::Role::Logger
-);
 
 1;

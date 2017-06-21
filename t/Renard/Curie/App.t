@@ -126,7 +126,7 @@ subtest "Drag and drop of file" => sub {
 	my $data = Test::MockObject->new( ); # mocking Gtk3::SelectionData
 	$data->mock( get_uris => sub { [ "$pdf_ref_uri" ] } );
 
-	my $info = Renard::Curie::App::DND_TARGET_URI_LIST;
+	my $info = $app->DND_TARGET_URI_LIST;
 
 	my @signal_args = (
 		undef, # $context
@@ -138,7 +138,7 @@ subtest "Drag and drop of file" => sub {
 		$app, # $app
 	);
 
-	Renard::Curie::App::on_drag_data_received_cb( $app->content_box, @signal_args);
+	Renard::Curie::Component::MainWindow::on_drag_data_received_cb( $app->content_box, @signal_args);
 
 	is(  $app->page_document_component->view->document->filename, "$pdf_ref_path", "Drag and drop opened correct file" );
 
