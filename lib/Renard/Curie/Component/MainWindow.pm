@@ -60,25 +60,6 @@ has content_box => (
 	isa => InstanceOf['Gtk3::Box'],
 );
 
-=classmethod setup_gtk
-
-  classmethod setup_gtk()
-
-Sets up any of the L<Glib::Object::Introspection>-based libraries needed for
-the application.
-
-Currently loads nothing, but will load the Gnome Docking Library (C<libgdl>) in
-the future.
-
-=cut
-classmethod setup_gtk() {
-	# stub out the GDL loading for now. Docking is not yet used.
-	##Glib::Object::Introspection->setup(
-		##basename => 'Gdl',
-		##version => '3',
-		##package => 'Gdl', );
-}
-
 =method setup_window
 
   method setup_window()
@@ -119,8 +100,6 @@ Initialises the application and sets up signals.
 
 =cut
 method BUILD(@) {
-	$self->setup_gtk;
-
 	$self->setup_window;
 
 	$self->window->signal_connect(

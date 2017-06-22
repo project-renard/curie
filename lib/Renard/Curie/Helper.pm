@@ -79,7 +79,27 @@ fun _set_icon_theme( (Str) $icon_theme_name ) {
 	}                                                                   # uncoverable statement
 }
 
+=func _setup_gtk
+
+  fun _setup_gtk()
+
+Sets up any of the L<Glib::Object::Introspection>-based libraries needed for
+the application.
+
+Currently loads nothing, but will load the Gnome Docking Library (C<libgdl>) in
+the future.
+
+=cut
+fun _setup_gtk() {
+	# stub out the GDL loading for now. Docking is not yet used.
+	##Glib::Object::Introspection->setup(
+		##basename => 'Gdl',
+		##version => '3',
+		##package => 'Gdl', );
+}
+
 sub import {
+	_setup_gtk();
 	_scrolled_window_viewport_shim;
 	_set_theme('Flat-Plat');
 	_set_icon_theme('Arc');
