@@ -106,30 +106,6 @@ method BUILD(@) {
 	$self->window->set_default_size( 800, 600 );
 }
 
-=method open_pdf_document
-
-  method open_pdf_document( (Path->coercibles) $pdf_filename )
-
-Opens a PDF file stored on the disk.
-
-=cut
-method open_pdf_document( (Path->coercibles) $pdf_filename ) {
-	$pdf_filename = Path->coerce( $pdf_filename );
-	if( not -f $pdf_filename ) {
-		Renard::Curie::Error::IO::FileNotFound
-			->throw("PDF filename does not exist: $pdf_filename");
-	}
-
-	my $doc = Renard::Curie::Model::Document::PDF->new(
-		filename => $pdf_filename,
-	);
-
-	# set window title
-	$self->window->set_title( $pdf_filename );
-
-	$self->open_document( $doc );
-}
-
 =method open_document
 
   method open_document( (DocumentModel) $doc )
@@ -147,6 +123,11 @@ method open_document( (DocumentModel) $doc ) {
 	);
 	$self->page_document_component($pd);
 	$self->content_box->pack_start( $pd, TRUE, TRUE, 0 );
+
+	if( $doc->can('filename') ) {
+		$self->window->set_title( $doc->filename );
+	}
+
 	$pd->show_all;
 }
 

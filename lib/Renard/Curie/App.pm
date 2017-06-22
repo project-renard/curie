@@ -103,4 +103,25 @@ fun _get_version() :ReturnType(Str) {
 	return $Renard::Curie::App::VERSION // 'dev'
 }
 
+=method open_pdf_document
+
+  method open_pdf_document( (Path->coercibles) $pdf_filename )
+
+Opens a PDF file stored on the disk.
+
+=cut
+method open_pdf_document( (Path->coercibles) $pdf_filename ) {
+	$pdf_filename = Path->coerce( $pdf_filename );
+	if( not -f $pdf_filename ) {
+		Renard::Curie::Error::IO::FileNotFound
+			->throw("PDF filename does not exist: $pdf_filename");
+	}
+
+	my $doc = Renard::Curie::Model::Document::PDF->new(
+		filename => $pdf_filename,
+	);
+
+	$self->open_document( $doc );
+}
+
 1;
