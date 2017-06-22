@@ -14,6 +14,7 @@ use Renard::Curie::Model::Document::PDF;
 use Renard::Curie::Component::PageDrawingArea;
 
 use MooX::Role::Logger ();
+use MooX::Lsub;
 
 use Renard::Curie::Types qw(InstanceOf Path Str DocumentModel);
 
@@ -22,11 +23,11 @@ use Renard::Curie::Types qw(InstanceOf Path Str DocumentModel);
 A L<Gtk3::Window> that contains the main window for the application.
 
 =cut
-has window => ( is => 'lazy' );
-
-method _build_window() :ReturnType(InstanceOf['Gtk3::Window']) {
-	my $window = $self->builder->get_object('main-window');
-}
+lsub window => method() { # :ReturnType(InstanceOf['Gtk3::Window'])
+	(InstanceOf['Gtk3::Window'])->(
+		$self->builder->get_object('main-window')
+	);
+};
 
 =attr page_document_component
 
@@ -55,10 +56,11 @@ two different regions.
 The left region contains L</outline> and the right region contains L</page_document_component>.
 
 =cut
-has content_box => (
-	is => 'rw',
-	isa => InstanceOf['Gtk3::Box'],
-);
+lsub content_box => method() { # :ReturnType(InstanceOf['Gtk3::Box'])
+	(InstanceOf['Gtk3::Box'])->(
+		Gtk3::Box->new( 'horizontal', 0 )
+	);
+};
 
 =method setup_window
 
@@ -74,7 +76,6 @@ including:
 
 =cut
 method setup_window() {
-	$self->content_box( Gtk3::Box->new( 'horizontal', 0 ) );
 	$self->builder->get_object('application-vbox')
 		->pack_start( $self->content_box, TRUE, TRUE, 0 );
 }

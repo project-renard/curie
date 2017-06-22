@@ -6,6 +6,7 @@ use lib 't/lib';
 use CurieTestHelper;
 
 use Renard::Curie::Setup;
+use Renard::Curie::App;
 
 my $cairo_doc = CurieTestHelper->create_cairo_document;
 

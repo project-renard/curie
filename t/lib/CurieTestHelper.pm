@@ -174,8 +174,6 @@ document passed in C<$document>.
 =cut
 classmethod create_app_with_document( (DocumentModel) $document )
 		:ReturnType( list => Tuple[InstanceOf['Renard::Curie::App'], InstanceOf['Renard::Curie::Component::PageDrawingArea']] ) {
-	require Renard::Curie::App;
-
 	my $app = Renard::Curie::App->new;
 	$app->open_document( $document );
 
