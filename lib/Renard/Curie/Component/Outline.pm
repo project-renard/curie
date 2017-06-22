@@ -3,6 +3,7 @@ package Renard::Curie::Component::Outline;
 # ABSTRACT: Component that provides a list of headings for navigating
 
 use Moo;
+use Gtk3;
 use Glib::Object::Subclass 'Gtk3::Revealer';
 use Glib 'TRUE', 'FALSE';
 use Renard::Curie::Types qw(InstanceOf PageNumber);

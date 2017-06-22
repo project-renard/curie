@@ -4,6 +4,7 @@ package Renard::Curie::Component::MenuBar;
 
 use Moo;
 use URI;
+use Gtk3;
 use Glib::Object::Subclass 'Gtk3::Bin';
 use Glib 'TRUE', 'FALSE';
 use Function::Parameters;
