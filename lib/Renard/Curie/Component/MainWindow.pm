@@ -2,16 +2,16 @@ use Renard::Curie::Setup;
 package Renard::Curie::Component::MainWindow;
 # ABSTRACT: Main window of the application
 
-use Gtk3 -init;
+use Renard::Curie::Helper;
+use Renard::Curie::Model::Document::PDF;
+use Renard::Curie::Component::PageDrawingArea;
+
+use Gtk3;
 use Cairo;
 use Glib::Object::Introspection;
 use Glib 'TRUE', 'FALSE';
 
 use Moo 2.001001;
-
-use Renard::Curie::Helper;
-use Renard::Curie::Model::Document::PDF;
-use Renard::Curie::Component::PageDrawingArea;
 
 use MooX::Role::Logger ();
 use MooX::Lsub;

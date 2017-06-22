@@ -10,7 +10,7 @@ package Renard::Curie::Helper;
 
 use Renard::Curie::Types qw(Str);
 use Class::Method::Modifiers;
-use Gtk3;
+use Gtk3 -init;
 use Function::Parameters;
 
 fun _scrolled_window_viewport_shim() {
