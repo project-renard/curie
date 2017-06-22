@@ -80,17 +80,15 @@ method setup_window() {
 		->pack_start( $self->content_box, TRUE, TRUE, 0 );
 }
 
-=method run
+=method show_all
 
-  method run()
+  method show_all()
 
-Displays L</window> and starts the L<Gtk3> event loop.
+Shows the C<window> widget of this component and its subwidgets.
 
 =cut
-method run() {
+method show_all() {
 	$self->window->show_all;
-	$self->_logger->info("starting the Gtk main event loop");
-	Gtk3::main;
 }
 
 =method BUILD

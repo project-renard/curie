@@ -4,6 +4,8 @@ package Renard::Curie::App;
 
 use Moo 2.001001;
 
+use Renard::Curie::Helper;
+
 extends q(Renard::Curie::Component::MainWindow);
 
 use File::Spec;
@@ -72,7 +74,20 @@ Application entry point.
 method main() {
 	$self = __PACKAGE__->new unless ref $self;
 	$self->process_arguments;
+	$self->show_all;
 	$self->run;
+}
+
+=method run
+
+  method run()
+
+Displays L</window> and starts the L<Gtk3> event loop.
+
+=cut
+method run() {
+	$self->_logger->info("starting the Gtk main event loop");
+	Gtk3::main;
 }
 
 =func _get_version
