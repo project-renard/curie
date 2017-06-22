@@ -6,27 +6,30 @@ use Moo 2.001001;
 
 use Renard::Curie::Helper;
 
-extends q(Renard::Curie::Component::MainWindow);
-
 use File::Spec;
 use File::Basename;
 use Module::Util qw(:all);
 use Renard::Curie::Types qw(InstanceOf Path Str DocumentModel File);
 use Getopt::Long::Descriptive;
 
-=for Pod::Coverage ui_file
+use MooX::Role::Logger ();
+
+use Renard::Curie::Component::MainWindow;
+
+=attr main_window
+
+The toplevel L<Renard::Curie::Component::MainWindow> component for this application.
 
 =cut
-has ui_file => (
+has main_window => (
 	is => 'ro',
-	isa => File,
-	coerce => 1,
-	default => sub {
-		my $module_name = 'Renard::Curie::Component::MainWindow';
-		my $package_last_component = (split(/::/, $module_name))[-1];
-		my $module_file = find_installed($module_name);
-		File::Spec->catfile(dirname($module_file), "@{[ $package_last_component ]}.glade")
+	isa => InstanceOf['Renard::Curie::Component::MainWindow'],
+	default => method() {
+		Renard::Curie::Component::MainWindow->new( context => $self );
 	},
+	handles => [
+		qw( open_document log_window page_document_component menu_bar outline window DND_TARGET_URI_LIST content_box )
+	],
 );
 
 =method process_arguments
@@ -74,7 +77,7 @@ Application entry point.
 method main() {
 	$self = __PACKAGE__->new unless ref $self;
 	$self->process_arguments;
-	$self->show_all;
+	$self->main_window->show_all;
 	$self->run;
 }
 
@@ -123,5 +126,9 @@ method open_pdf_document( (Path->coercibles) $pdf_filename ) {
 
 	$self->open_document( $doc );
 }
+
+with qw(
+	MooX::Role::Logger
+);
 
 1;

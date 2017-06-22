@@ -13,7 +13,7 @@ use Test::MockModule;
 
 subtest 'Check that the open file dialog with filters is created' => sub {
 	my $app = Renard::Curie::App->new;
-	my $file_chooser = Renard::Curie::Component::FileChooser->new( app => $app );
+	my $file_chooser = Renard::Curie::Component::FileChooser->new( app => $app->main_window );
 
 	my $dialog = $file_chooser->get_open_file_dialog_with_filters;
 

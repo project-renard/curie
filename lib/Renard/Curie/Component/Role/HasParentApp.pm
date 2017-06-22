@@ -7,12 +7,12 @@ use Renard::Curie::Types qw(InstanceOf);
 
 =attr app
 
-Links the component to the parent L<Renard::Curie::App> application.
+Links the component to the parent L<Renard::Curie::Component::MainWindow> component.
 
 =cut
 has app => (
 	is => 'ro',
-	isa => InstanceOf['Renard::Curie::App'],
+	isa => InstanceOf['Renard::Curie::Component::MainWindow'],
 	required => 1,
 	weak_ref => 1
 );
