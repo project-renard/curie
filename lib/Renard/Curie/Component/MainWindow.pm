@@ -7,28 +7,15 @@ use Cairo;
 use Glib::Object::Introspection;
 use Glib 'TRUE', 'FALSE';
 
-use URI::file;
-
 use Moo 2.001001;
 
 use Renard::Curie::Helper;
 use Renard::Curie::Model::Document::PDF;
 use Renard::Curie::Component::PageDrawingArea;
-use Renard::Curie::Component::Outline;
-use Renard::Curie::Component::MenuBar;
-use Renard::Curie::Component::LogWindow;
-use Renard::Curie::Component::FileChooser;
-use Renard::Curie::Component::AccelMap;
 
-use Log::Any::Adapter;
 use MooX::Role::Logger ();
-use MooX::Lsub;
 
 use Renard::Curie::Types qw(InstanceOf Path Str DocumentModel);
-use Function::Parameters;
-
-lsub DND_TARGET_URI_LIST => sub { 0 };
-lsub DND_TARGET_TEXT     => sub { 1 };
 
 =attr window
 
@@ -58,37 +45,6 @@ has page_document_component => (
 	isa => InstanceOf['Renard::Curie::Component::PageDrawingArea'],
 	predicate => 1, # has_page_document_component
 	clearer => 1 # clear_page_document_component
-);
-
-=attr menu_bar
-
-A L<Renard::Curie::Component::MenuBar> for the application's menu-bar.
-
-=cut
-has menu_bar => (
-	is => 'rw',
-	isa => InstanceOf['Renard::Curie::Component::MenuBar'],
-);
-
-=attr outline
-
-A L<Renard::Curie::Component::Outline> which makes up the outline sidebar for
-this window.
-
-=cut
-has outline => (
-	is => 'rw',
-	isa => InstanceOf['Renard::Curie::Component::Outline'],
-);
-
-=attr log_window
-
-A L<Renard::Curie::Component::LogWindow> for the application's logging.
-
-=cut
-has log_window => (
-	is => 'rw',
-	isa => InstanceOf['Renard::Curie::Component::LogWindow'],
 );
 
 =attr content_box
@@ -137,43 +93,9 @@ including:
 
 =cut
 method setup_window() {
-	my $menu = Renard::Curie::Component::MenuBar->new( app => $self );
-	$self->menu_bar( $menu );
-	$self->builder->get_object('application-vbox')
-		->pack_start( $menu, FALSE, TRUE, 0 );
-
 	$self->content_box( Gtk3::Box->new( 'horizontal', 0 ) );
 	$self->builder->get_object('application-vbox')
 		->pack_start( $self->content_box, TRUE, TRUE, 0 );
-
-	$self->outline( Renard::Curie::Component::Outline->new( app => $self ) );
-	$self->content_box->pack_start( $self->outline , FALSE, TRUE, 0 );
-
-	my $log_win = Renard::Curie::Component::LogWindow->new( app => $self );
-	Log::Any::Adapter->set('+Renard::Curie::Log::Any::Adapter::LogWindow',
-		log_window => $log_win );
-	$self->log_window( $log_win );
-
-	Renard::Curie::Component::AccelMap->new( app => $self );
-}
-
-=method setup_dnd
-
-  method setup_dnd()
-
-Setup drag and drop.
-
-=cut
-method setup_dnd() {
-	$self->content_box->drag_dest_set('all', [], 'copy');
-	my $target_list = Gtk3::TargetList->new([
-		Gtk3::TargetEntry->new( 'text/uri-list', 0, $self->DND_TARGET_URI_LIST ),
-		Gtk3::TargetEntry->new( 'text/plain'   , 0, $self->DND_TARGET_TEXT     )
-	]);
-	$self->content_box->drag_dest_set_target_list($target_list);
-
-	$self->content_box->signal_connect('drag-data-received' =>
-		\&on_drag_data_received_cb, $self );
 }
 
 =method run
@@ -200,7 +122,6 @@ method BUILD(@) {
 	$self->setup_gtk;
 
 	$self->setup_window;
-	$self->setup_dnd;
 
 	$self->window->signal_connect(
 		destroy => \&on_application_quit_cb, $self );
@@ -225,8 +146,6 @@ method open_pdf_document( (Path->coercibles) $pdf_filename ) {
 		filename => $pdf_filename,
 	);
 
-	my $rm_added = $self->menu_bar->recent_manager->add_item( $doc->filename_uri );
-
 	# set window title
 	$self->window->set_title( $pdf_filename );
 
@@ -248,35 +167,12 @@ method open_document( (DocumentModel) $doc ) {
 	my $pd = Renard::Curie::Component::PageDrawingArea->new(
 		document => $doc,
 	);
-	$self->outline->update( $doc );
 	$self->page_document_component($pd);
 	$self->content_box->pack_start( $pd, TRUE, TRUE, 0 );
 	$pd->show_all;
 }
 
 # Callbacks {{{
-=callback on_open_file_dialog_cb
-
-  callback on_open_file_dialog_cb( $event, $self )
-
-Callback that opens a L<Renard::Curie::Component::FileChooser> component.
-
-=cut
-callback on_open_file_dialog_cb( $event, $self ) {
-	my $file_chooser = Renard::Curie::Component::FileChooser->new( app => $self );
-	my $dialog = $file_chooser->get_open_file_dialog_with_filters;
-
-	my $result = $dialog->run;
-
-	if ( $result eq 'accept' ) {
-		my $filename = $dialog->get_filename;
-		$dialog->destroy;
-		$self->open_pdf_document($filename);
-	} else {
-		$dialog->destroy;
-	}
-}
-
 =callback on_application_quit_cb
 
   callback on_application_quit_cb( $event, $self )
@@ -287,27 +183,17 @@ Callback that stops the L<Gtk3> main loop.
 callback on_application_quit_cb( $event, $self ) {
 	Gtk3::main_quit;
 }
-
-=callback on_drag_data_received_cb
-
-  on_drag_data_received_cb
-
-Whenever the drag and drop data is received by the application.
-
-=cut
-callback on_drag_data_received_cb( $widget, $context, $x, $y, $data, $info, $time, $app ) {
-	if( $info == $app->DND_TARGET_URI_LIST ) {
-		my @uris = @{ $data->get_uris };
-		my $pdf_filename =  URI->new($uris[0], 'file')->file;
-		$app->open_pdf_document( $pdf_filename );
-	}
-}
 # }}}
 
 with qw(
 	Renard::Curie::Component::Role::FromBuilder
 	Renard::Curie::Component::Role::UIFileFromPackageName
 	MooX::Role::Logger
-);
 
+	Renard::Curie::Component::MainWindow::Role::DragAndDrop
+	Renard::Curie::Component::MainWindow::Role::LogWindow
+	Renard::Curie::Component::MainWindow::Role::AccelMap
+	Renard::Curie::Component::MainWindow::Role::MenuBar
+	Renard::Curie::Component::MainWindow::Role::Outline
+);
 1;
