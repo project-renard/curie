@@ -2,6 +2,7 @@
 
 use Test::Most tests => 5;
 use Test::Trap;
+use Test::Exception 0.43;
 
 use lib 't/lib';
 use CurieTestHelper;
