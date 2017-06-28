@@ -3,11 +3,15 @@ package Renard::Curie::Component::Outline;
 # ABSTRACT: Component that provides a list of headings for navigating
 
 use Moo;
-use Gtk3;
-use Glib::Object::Subclass 'Gtk3::Revealer';
+use Renard::Curie::Helper;
 use Glib 'TRUE', 'FALSE';
 use Renard::Curie::Types qw(InstanceOf PageNumber);
-use Function::Parameters;
+
+has _gtk_widget => (
+	is => 'lazy',
+	handles => [qw(set get_reveal_child set_reveal_child set_transition_type add)],
+);
+method _build__gtk_widget() { Gtk3::Revealer->new };
 
 =attr tree_view
 
@@ -31,17 +35,6 @@ has model => (
 	trigger => 1, # _trigger_model
 	isa => InstanceOf['Gtk3::TreeStore'],
 );
-
-=classmethod FOREIGNBUILDARGS
-
-  classmethod FOREIGNBUILDARGS(@)
-
-Builds the L<Gtk3::Revealer> super-class.
-
-=cut
-classmethod FOREIGNBUILDARGS(@) {
-	return ();
-}
 
 =method BUILD
 
@@ -82,7 +75,10 @@ method BUILD(@) {
 	$scrolled_window->add( $self->tree_view );
 	$frame->add( $scrolled_window );
 	$self->add( $frame );
-	$self->reveal( FALSE );
+
+	Glib::Timeout->add(0, sub {
+		$self->reveal( FALSE );
+	});
 }
 
 =method update
@@ -120,7 +116,7 @@ to a row of the tree that has been clicked.
 callback on_tree_view_row_activate_cb( $tree_view, $path, $column, $self ) {
 	# NOTE : This needs more error checking.
 
-	my $pd = $self->app->page_document_component;
+	my $pd = $self->main_window->page_document_component;
 
 	my $iter = $self->model->get_iter( $path );
 	my $page_num = $self->model->get_value($iter, 1);
@@ -146,7 +142,7 @@ method reveal( $should_reveal ) {
 }
 
 with qw(
-	Renard::Curie::Component::Role::HasParentApp
+	Renard::Curie::Component::Role::HasParentMainWindow
 );
 
 1;

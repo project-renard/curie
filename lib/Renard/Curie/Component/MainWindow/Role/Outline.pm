@@ -17,12 +17,12 @@ this window.
 
 =cut
 has outline => (
-	is => 'rw',
+	is => 'ro',
+	required => 1,
 	isa => InstanceOf['Renard::Curie::Component::Outline'],
 );
 
 after setup_window => method() {
-	$self->outline( Renard::Curie::Component::Outline->new( app => $self ) );
 	$self->content_box->pack_start( $self->outline , FALSE, TRUE, 0 );
 };
 

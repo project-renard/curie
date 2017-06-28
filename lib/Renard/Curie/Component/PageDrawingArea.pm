@@ -3,6 +3,8 @@ package Renard::Curie::Component::PageDrawingArea;
 # ABSTRACT: Component that implements document page navigation
 
 use Moo;
+
+use Renard::Curie::Helper;
 use Glib 'TRUE', 'FALSE';
 use Glib::Object::Subclass
 	'Gtk3::Bin',
@@ -12,7 +14,6 @@ use Glib::Object::Subclass
 	;
 use Renard::Curie::Types qw(RenderableDocumentModel RenderablePageModel
 	PageNumber ZoomLevel Bool InstanceOf);
-use Function::Parameters;
 use Renard::Curie::Model::View::SinglePage;
 use Renard::Curie::Model::View::ContinuousPage;
 

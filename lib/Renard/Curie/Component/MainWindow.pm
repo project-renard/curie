@@ -18,15 +18,15 @@ use MooX::Lsub;
 
 use Renard::Curie::Types qw(InstanceOf Path Str DocumentModel);
 
-=attr context
+=attr app
 
 A reference to the L<Renard::Curie::App> for this window.
 
 =cut
-has context => (
+has app => (
 	is => 'ro',
+	required => 1,
 	isa => InstanceOf['Renard::Curie::App'],
-	handles => [qw(open_pdf_document)],
 );
 
 =attr window
@@ -166,4 +166,5 @@ with qw(
 	Renard::Curie::Component::MainWindow::Role::MenuBar
 	Renard::Curie::Component::MainWindow::Role::Outline
 );
+
 1;

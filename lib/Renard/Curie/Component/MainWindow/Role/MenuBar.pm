@@ -16,16 +16,15 @@ A L<Renard::Curie::Component::MenuBar> for the application's menu-bar.
 
 =cut
 has menu_bar => (
-	is => 'rw',
+	is => 'ro',
+	required => 1,
 	isa => InstanceOf['Renard::Curie::Component::MenuBar'],
 );
 
 
 before setup_window => method() {
-	my $menu = Renard::Curie::Component::MenuBar->new( app => $self );
-	$self->menu_bar( $menu );
 	$self->builder->get_object('application-vbox')
-		->pack_start( $menu, FALSE, TRUE, 0 );
+		->pack_start( $self->menu_bar, FALSE, TRUE, 0 );
 };
 
 after open_document => method( (DocumentModel) $doc ) {
@@ -42,7 +41,7 @@ Callback that opens a L<Renard::Curie::Component::FileChooser> component.
 
 =cut
 callback on_open_file_dialog_cb( $event, $self ) {
-	my $file_chooser = Renard::Curie::Component::FileChooser->new( app => $self );
+	my $file_chooser = Renard::Curie::Component::FileChooser->new( main_window => $self );
 	my $dialog = $file_chooser->get_open_file_dialog_with_filters;
 
 	my $result = $dialog->run;
@@ -50,7 +49,7 @@ callback on_open_file_dialog_cb( $event, $self ) {
 	if ( $result eq 'accept' ) {
 		my $filename = $dialog->get_filename;
 		$dialog->destroy;
-		$self->open_pdf_document($filename);
+		$self->app->open_pdf_document($filename);
 	} else {
 		$dialog->destroy;
 	}

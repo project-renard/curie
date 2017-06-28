@@ -42,11 +42,11 @@ method setup_dnd() {
 Whenever the drag and drop data is received by the application.
 
 =cut
-callback on_drag_data_received_cb( $widget, $context, $x, $y, $data, $info, $time, $app ) {
-	if( $info == $app->DND_TARGET_URI_LIST ) {
+callback on_drag_data_received_cb( $widget, $context, $x, $y, $data, $info, $time, $self ) {
+	if( $info == $self->DND_TARGET_URI_LIST ) {
 		my @uris = @{ $data->get_uris };
 		my $pdf_filename =  URI->new($uris[0], 'file')->file;
-		$app->open_pdf_document( $pdf_filename );
+		$self->app->open_pdf_document( $pdf_filename );
 	}
 }
 

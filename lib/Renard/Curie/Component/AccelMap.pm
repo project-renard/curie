@@ -3,7 +3,7 @@ package Renard::Curie::Component::AccelMap;
 # ABSTRACT: Set up the accelerator map (global keybindings)
 
 use Moo;
-use Function::Parameters;
+use Renard::Curie::Helper;
 
 =method BUILD
 
@@ -29,9 +29,5 @@ method BUILD(@) {
 		'release-mask'
 	);
 }
-
-with qw(
-	Renard::Curie::Component::Role::HasParentApp
-);
 
 1;

@@ -18,25 +18,26 @@ subtest "Continuous page" => sub {
 	};
 	plan tests => 1;
 
-	my $c = Renard::Curie::Model::View::ContinuousPage->new(
+	my $cpage = Renard::Curie::Model::View::ContinuousPage->new(
 		document => Renard::Curie::Model::Document::PDF->new( filename => $pdf_ref_path )
 	);
 
-	my $app = Renard::Curie::App->new;
-	$app->page_document_component(
+	my $c = CurieTestHelper->get_app_container;
+	my $app = $c->app;
+	$c->main_window->page_document_component(
 		Renard::Curie::Component::PageDrawingArea->new(
-			view => $c
+			view => $cpage
 		)
 	);
-	$app->window->show_all;
+	$c->main_window->window->show_all;
 
 	Glib::Timeout->add(100, sub {
-		$c->zoom_level(1.1);
-		$c->page_number(2);
+		$cpage->zoom_level(1.1);
+		$cpage->page_number(2);
 
 		CurieTestHelper->refresh_gui;
 
-		$app->window->destroy;
+		$c->main_window->window->destroy;
 
 		pass;
 	});

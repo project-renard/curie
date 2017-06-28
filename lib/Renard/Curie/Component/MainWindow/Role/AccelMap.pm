@@ -6,7 +6,7 @@ use Moo::Role;
 use Renard::Curie::Component::AccelMap;
 
 after setup_window => method() {
-	Renard::Curie::Component::AccelMap->new( app => $self );
+	Renard::Curie::Component::AccelMap->new;
 };
 
 1;

@@ -23,13 +23,8 @@ The toplevel L<Renard::Curie::Component::MainWindow> component for this applicat
 =cut
 has main_window => (
 	is => 'ro',
+	required => 1,
 	isa => InstanceOf['Renard::Curie::Component::MainWindow'],
-	default => method() {
-		Renard::Curie::Component::MainWindow->new( context => $self );
-	},
-	handles => [
-		qw( open_document log_window page_document_component menu_bar outline window DND_TARGET_URI_LIST content_box )
-	],
 );
 
 =method process_arguments
@@ -124,7 +119,7 @@ method open_pdf_document( (Path->coercibles) $pdf_filename ) {
 		filename => $pdf_filename,
 	);
 
-	$self->open_document( $doc );
+	$self->main_window->open_document( $doc );
 }
 
 with qw(

@@ -16,15 +16,14 @@ A L<Renard::Curie::Component::LogWindow> for the application's logging.
 
 =cut
 has log_window => (
-	is => 'rw',
+	is => 'ro',
+	required => 1,
 	isa => InstanceOf['Renard::Curie::Component::LogWindow'],
 );
 
 after setup_window => method() {
-	my $log_win = Renard::Curie::Component::LogWindow->new( app => $self );
 	Log::Any::Adapter->set('+Renard::Curie::Log::Any::Adapter::LogWindow',
-		log_window => $log_win );
-	$self->log_window( $log_win );
+		log_window => $self->log_window );
 };
 
 1;

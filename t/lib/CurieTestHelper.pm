@@ -174,15 +174,21 @@ document passed in C<$document>.
 =cut
 classmethod create_app_with_document( (DocumentModel) $document )
 		:ReturnType( list => Tuple[InstanceOf['Renard::Curie::App'], InstanceOf['Renard::Curie::Component::PageDrawingArea']] ) {
-	my $app = Renard::Curie::App->new;
-	$app->open_document( $document );
+	my $c = $class->get_app_container;
+	my $app = $c->app;
+	$c->main_window->open_document( $document );
 
-	my $page_component = $app->page_document_component;
+	my $page_component = $c->main_window->page_document_component;
 
-	$app->window->show_all;
+	$c->main_window->window->show_all;
 	$class->refresh_gui;
 
 	($app, $page_component);
+}
+
+classmethod get_app_container() :ReturnType(InstanceOf['Renard::Curie::Container::App']) {
+	require Renard::Curie::Container::App;
+	Renard::Curie::Container::App->new;
 }
 
 1;
