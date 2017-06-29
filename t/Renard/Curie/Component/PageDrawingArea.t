@@ -102,6 +102,7 @@ subtest 'Check the page entry' => sub {
 	$page_comp->view->page_number(2);
 
 	$entry->set_text('4foo');
+	diag "InvalidPageNumber exception will be thrown - safe to ignore";
 	$entry->signal_emit('activate');
 
 	is $page_comp->view->page_number, 2, "Page number was not changed";

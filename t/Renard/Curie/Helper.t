@@ -44,6 +44,7 @@ subtest "Theming" => sub {
 		subtest "Try non-existent theme" => sub {
 			$settings->set_property($theme_property, $default_theme);
 
+			diag 'Warning about missing theme can be ignored';
 			my $try_theme = 'Does-Not-Exist';
 			Renard::Curie::Helper::_set_theme($try_theme);
 			isnt( $settings->get_property($theme_property),
@@ -83,6 +84,7 @@ EOF
 		subtest "Try non-existent icon theme" => sub {
 			$settings->set_property($icon_theme_property, $default_theme);
 
+			diag 'Warning about missing icon theme can be ignored';
 			my $try_icon_theme = 'Does-Not-Exist';
 			Renard::Curie::Helper::_set_icon_theme($try_icon_theme);
 			isnt( $settings->get_property($icon_theme_property),
