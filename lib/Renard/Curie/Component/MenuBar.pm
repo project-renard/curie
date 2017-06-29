@@ -8,9 +8,6 @@ use URI;
 use Glib 'TRUE', 'FALSE';
 use Renard::Curie::Types qw(InstanceOf);
 
-use Renard::Curie::Model::View::ContinuousPage;
-use Renard::Curie::Model::View::SinglePage;
-
 has _gtk_widget => (
 	is => 'lazy',
 	handles => [qw(add get_child signal_connect)],
@@ -36,6 +33,17 @@ Recent files>> sub-menu.
 has recent_chooser => (
 	is => 'lazy', # _build_recent_chooser
 	isa => InstanceOf['Gtk3::RecentChooserMenu'],
+);
+
+=attr view_manager
+
+The view manager model for this application.
+
+=cut
+has view_manager => (
+	is => 'ro',
+	required => 1,
+	isa => InstanceOf['Renard::Curie::ViewModel::ViewManager'],
 );
 
 =method BUILD
@@ -172,7 +180,7 @@ callback on_menu_file_recentfiles_item_activated_cb( (InstanceOf['Gtk3::RecentCh
 	my $selected_item = $recent_chooser->get_current_item;
 	my $uri = $selected_item->get_uri;
 	my $file = URI->new( $uri )->file;
-	$self->main_window->app->open_pdf_document( $file );
+	$self->view_manager->open_pdf_document( $file );
 }
 
 =callback on_menu_help_logwin_activate_cb
@@ -196,18 +204,11 @@ Toggles the view between a continuous page view and single page view.
 
 =cut
 callback on_menu_view_continuous_cb( $event_menu_item, $self ) {
-	my $document = $self->main_window->page_document_component->view->document;
-	my $view;
 	if( $event_menu_item->get_active ) {
-		$view = Renard::Curie::Model::View::ContinuousPage->new(
-			document => $document
-		);
+		$self->view_manager->set_view_to_continuous_page;
 	} else {
-		$view = Renard::Curie::Model::View::SinglePage->new(
-			document => $document
-		);
+		$self->view_manager->set_view_to_single_page;
 	}
-	$self->main_window->page_document_component->view( $view );
 }
 
 =callback on_menu_view_sidebar_cb
@@ -232,7 +233,7 @@ where C<$data> is an C<ArrayRef> that contains C<< [ $self, $zoom_level ] >>.
 =cut
 callback on_menu_view_zoom_item_activate_cb($event, $data) {
 	my ($self, $zoom_level) = @$data;
-	$self->main_window->page_document_component->view->zoom_level( $zoom_level );
+	$self->view_manager->current_view->zoom_level( $zoom_level );
 }
 
 # }}}

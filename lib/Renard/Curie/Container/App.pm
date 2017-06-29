@@ -31,7 +31,14 @@ has log_window => (
 has main_window => (
 	is => 'ro',
 	isa => 'Renard::Curie::Component::MainWindow',
-	dependencies => [qw(app log_window outline menu_bar)],
+	dependencies => [qw(log_window outline menu_bar view_manager)],
+	lifecycle => 'Singleton',
+);
+
+has view_manager => (
+	is => 'ro',
+	isa => 'Renard::Curie::ViewModel::ViewManager',
+	infer => 1,
 	lifecycle => 'Singleton',
 );
 
@@ -44,7 +51,7 @@ has app => (
 );
 
 method _test_current_view() {
-	$self->main_window->page_document_component->view;
+	$self->view_manager->current_view;
 }
 
 1;

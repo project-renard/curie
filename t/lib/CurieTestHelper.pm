@@ -176,7 +176,7 @@ classmethod create_app_with_document( (DocumentModel) $document )
 		:ReturnType( list => Tuple[InstanceOf['Renard::Curie::App'], InstanceOf['Renard::Curie::Component::PageDrawingArea']] ) {
 	my $c = $class->get_app_container;
 	my $app = $c->app;
-	$c->main_window->open_document( $document );
+	$c->view_manager->current_document( $document );
 
 	my $page_component = $c->main_window->page_document_component;
 

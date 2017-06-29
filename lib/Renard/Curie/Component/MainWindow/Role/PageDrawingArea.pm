@@ -53,6 +53,7 @@ method open_document( (DocumentModel) $doc ) {
 	$self->page_document_component(
 		Renard::Curie::Component::PageDrawingArea->new(
 			document => $doc,
+			view_manager => $self->view_manager,
 		)
 	);
 
@@ -60,5 +61,24 @@ method open_document( (DocumentModel) $doc ) {
 		$self->window->set_title( $doc->filename );
 	}
 }
+
+=attr view_manager
+
+The view manager model for this application.
+
+=cut
+has view_manager => (
+	is => 'ro',
+	required => 1,
+	isa => InstanceOf['Renard::Curie::ViewModel::ViewManager'],
+);
+
+after BUILD => method(@) {
+	$self->view_manager->signal_connect( 'document-changed' =>
+		fun($view_manager, $doc) {
+			$self->open_document( $doc );
+		}
+	);
+};
 
 1;

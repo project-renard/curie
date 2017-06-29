@@ -109,10 +109,10 @@ subtest "Open document twice" => sub {
 	my $cairo_doc_a = CurieTestHelper->create_cairo_document;
 	my $cairo_doc_b = CurieTestHelper->create_cairo_document;
 
-	$c->main_window->open_document($cairo_doc_a);
+	$c->view_manager->current_document($cairo_doc_a);
 	cmp_deeply $c->_test_current_view->document, $cairo_doc_a, 'First document loaded';
 
-	$c->main_window->open_document($cairo_doc_b);
+	$c->view_manager->current_document($cairo_doc_b);
 	cmp_deeply $c->_test_current_view->document, $cairo_doc_b, 'Second document loaded';
 
 	undef $app;
@@ -164,8 +164,9 @@ subtest "Opening document adds to recent manager" => sub {
 	my $rm = Test::MockModule->new('Gtk3::RecentManager', no_auto => 1);
 	$rm->mock( add_item => method($item) { $added_item = $item; 1; } );
 
-	my $app = CurieTestHelper->get_app_container->app;
-	$app->open_pdf_document( $pdf_ref_path );
+	my $c = CurieTestHelper->get_app_container;
+	my $app = $c->app;
+	$c->view_manager->open_pdf_document( $pdf_ref_path );
 
 	is( $added_item, $pdf_ref_uri, "Got the expected item URI" );
 };

@@ -49,7 +49,7 @@ callback on_open_file_dialog_cb( $event, $self ) {
 	if ( $result eq 'accept' ) {
 		my $filename = $dialog->get_filename;
 		$dialog->destroy;
-		$self->app->open_pdf_document($filename);
+		$self->view_manager->open_pdf_document($filename);
 	} else {
 		$dialog->destroy;
 	}

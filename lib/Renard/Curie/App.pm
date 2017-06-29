@@ -9,13 +9,13 @@ use Renard::Curie::Helper;
 use File::Spec;
 use File::Basename;
 use Module::Util qw(:all);
-use Renard::Curie::Types qw(InstanceOf Path Str DocumentModel File);
+use Renard::Curie::Types qw(InstanceOf Str DocumentModel);
 use Getopt::Long::Descriptive;
 
 use MooX::Role::Logger ();
 
 use Renard::Curie::Component::MainWindow;
-use Renard::Curie::Model::Document::PDF;
+use Renard::Curie::ViewModel::ViewManager;
 
 =attr main_window
 
@@ -26,6 +26,17 @@ has main_window => (
 	is => 'ro',
 	required => 1,
 	isa => InstanceOf['Renard::Curie::Component::MainWindow'],
+);
+
+=attr view_manager
+
+The view manager model for this application.
+
+=cut
+has view_manager => (
+	is => 'ro',
+	required => 1,
+	isa => InstanceOf['Renard::Curie::ViewModel::ViewManager'],
 );
 
 =method process_arguments
@@ -59,7 +70,7 @@ method process_arguments() {
 
 	if( $pdf_filename ) {
 		$self->_logger->infof("opening the file %s", $pdf_filename);
-		$self->open_pdf_document( $pdf_filename );
+		$self->view_manager->open_pdf_document( $pdf_filename );
 	}
 }
 
@@ -100,27 +111,6 @@ development version.
 =cut
 fun _get_version() :ReturnType(Str) {
 	return $Renard::Curie::App::VERSION // 'dev'
-}
-
-=method open_pdf_document
-
-  method open_pdf_document( (Path->coercibles) $pdf_filename )
-
-Opens a PDF file stored on the disk.
-
-=cut
-method open_pdf_document( (Path->coercibles) $pdf_filename ) {
-	$pdf_filename = Path->coerce( $pdf_filename );
-	if( not -f $pdf_filename ) {
-		Renard::Curie::Error::IO::FileNotFound
-			->throw("PDF filename does not exist: $pdf_filename");
-	}
-
-	my $doc = Renard::Curie::Model::Document::PDF->new(
-		filename => $pdf_filename,
-	);
-
-	$self->main_window->open_document( $doc );
 }
 
 with qw(

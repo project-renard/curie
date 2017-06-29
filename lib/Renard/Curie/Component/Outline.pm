@@ -13,6 +13,17 @@ has _gtk_widget => (
 );
 method _build__gtk_widget() { Gtk3::Revealer->new };
 
+=attr view_manager
+
+The view manager model for this application.
+
+=cut
+has view_manager => (
+	is => 'ro',
+	required => 1,
+	isa => InstanceOf['Renard::Curie::ViewModel::ViewManager'],
+);
+
 =attr tree_view
 
 The L<Gtk3::TreeView> component that displays the interactive tree.
@@ -115,13 +126,10 @@ to a row of the tree that has been clicked.
 =cut
 callback on_tree_view_row_activate_cb( $tree_view, $path, $column, $self ) {
 	# NOTE : This needs more error checking.
-
-	my $pd = $self->main_window->page_document_component;
-
 	my $iter = $self->model->get_iter( $path );
 	my $page_num = $self->model->get_value($iter, 1);
 
-	PageNumber->check($page_num) and $pd->view->page_number( $page_num );
+	PageNumber->check($page_num) and $self->view_manager->current_view->page_number( $page_num );
 }
 
 =method reveal
@@ -140,9 +148,5 @@ method reveal( $should_reveal ) {
 	$self->set( 'hexpand' => $should_reveal );
 	$self->set_reveal_child( $should_reveal );
 }
-
-with qw(
-	Renard::Curie::Component::Role::HasParentMainWindow
-);
 
 1;

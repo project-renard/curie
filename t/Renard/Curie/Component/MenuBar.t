@@ -124,7 +124,7 @@ subtest "Menu: View -> Continuous" => sub {
 
 	my $c = CurieTestHelper->get_app_container;
 	my $app = $c->app;
-	$app->open_pdf_document( $pdf_ref_path );
+	$c->view_manager->open_pdf_document( $pdf_ref_path );
 
 	my $continuous_item = $c->menu_bar->builder
 		->get_object('menu-item-view-continuous');
@@ -159,7 +159,7 @@ subtest "Menu: View -> Zoom" => sub {
 
 	my $c = CurieTestHelper->get_app_container;
 	my $app = $c->app;
-	$app->open_pdf_document( $pdf_ref_path );
+	$c->view_manager->open_pdf_document( $pdf_ref_path );
 
 	my $zoom_menu = $c->menu_bar->builder
 		->get_object('menu-view-zoom');

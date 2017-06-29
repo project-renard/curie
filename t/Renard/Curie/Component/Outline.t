@@ -19,7 +19,7 @@ plan tests => 2;
 subtest 'Check that the outline model is set for the current document' => sub {
 	my $c = CurieTestHelper->get_app_container;
 	my $app = $c->app;
-	$app->open_pdf_document( $pdf_ref_path );
+	$c->view_manager->open_pdf_document( $pdf_ref_path );
 	my $doc = $c->_test_current_view->document;
 	my $outline = $doc->outline;
 
@@ -32,7 +32,7 @@ subtest 'Check that clicking an outline item sets the page number' => sub {
 
 	my $c = CurieTestHelper->get_app_container;
 	my $app = $c->app;
-	$app->open_pdf_document( $pdf_ref_path );
+	$c->view_manager->open_pdf_document( $pdf_ref_path );
 	my $page_comp = $c->main_window->page_document_component;
 	my $doc = $c->_test_current_view->document;
 	my $outline = $doc->outline;

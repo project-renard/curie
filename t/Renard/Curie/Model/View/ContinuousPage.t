@@ -24,9 +24,10 @@ subtest "Continuous page" => sub {
 
 	my $c = CurieTestHelper->get_app_container;
 	my $app = $c->app;
+	$c->view_manager->current_view( $cpage );
 	$c->main_window->page_document_component(
 		Renard::Curie::Component::PageDrawingArea->new(
-			view => $cpage
+			view_manager => $c->view_manager,
 		)
 	);
 	$c->main_window->window->show_all;

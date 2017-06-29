@@ -17,15 +17,18 @@ use Renard::Curie::Types qw(RenderableDocumentModel RenderablePageModel
 use Renard::Curie::Model::View::SinglePage;
 use Renard::Curie::Model::View::ContinuousPage;
 
-=attr view
+=attr view_manager
 
-The view model that is used to render pages.
+The view manager model for this application.
 
 =cut
-has view => (
-	is => 'rw',
+has view_manager => (
+	is => 'ro',
 	required => 1,
-	trigger => 1,
+	isa => InstanceOf['Renard::Curie::ViewModel::ViewManager'],
+	handles => {
+		view => current_view =>,
+	},
 );
 
 =attr drawing_area
@@ -54,26 +57,6 @@ has scrolled_window => (
 * C<update-scroll-adjustment>: called when the widget has been horizontally or vertically scrolled
 
 =cut
-
-=method BUILDARGS
-
-If an object is created with the C<document> argument, a
-L<Renard::Curie::Model::View::SinglePage> view model is created for that
-document.
-
-=cut
-around BUILDARGS => sub {
-	my ( $orig, $class, %args ) = @_;
-
-	if( exists $args{document} ) {
-		my $doc = delete $args{document};
-		$args{view} = Renard::Curie::Model::View::SinglePage->new(
-			document => $doc,
-		);
-	}
-
-	return $class->$orig(%args);
-};
 
 =classmethod FOREIGNBUILDARGS
 
@@ -116,6 +99,12 @@ method BUILD(@) {
 		$self->builder->get_object('page-drawing-component')
 	);
 
+	$self->view_manager->signal_connect(
+		'update-view' => fun( $view_manager, $view ) {
+			$self->update_view( $view );
+		}
+	);
+	$self->update_view( $self->view_manager->current_view );
 	$self->view->signal_emit('view-changed');
 }
 
@@ -420,7 +409,14 @@ method set_navigation_buttons_sensitivity() {
 	}
 }
 
-method _trigger_view($new_view) {
+=method update_view
+
+  method update_view($new_view)
+
+Sets up the signals for a new view.
+
+=cut
+method update_view($new_view) {
 	# so that the widget can take input
 	$self->view->signal_connect( 'view-changed', sub {
 		$self->signal_emit('update-scroll-adjustment');

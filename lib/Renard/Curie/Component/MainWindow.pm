@@ -16,17 +16,6 @@ use MooX::Lsub;
 
 use Renard::Curie::Types qw(InstanceOf Path Str DocumentModel);
 
-=attr app
-
-A reference to the L<Renard::Curie::App> for this window.
-
-=cut
-has app => (
-	is => 'ro',
-	required => 1,
-	isa => InstanceOf['Renard::Curie::App'],
-);
-
 =attr window
 
 A L<Gtk3::Window> that contains the main window for the application.
