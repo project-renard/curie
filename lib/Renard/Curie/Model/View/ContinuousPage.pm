@@ -6,17 +6,10 @@ use Moo;
 use Renard::Curie::Types qw(RenderablePageModel InstanceOf SizeRequest);
 use POSIX qw(ceil);
 
+use Renard::Curie::Model::View;
 use Glib::Object::Subclass
-	'Glib::Object',
-	signals => { 'view-changed' => {} },
-	;
-
-=head1 SIGNALS
-
-=for :list
-* C<view-changed>: called when a view property is changed.
-
-=cut
+	'Renard::Curie::Model::View';
+extends 'Renard::Curie::Model::View';
 
 =classmethod FOREIGNBUILDARGS
 
