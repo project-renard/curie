@@ -3,8 +3,6 @@ package Renard::Curie::Component::MainWindow;
 # ABSTRACT: Main window of the application
 
 use Renard::Curie::Helper;
-use Renard::Curie::Model::Document::PDF;
-use Renard::Curie::Component::PageDrawingArea;
 
 use Gtk3;
 use Cairo;
@@ -39,25 +37,6 @@ lsub window => method() { # :ReturnType(InstanceOf['Gtk3::Window'])
 		$self->builder->get_object('main-window')
 	);
 };
-
-=attr page_document_component
-
-A L<Renard::Curie::Component::PageDrawingArea> that holds the currently
-displayed document.
-
-=for :list
-* Predicate: C<has_page_document_component>
-* Clearer: C<clear_page_document_component>
-
-=for Pod::Coverage has_page_document_component clear_page_document_component
-
-=cut
-has page_document_component => (
-	is => 'rw',
-	isa => InstanceOf['Renard::Curie::Component::PageDrawingArea'],
-	predicate => 1, # has_page_document_component
-	clearer => 1 # clear_page_document_component
-);
 
 =attr content_box
 
@@ -117,31 +96,6 @@ method BUILD(@) {
 	$self->window->set_default_size( 800, 600 );
 }
 
-=method open_document
-
-  method open_document( (DocumentModel) $doc )
-
-Sets the document for the application's L</page_document_component>.
-
-=cut
-method open_document( (DocumentModel) $doc ) {
-	if( $self->has_page_document_component ) {
-		$self->content_box->remove( $self->page_document_component );
-		$self->clear_page_document_component;
-	}
-	my $pd = Renard::Curie::Component::PageDrawingArea->new(
-		document => $doc,
-	);
-	$self->page_document_component($pd);
-	$self->content_box->pack_start( $pd, TRUE, TRUE, 0 );
-
-	if( $doc->can('filename') ) {
-		$self->window->set_title( $doc->filename );
-	}
-
-	$pd->show_all;
-}
-
 # Callbacks {{{
 =callback on_application_quit_cb
 
@@ -159,6 +113,8 @@ with qw(
 	Renard::Curie::Component::Role::FromBuilder
 	Renard::Curie::Component::Role::UIFileFromPackageName
 	MooX::Role::Logger
+
+	Renard::Curie::Component::MainWindow::Role::PageDrawingArea
 
 	Renard::Curie::Component::MainWindow::Role::DragAndDrop
 	Renard::Curie::Component::MainWindow::Role::LogWindow

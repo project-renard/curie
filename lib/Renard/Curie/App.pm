@@ -15,6 +15,7 @@ use Getopt::Long::Descriptive;
 use MooX::Role::Logger ();
 
 use Renard::Curie::Component::MainWindow;
+use Renard::Curie::Model::Document::PDF;
 
 =attr main_window
 
