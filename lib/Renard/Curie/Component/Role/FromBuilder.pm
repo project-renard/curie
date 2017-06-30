@@ -3,6 +3,7 @@ package Renard::Curie::Component::Role::FromBuilder;
 # ABSTRACT: Role that loads a Glade UI file into a Gtk3::Builder
 
 use Moo::Role;
+use Renard::Curie::Helper;
 use Renard::Curie::Types qw(InstanceOf);
 
 =attr ui_file

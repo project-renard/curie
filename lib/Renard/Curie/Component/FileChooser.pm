@@ -3,8 +3,8 @@ package Renard::Curie::Component::FileChooser;
 # ABSTRACT: Component that implements a file chooser dialog
 
 use Moo;
+use Renard::Curie::Helper;
 use Renard::Curie::Types qw(InstanceOf);
-use Function::Parameters;
 
 =attr all_filter
 
@@ -52,7 +52,7 @@ Returns an instance of L<Gtk3::FileChooserDialog> for opening files.
 method get_open_file_dialog() :ReturnType(InstanceOf['Gtk3::FileChooserDialog']) {
 	my $dialog = Gtk3::FileChooserDialog->new(
 		"Open File",
-		$self->app->window,
+		$self->main_window->window,
 		'GTK_FILE_CHOOSER_ACTION_OPEN',
 		'gtk-cancel' => 'cancel',
 		'gtk-open' => 'accept',
@@ -82,7 +82,7 @@ method get_open_file_dialog_with_filters() :ReturnType(InstanceOf['Gtk3::FileCho
 }
 
 with qw(
-	Renard::Curie::Component::Role::HasParentApp
+	Renard::Curie::Component::Role::HasParentMainWindow
 );
 
 1;

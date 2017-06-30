@@ -2,11 +2,12 @@ use Renard::Curie::Setup;
 package Renard::Curie::Model::Document::CairoImageSurface;
 # ABSTRACT: Document made up of a collection of Cairo image surfaces
 
+use Moo;
 use Renard::Curie::Model::Page::CairoImageSurface;
 use Function::Parameters;
 use Renard::Curie::Types qw(PageNumber InstanceOf ArrayRef);
 
-use Moo;
+extends qw(Renard::Curie::Model::Document);
 
 =attr image_surfaces
 
@@ -57,8 +58,6 @@ method _build_identity_bounds() {
 		}
 	} 0..@$surfaces-1 ];
 }
-
-extends qw(Renard::Curie::Model::Document);
 
 with qw(
 	Renard::Curie::Model::Document::Role::Pageable

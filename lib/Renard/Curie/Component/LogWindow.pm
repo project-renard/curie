@@ -3,10 +3,10 @@ package Renard::Curie::Component::LogWindow;
 # ABSTRACT: Component that collects log messages
 
 use Moo;
+use Renard::Curie::Helper;
 use MooX::HandlesVia;
 use Glib 'TRUE', 'FALSE';
 use Renard::Curie::Types qw(ArrayRef HashRef Str);
-use Function::Parameters;
 
 =attr log_messages
 

@@ -12,8 +12,9 @@ use Renard::Curie::Component::FileChooser;
 use Test::MockModule;
 
 subtest 'Check that the open file dialog with filters is created' => sub {
-	my $app = Renard::Curie::App->new;
-	my $file_chooser = Renard::Curie::Component::FileChooser->new( app => $app );
+	my $c = CurieTestHelper->get_app_container;
+	my $app = $c->app;
+	my $file_chooser = Renard::Curie::Component::FileChooser->new( main_window => $c->main_window );
 
 	my $dialog = $file_chooser->get_open_file_dialog_with_filters;
 
@@ -42,8 +43,9 @@ subtest "Menu: File -> Open" => sub {
 		($got_file, $destroyed) = (0, 0);
 		$fc->mock( run => 'accept' );
 
-		my $app = Renard::Curie::App->new;
-		Renard::Curie::Helper->callback( $app->menu_bar,
+		my $c = CurieTestHelper->get_app_container;
+		my $app = $c->app;
+		Renard::Curie::Helper->callback( $c->menu_bar,
 			on_menu_file_open_activate_cb => undef );
 
 		ok( $got_file, "Callback retrieved the filename");
@@ -54,8 +56,9 @@ subtest "Menu: File -> Open" => sub {
 		($got_file, $destroyed) = (0, 0);
 		$fc->mock( run => 'cancel' );
 
-		my $app = Renard::Curie::App->new;
-		Renard::Curie::Helper->callback( $app->menu_bar,
+		my $c = CurieTestHelper->get_app_container;
+		my $app = $c->app;
+		Renard::Curie::Helper->callback( $c->menu_bar,
 			on_menu_file_open_activate_cb => undef );
 		ok(!$got_file, "Callback did not retrieve the filename");
 		ok( $destroyed, "Callback destroyed the dialog");

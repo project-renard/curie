@@ -3,15 +3,16 @@ package Renard::Curie::Component::MenuBar;
 # ABSTRACT: Component that provides a menu bar for the application
 
 use Moo;
-use URI;
-use Glib::Object::Subclass 'Gtk3::Bin';
-use Glib 'TRUE', 'FALSE';
-use Function::Parameters;
-use Renard::Curie::Types qw(InstanceOf);
 use Renard::Curie::Helper;
+use URI;
+use Glib 'TRUE', 'FALSE';
+use Renard::Curie::Types qw(InstanceOf);
 
-use Renard::Curie::Model::View::ContinuousPage;
-use Renard::Curie::Model::View::SinglePage;
+has _gtk_widget => (
+	is => 'lazy',
+	handles => [qw(add get_child signal_connect)],
+);
+method _build__gtk_widget() { Gtk3::Overlay->new };
 
 =attr recent_manager
 
@@ -34,16 +35,16 @@ has recent_chooser => (
 	isa => InstanceOf['Gtk3::RecentChooserMenu'],
 );
 
-=classmethod FOREIGNBUILDARGS
+=attr view_manager
 
-  classmethod FOREIGNBUILDARGS(@)
-
-Builds the L<Gtk3::Bin> super-class.
+The view manager model for this application.
 
 =cut
-classmethod FOREIGNBUILDARGS(@) {
-	return ();
-}
+has view_manager => (
+	is => 'ro',
+	required => 1,
+	isa => InstanceOf['Renard::Curie::ViewModel::ViewManager'],
+);
 
 =method BUILD
 
@@ -53,11 +54,6 @@ Initialises the menu bar signals.
 
 =cut
 method BUILD(@) {
-	# Accelerator group
-	$self->app->window->add_accel_group(
-		$self->builder->get_object('menu-accel-group')
-	);
-
 	# File menu
 	$self->builder->get_object('menu-item-file-open')
 		->signal_connect( activate =>
@@ -82,13 +78,6 @@ method BUILD(@) {
 		->signal_connect( toggled =>
 			\&on_menu_view_continuous_cb, $self );
 
-	# Make sure that the menu-item-view-sidebar object matches
-	# the outline's revealer state once the application starts.
-	Glib::Timeout->add( 0, sub {
-		$self->builder->get_object('menu-item-view-sidebar')
-			->set_active($self->app->outline->get_reveal_child);
-		return FALSE; # run only once
-	});
 	$self->builder->get_object('menu-item-view-sidebar')
 		->signal_connect( toggled =>
 			\&on_menu_view_sidebar_cb, $self );
@@ -123,10 +112,26 @@ method BUILD(@) {
 		->signal_connect( activate =>
 			\&on_menu_help_logwin_activate_cb, $self );
 
+	# delay this because it is circular
+	Glib::Timeout->add(0, sub {
+		$self->_wireup;
+		return FALSE; # run only once
+	});
+
 	# add as child for this Gtk3::Bin
 	$self->add(
 		$self->builder->get_object('menubar')
 	);
+}
+
+method _wireup() {
+	# Accelerator group
+	$self->main_window->window->add_accel_group(
+		$self->builder->get_object('menu-accel-group')
+	);
+
+	$self->builder->get_object('menu-item-view-sidebar')
+		->set_active($self->main_window->outline->get_reveal_child);
 }
 
 method _build_recent_manager() :ReturnType(InstanceOf['Gtk3::RecentManager']) {
@@ -150,7 +155,7 @@ Callback for the C<< File -> Open >> menu item.
 
 =cut
 callback on_menu_file_open_activate_cb($event, $self) {
-	Renard::Curie::Helper->callback( $self->app, on_open_file_dialog_cb => $event );
+	Renard::Curie::Helper->callback( $self->main_window, on_open_file_dialog_cb => $event );
 }
 
 =callback on_menu_file_quit_activate_cb
@@ -161,7 +166,7 @@ Callback for the C<< File -> Quit >> menu item.
 
 =cut
 callback on_menu_file_quit_activate_cb($event, $self) {
-	Renard::Curie::Helper->callback( $self->app, on_application_quit_cb => $event );
+	Renard::Curie::Helper->callback( $self->main_window, on_application_quit_cb => $event );
 }
 
 =callback on_menu_file_recentfiles_item_activated_cb
@@ -175,7 +180,7 @@ callback on_menu_file_recentfiles_item_activated_cb( (InstanceOf['Gtk3::RecentCh
 	my $selected_item = $recent_chooser->get_current_item;
 	my $uri = $selected_item->get_uri;
 	my $file = URI->new( $uri )->file;
-	$self->app->open_pdf_document( $file );
+	$self->view_manager->open_pdf_document( $file );
 }
 
 =callback on_menu_help_logwin_activate_cb
@@ -188,7 +193,7 @@ Displays the Message log window.
 
 =cut
 callback on_menu_help_logwin_activate_cb($event, $self) {
-	$self->app->log_window->show_log_window;
+	$self->main_window->log_window->show_log_window;
 }
 
 =callback on_menu_view_continuous_cb
@@ -199,18 +204,11 @@ Toggles the view between a continuous page view and single page view.
 
 =cut
 callback on_menu_view_continuous_cb( $event_menu_item, $self ) {
-	my $document = $self->app->page_document_component->view->document;
-	my $view;
 	if( $event_menu_item->get_active ) {
-		$view = Renard::Curie::Model::View::ContinuousPage->new(
-			document => $document
-		);
+		$self->view_manager->set_view_to_continuous_page;
 	} else {
-		$view = Renard::Curie::Model::View::SinglePage->new(
-			document => $document
-		);
+		$self->view_manager->set_view_to_single_page;
 	}
-	$self->app->page_document_component->view( $view );
 }
 
 =callback on_menu_view_sidebar_cb
@@ -221,7 +219,7 @@ This toggles whether or not the outline sidebar is visible.
 
 =cut
 callback on_menu_view_sidebar_cb($event_menu_item, $self) {
-	$self->app->outline->reveal( $event_menu_item->get_active );
+	$self->main_window->outline->reveal( $event_menu_item->get_active );
 }
 
 =callback on_menu_view_zoom_item_activate_cb
@@ -235,7 +233,7 @@ where C<$data> is an C<ArrayRef> that contains C<< [ $self, $zoom_level ] >>.
 =cut
 callback on_menu_view_zoom_item_activate_cb($event, $data) {
 	my ($self, $zoom_level) = @$data;
-	$self->app->page_document_component->view->zoom_level( $zoom_level );
+	$self->view_manager->current_view->zoom_level( $zoom_level );
 }
 
 # }}}
@@ -244,7 +242,7 @@ callback on_menu_view_zoom_item_activate_cb($event, $data) {
 with qw(
 	Renard::Curie::Component::Role::FromBuilder
 	Renard::Curie::Component::Role::UIFileFromPackageName
-	Renard::Curie::Component::Role::HasParentApp
+	Renard::Curie::Component::Role::HasParentMainWindow
 );
 
 1;

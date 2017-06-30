@@ -10,8 +10,10 @@ package Renard::Curie::Helper;
 
 use Renard::Curie::Types qw(Str);
 use Class::Method::Modifiers;
-use Gtk3;
+use Gtk3 -init;
 use Function::Parameters;
+
+our $LOADED = 0;
 
 fun _scrolled_window_viewport_shim() {
 	# Note: The code below is marked as uncoverable because it only applies
@@ -79,10 +81,52 @@ fun _set_icon_theme( (Str) $icon_theme_name ) {
 	}                                                                   # uncoverable statement
 }
 
+=func _setup_gtk
+
+  fun _setup_gtk()
+
+Sets up any of the L<Glib::Object::Introspection>-based libraries needed for
+the application.
+
+Currently loads nothing, but will load the Gnome Docking Library (C<libgdl>) in
+the future.
+
+=cut
+fun _setup_gtk() {
+	# stub out the GDL loading for now. Docking is not yet used.
+	##Glib::Object::Introspection->setup(
+		##basename => 'Gdl',
+		##version => '3',
+		##package => 'Gdl', );
+}
+
+fun _gtk_box_shim() {
+	my $shim = fun(@) {
+		my $orig = shift;
+		my $self = shift;
+		my $widget = shift;
+		if( $widget->can('_gtk_widget') ) {
+			$orig->($self, $widget->_gtk_widget, @_);
+		} else {
+			$orig->($self, $widget, @_);
+		}
+	};
+	for my $method (qw(pack_start add)) {
+		Class::Method::Modifiers::install_modifier
+			"Gtk3::Box",
+			around => $method => $shim;
+	}
+}
+
 sub import {
-	_scrolled_window_viewport_shim;
-	_set_theme('Flat-Plat');
-	_set_icon_theme('Arc');
+	unless( $::LOADED ) {
+		_setup_gtk();
+		_scrolled_window_viewport_shim;
+		_gtk_box_shim;
+		#_set_theme('Flat-Plat');
+		#_set_icon_theme('Arc');
+		$::LOADED = 1;
+	}
 	return;
 }
 
