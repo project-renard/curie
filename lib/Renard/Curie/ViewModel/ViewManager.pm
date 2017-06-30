@@ -33,7 +33,7 @@ has current_document => (
 has current_view => (
 	is => 'rw',
 	isa => InstanceOf['Renard::Curie::Model::View'],
-	trigger => 1,
+	trigger => 1, # _trigger_current_view
 );
 
 method _trigger_current_view($view) {
