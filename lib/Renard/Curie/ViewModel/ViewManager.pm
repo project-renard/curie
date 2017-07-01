@@ -3,7 +3,7 @@ package Renard::Curie::ViewModel::ViewManager;
 # ABSTRACT: Manages the currently open views
 
 use Moo;
-use Renard::Curie::Types qw(InstanceOf DocumentModel Path);
+use Renard::Curie::Types qw(InstanceOf DocumentModel Path FileUri);
 use Renard::Curie::Model::View::SinglePage;
 use Renard::Curie::Model::View::ContinuousPage;
 use Renard::Curie::Model::Document::PDF;
@@ -69,6 +69,17 @@ method open_pdf_document( (Path->coercibles) $pdf_filename ) {
 			filename => $pdf_filename,
 		)
 	);
+}
+
+=method open_document_as_file_uri
+
+  method open_document_as_file_uri( (FileUri) $uri )
+
+Takes a file in the form of a C<FileUri> and opens the file.
+
+=cut
+method open_document_as_file_uri( (FileUri) $uri ) {
+	$self->open_pdf_document( $uri->file );
 }
 
 =method set_view_to_continuous_page

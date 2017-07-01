@@ -43,19 +43,24 @@ Whenever the drag and drop data is received by the application.
 
 =cut
 callback on_drag_data_received_cb( $widget, $context, $x, $y, $data, $info, $time, $self ) {
-	my $pdf_filename;
-
-	my $file_uri_to_file = fun($uri) {
-		URI->new($uri, 'file')->file;
-	};
+	my $pdf_filename_text;
 
 	if( $info == $self->DND_TARGET_URI_LIST ) {
 		my @uris = @{ $data->get_uris };
-		$pdf_filename =  $file_uri_to_file->($uris[0]);
+		$pdf_filename_text = $uris[0];
+	} elsif( $info == $self->DND_TARGET_TEXT ) {
+		my $text = $data->get_text;
+		if( $text =~ /^file:/ ) {
+			$pdf_filename_text = $text;
+		} else {
+			warn "Do not know what to do with text drag-and-drop data: $text";
+		}
 	}
 
-	if( defined $pdf_filename ) {
-		$self->view_manager->open_pdf_document( $pdf_filename );
+	if( defined $pdf_filename_text ) {
+		$self->view_manager->open_document_as_file_uri(
+			URI->new($pdf_filename_text, 'file')
+		);
 	}
 }
 

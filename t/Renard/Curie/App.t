@@ -126,29 +126,55 @@ subtest "Drag and drop of file" => sub {
 	};
 
 	my $pdf_ref_uri = URI::file->new($pdf_ref_path);
-
 	my $c = CurieTestHelper->get_app_container;
-	my $app = $c->app;
-	my $data = Test::MockObject->new( ); # mocking Gtk3::SelectionData
-	$data->mock( get_uris => sub { [ "$pdf_ref_uri" ] } );
 
-	my $info = $c->main_window->DND_TARGET_URI_LIST;
-
-	my @signal_args = (
-		undef, # $context
-		0,     # $x
-		0,     # $y
-		$data, # $data
-		$info, # $info
-		0,     # $time
-		$c->main_window, # $main_window
+	my @tests = (
+		{
+			name => 'text/uri-list',
+			info => $c->main_window->DND_TARGET_URI_LIST,
+			mock => sub {
+				my $data = Test::MockObject->new( ); # mocking Gtk3::SelectionData
+				$data->mock( get_uris => sub { [ "$pdf_ref_uri" ] } );
+				$data;
+			},
+		},
+		{
+			name => 'text/plain',
+			info => $c->main_window->DND_TARGET_TEXT,
+			mock => sub {
+				my $data = Test::MockObject->new( ); # mocking Gtk3::SelectionData
+				$data->mock( get_text => sub { "$pdf_ref_uri" } );
+				$data;
+			},
+		},
 	);
 
-	Renard::Curie::Component::MainWindow::on_drag_data_received_cb( $c->main_window->content_box, @signal_args );
+	plan tests => scalar @tests;
 
-	is(  $c->_test_current_view->document->filename, "$pdf_ref_path", "Drag and drop opened correct file" );
+	for my $test (@tests) {
+		subtest "Name: $test->{name}" => sub {
+			my $app = $c->app;
 
-	undef $app;
+			my $data = $test->{mock}->();
+			my $info = $test->{info};
+
+			my @signal_args = (
+				undef, # $context
+				0,     # $x
+				0,     # $y
+				$data, # $data
+				$info, # $info
+				0,     # $time
+				$c->main_window, # $main_window
+			);
+
+			Renard::Curie::Component::MainWindow::on_drag_data_received_cb( $c->main_window->content_box, @signal_args );
+
+			is(  $c->_test_current_view->document->filename, "$pdf_ref_path", "Drag and drop opened correct file" );
+
+			undef $app;
+		};
+	}
 };
 
 subtest "Opening document adds to recent manager" => sub {
