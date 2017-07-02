@@ -179,8 +179,7 @@ Callback for items under the C<< File -> Recent files >> sub-menu.
 callback on_menu_file_recentfiles_item_activated_cb( (InstanceOf['Gtk3::RecentChooserMenu']) $recent_chooser, $self ) {
 	my $selected_item = $recent_chooser->get_current_item;
 	my $uri = $selected_item->get_uri;
-	my $file = URI->new( $uri )->file;
-	$self->view_manager->open_pdf_document( $file );
+	$self->view_manager->open_document_as_file_uri( URI->new( $uri, 'file' ) );
 }
 
 =callback on_menu_help_logwin_activate_cb
