@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 
 use Test::Most tests => 6;
+use Test::MockModule;
 
 use lib 't/lib';
 use CurieTestHelper;
@@ -102,7 +103,10 @@ subtest 'Check the page entry' => sub {
 	$page_comp->view->page_number(2);
 
 	$entry->set_text('4foo');
+	my $dialog = Test::MockModule->new('Gtk3::Dialog', no_auto => 1);
+	$dialog->mock( run => sub {} ); # do not allow the dialog to be run
 	diag "InvalidPageNumber exception will be thrown - safe to ignore";
+
 	$entry->signal_emit('activate');
 
 	is $page_comp->view->page_number, 2, "Page number was not changed";
