@@ -241,7 +241,7 @@ Sets up the label that shows the number of pages in the document.
 =cut
 method setup_number_of_pages_label() {
 	$self->builder->get_object("number-of-pages-label")
-		->set_text( $self->view->document->last_page_number );
+		->set_text( $self->view->document->number_of_pages );
 }
 
 =method setup_keybindings
