@@ -40,10 +40,6 @@ has _grid_schemes => (
 	isa => ArrayRef, # ArrayRef[GridScheme]
 );
 
-has _grid_index => (
-	is => 'rw',
-);
-
 method _build__grid_schemes() {
 	my $go_r = $self->view_options->grid_options->rows;
 	my $go_c = $self->view_options->grid_options->columns;
@@ -79,15 +75,19 @@ method _build__grid_schemes() {
 	return \@grid_collection;
 }
 
-method _trigger_page_number() {
+method _build__subviews() {
+	[ (1) x scalar @{ $self->_grid_schemes } ],
+}
+
+method _trigger__subview_idx() {
 	...
 }
 
 
 with qw(
 	Renard::Curie::Model::View::Role::ForDocument
-	Renard::Curie::Model::View::Role::Pageable
 	Renard::Curie::Model::View::Role::Renderable
+	Renard::Curie::Model::View::Role::SubviewPageable
 );
 
 1;
