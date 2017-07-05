@@ -120,15 +120,8 @@ See L<Renard::Curie::Model::View::Role::Renderable/get_size_request>.
 
 =cut
 method get_size_request() :ReturnType( list => SizeRequest) {
-	my $page_identity = $self->document
-		->identity_bounds
-		->[ $self->page_number - 1 ];
-
-	# multiply to account for zoom-level
-	my $w = ceil($page_identity->{dims}{w} * $self->zoom_level);
-	my $h = ceil($page_identity->{dims}{h} * $self->zoom_level);
-
-	return ( $w, $h );
+	my $rp = $self->rendered_page;
+	return ( $rp->width, $rp->height );
 }
 
 with qw(

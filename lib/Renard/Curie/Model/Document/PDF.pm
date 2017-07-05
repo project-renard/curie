@@ -4,7 +4,7 @@ package Renard::Curie::Model::Document::PDF;
 
 use Moo;
 use Renard::Curie::Data::PDF;
-use Renard::Curie::Model::Page::RenderedFromPNG;
+use Renard::Curie::Model::Page::PDF;
 use Renard::Curie::Model::Outline;
 use Renard::Curie::Types qw(PageNumber ZoomLevel);
 
@@ -45,13 +45,9 @@ See L<Renard::Curie::Model::Document::Role::Renderable>.
 
 =cut
 method get_rendered_page( (PageNumber) :$page_number, (ZoomLevel) :$zoom_level = 1.0 ) {
-	my $png_data = Renard::Curie::Data::PDF::get_mutool_pdf_page_as_png(
-		$self->filename, $page_number, $zoom_level
-	);
-
-	return Renard::Curie::Model::Page::RenderedFromPNG->new(
+	return Renard::Curie::Model::Page::PDF->new(
+		document => $self,
 		page_number => $page_number,
-		png_data => $png_data,
 		zoom_level => $zoom_level,
 	);
 }
