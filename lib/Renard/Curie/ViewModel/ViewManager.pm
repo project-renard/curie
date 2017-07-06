@@ -6,7 +6,11 @@ use Moo;
 use Renard::Curie::Types qw(InstanceOf DocumentModel Path FileUri);
 use Renard::Curie::Model::View::SinglePage;
 use Renard::Curie::Model::View::ContinuousPage;
+use Renard::Curie::Model::ViewOptions::Grid;
 use Renard::Curie::Model::Document::PDF;
+
+use Renard::Curie::Model::ViewOptions;
+use Renard::Curie::Model::View::Grid;
 
 use Glib::Object::Subclass
 	'Glib::Object',
@@ -42,8 +46,14 @@ method _trigger_current_view($view) {
 
 method _trigger_current_document( (DocumentModel) $doc ) {
 	$self->current_view(
-		Renard::Curie::Model::View::SinglePage->new(
-			document => $doc
+		Renard::Curie::Model::View::Grid->new(
+			view_options => Renard::Curie::Model::ViewOptions->new(
+				grid_options => Renard::Curie::Model::ViewOptions::Grid->new(
+					rows => undef,
+					columns => 4,
+				)
+			),
+			document => $doc,
 		)
 	);
 

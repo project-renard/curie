@@ -3,11 +3,13 @@ package Renard::Curie::Model::View::Role::SubviewPageable;
 # ABSTRACT: Role for view models that are paged
 
 use Moo::Role;
+use MooX::HandlesVia;
 use Renard::Curie::Types qw(Bool PositiveOrZeroInt ArrayRef);
 
 has _subviews => (
 	is => 'lazy', # _build__subviews
 	isa => ArrayRef,
+	clearer => 1, # _clear_subviews
 	handles_via => 'Array',
 	handles => {
 		_number_of_subviews => 'count',
@@ -109,6 +111,13 @@ method set_current_subview_back() {
 	if( $self->can_move_to_previous_subview ) {
 		$self->_subview_idx( $self->_subview_idx - 1 );
 	}
+}
+
+{
+no strict;
+no warnings;
+*can_move_to_previous_page = \&can_move_to_previous_subview;
+*can_move_to_next_page = \&can_move_to_next_subview;
 }
 
 1;
