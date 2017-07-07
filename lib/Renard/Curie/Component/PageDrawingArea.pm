@@ -14,8 +14,6 @@ use Glib::Object::Subclass
 	;
 use Renard::Curie::Types qw(RenderableDocumentModel RenderablePageModel
 	PageNumber ZoomLevel Bool InstanceOf);
-use Renard::Curie::Model::View::SinglePage;
-use Renard::Curie::Model::View::ContinuousPage;
 
 =attr view_manager
 
