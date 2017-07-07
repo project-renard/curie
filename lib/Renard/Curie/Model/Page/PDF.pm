@@ -9,14 +9,36 @@ use POSIX qw(ceil);
 
 use Renard::Curie::Types qw(Str InstanceOf ZoomLevel PageNumber HashRef);
 
+=attr document
 
+  InstanceOf['Renard::Curie::Model::Document::PDF']
+
+The document that created this page.
+
+=cut
 has document => (
 	is => 'ro',
 	required => 1,
 	isa => InstanceOf['Renard::Curie::Model::Document::PDF'],
 );
 
+=attr page_number
+
+  PageNumber
+
+The page number that this page represents.
+
+=cut
 has page_number => ( is => 'ro', required => 1, isa => PageNumber, );
+
+=attr zoom_level
+
+  ZoomLevel
+
+
+The zoom level for this page.
+
+=cut
 has zoom_level => ( is => 'ro', required => 1, isa => ZoomLevel, );
 
 has png_data => (
@@ -31,6 +53,15 @@ method _build_png_data() {
 }
 
 
+=attr height
+
+The height of the page at with the current parameters.
+
+=attr width
+
+The width of the page at with the current parameters.
+
+=cut
 has _size => (
 	is => 'lazy',
 	isa => HashRef,
