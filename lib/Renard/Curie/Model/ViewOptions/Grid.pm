@@ -7,7 +7,12 @@ use MooX::Lsub;
 use Renard::Curie::Types qw(Maybe PositiveInt);
 use Renard::Curie::Error;
 
-with qw(MooX::Role::CloneSet);
+# Need to use the ::BuildArgs version since is_continuous_view is a lsub.
+with qw(MooX::BuildArgs MooX::Role::CloneSet::BuildArgs);
+=for Pod::Coverage
+BUILDARGS FINALIZE_BUILDARGS
+
+=cut
 
 =attr rows
 
