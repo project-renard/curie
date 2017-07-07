@@ -7,6 +7,7 @@ use Renard::Curie::Helper;
 use URI;
 use Glib 'TRUE', 'FALSE';
 use Renard::Curie::Types qw(InstanceOf);
+use Lingua::EN::Inflect qw(PL);
 
 has _gtk_widget => (
 	is => 'lazy',
@@ -105,6 +106,22 @@ method BUILD(@) {
 		$zoom_submenu->add( $menu_item );
 		$menu_item->signal_connect( activate =>
 			\&on_menu_view_zoom_item_activate_cb, [ $self, $zoom_menu_info->{zoom_level} ] );
+	}
+
+	## View -> Columns menu
+	my $columns_submenu = $self->builder->get_object('menu-view-columns');
+	my @column_menu_info = map {
+		my $n_columns = $_;
+		+{
+			text => "$n_columns @{[ PL('column', $n_columns) ]}",
+			columns => $n_columns,
+		};
+	} 1..6;
+	for my $column_menu_info (@column_menu_info) {
+		my $menu_item = Gtk3::MenuItem->new_with_label( $column_menu_info->{text} );
+		$columns_submenu->add( $menu_item );
+		$menu_item->signal_connect( activate =>
+			\&on_menu_view_column_item_activate_cb, [ $self, $column_menu_info->{columns} ] );
 	}
 
 	# Help menu
@@ -233,6 +250,20 @@ where C<$data> is an C<ArrayRef> that contains C<< [ $self, $zoom_level ] >>.
 callback on_menu_view_zoom_item_activate_cb($event, $data) {
 	my ($self, $zoom_level) = @$data;
 	$self->view_manager->current_view->zoom_level( $zoom_level );
+}
+
+=callback on_menu_view_column_item_activate_cb
+
+Callback for number of columns menu items under the C<< View -> Columns >> submenu.
+
+  callback on_menu_view_column_item_activate_cb($event, $data)
+
+where C<$data> is an C<ArrayRef> that contains C<< [ $self, $number_of_columns ] >>.
+
+=cut
+callback on_menu_view_column_item_activate_cb($event, $data) {
+	my ($self, $columns) = @$data;
+	$self->view_manager->number_of_columns( $columns );
 }
 
 # }}}
