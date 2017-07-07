@@ -366,8 +366,13 @@ method on_draw_page_cb( (InstanceOf['Cairo::Context']) $cr ) {
 
 	$self->view->draw_page( $self->drawing_area, $cr );
 
+	my $page_number = $self->view->page_number;
+	if( $self->view->can('_first_page_in_viewport') ) {
+		$page_number = $self->view->_first_page_in_viewport;
+	}
+
 	$self->builder->get_object('page-number-entry')
-		->set_text($self->view->page_number);
+		->set_text($page_number);
 }
 
 =callback on_activate_page_number_entry_cb

@@ -113,11 +113,4 @@ method set_current_subview_back() {
 	}
 }
 
-{
-no strict;
-no warnings;
-*can_move_to_previous_page = \&can_move_to_previous_subview;
-*can_move_to_next_page = \&can_move_to_next_subview;
-}
-
 1;

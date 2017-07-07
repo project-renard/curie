@@ -6,7 +6,12 @@ use Moo;
 
 use Renard::Curie::Types qw(InstanceOf ArrayRef SizeRequest);
 use POSIX qw(ceil);
-use List::AllUtils qw(part);
+use List::AllUtils qw(part first);
+use Glib qw(TRUE FALSE);
+use Test::Deep::NoTest;
+
+use vars qw($DO_NOT_SCROLL);
+$DO_NOT_SCROLL = 0;
 
 use MooX::Struct
 	GridScheme => [ qw( rows columns pages) ]
@@ -34,6 +39,7 @@ will be constructed.
 has view_options => (
 	is => 'ro',
 	required => 1,
+	predicate => 1, # has_view_options
 	isa => InstanceOf['Renard::Curie::Model::ViewOptions'],
 );
 
@@ -62,10 +68,12 @@ method draw_page(
 	$subview->_clear_page_info;
 	my $page_xy = $subview->_page_info->{page_xy};
 	my $zoom_level = $self->zoom_level;
-	for my $page (@$page_xy) {
-		next if $page->{bbox}[3] < $view_y_min
-			|| $page->{bbox}[1] > $view_y_max;
-
+	my @pages_to_render = grep {
+		my $page = $_;
+		! ( $page->{bbox}[3] < $view_y_min
+			|| $page->{bbox}[1] > $view_y_max);
+	} @$page_xy;
+	for my $page (@pages_to_render) {
 		my $rp = $self->document->get_rendered_page(
 			page_number => $page->{pageno},
 			zoom_level => $zoom_level,
@@ -141,8 +149,100 @@ method _build__subviews() {
 	];
 }
 
+has _adjustments => (
+	is => 'rw',
+	predicate => 1, # _has_adjustments
+);
+
+has _last_adjustment_values => (
+	is => 'rw',
+	default => sub { +{} },
+);
+
+has _need_to_scroll => (
+	is => 'rw',
+	default => sub { 1 },
+);
+
+method update_scroll_adjustment($hadjustment, $vadjustment) {
+	$self->_adjustments( [$hadjustment, $vadjustment] );
+
+	my $values = [ map {
+		[ $_->get_lower, $_->get_upper, ],
+	} ($hadjustment, $vadjustment) ];
+
+	if( ! eq_deeply( $values, $self->_last_adjustment_values ) ) {
+		$self->_need_to_scroll(1);
+	}
+
+	if( $self->_need_to_scroll ) {
+		$self->_scroll_to_page_number( $self->page_number );
+	}
+
+	$self->_last_adjustment_values( $values );
+
+	# TODO need to update how page number updates
+	#if( ! $DO_NOT_SCROLL ) {
+		#local $DO_NOT_SCROLL = 1;
+		#my $viewport_page = $self->_first_page_in_viewport;
+		#$self->{page_number} = $viewport_page if defined $viewport_page;
+	#}
+}
+
+method _first_page_in_viewport() {
+	my $first_page = $self->_current_subview->_grid_scheme->pages->[0];
+	my $top_left = [
+		$self->_adjustments->[0]->get_value,
+		$self->_adjustments->[1]->get_value ];
+	my $page_xy = $self->_current_subview->_page_info->{page_xy};
+	my $topleft_page = first {
+		my $page = $_;
+		$top_left->[0] <= $page->{bbox}[2]
+			&& $top_left->[1] <= $page->{bbox}[3];
+	} @$page_xy;
+
+	$topleft_page->{pageno};
+}
+
 method _trigger__subview_idx() {
-	$self->_clear_subviews;
+	$self->signal_emit( 'view-changed' );
+}
+
+method _scroll_to_page_number($page_number) {
+	unless($self->has_view_options) {
+		$self->_need_to_scroll(1);
+		return;
+	}
+
+	my $subview_has_page = !! grep {
+		$_ == $page_number
+	} @{ $self->_grid_schemes->[$self->_subview_idx]->pages };
+	if( ! $subview_has_page ) {
+		my $idx = first {
+			my $idx = $_;
+			my $subview_pages = $self->_grid_schemes->[$idx]->pages;
+			defined first { $_ == $page_number } @$subview_pages;
+		} 0 .. @{ $self->_grid_schemes } - 1;
+		$self->_subview_idx( $idx );
+	}
+
+	$self->_current_subview;
+	my $page_xy = $self->_current_subview->_page_info->{page_xy};
+	my $page = first {  $_->{pageno} == $page_number } @$page_xy;
+
+	if( $self->_has_adjustments ) {
+		$self->_adjustments->[0]->set_value( $page->{bbox}[0] );
+		$self->_adjustments->[1]->set_value( $page->{bbox}[1] );
+		$self->_need_to_scroll(0);
+	} else {
+		$self->_need_to_scroll(1);
+	}
+}
+
+method _trigger_page_number($page_number) {
+	if( ! $DO_NOT_SCROLL ) { # checking local variable
+		$self->_scroll_to_page_number($page_number);
+	}
 	$self->signal_emit( 'view-changed' );
 }
 
@@ -151,14 +251,11 @@ method _trigger_zoom_level($new_zoom_level) {
 	$self->signal_emit( 'view-changed' );
 }
 
-method page_number() {
-	42;
-}
-
 with qw(
 	Renard::Curie::Model::View::Role::ForDocument
 	Renard::Curie::Model::View::Role::Renderable
 	Renard::Curie::Model::View::Role::Zoomable
+	Renard::Curie::Model::View::Role::Pageable
 	Renard::Curie::Model::View::Role::SubviewPageable
 );
 
