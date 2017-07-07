@@ -35,11 +35,15 @@ around get_rendered_page => sub {
 	my $orig = shift;
 	my ($self, %rest) = @_;
 	my @args = @_;
-	return $self->render_cache->compute(
+
+	# make sure to call in a scalar context
+	my $return = $self->render_cache->compute(
 		\%rest,
 		'never',
 		sub { $orig->(@args); }
 	);
+
+	$return;
 };
 
 1;

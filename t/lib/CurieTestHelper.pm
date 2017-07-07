@@ -42,19 +42,20 @@ The pages have the colors:
 * black
 
 =cut
-classmethod create_cairo_document() {
+classmethod create_cairo_document( :$repeat = 1, :$width = 5000, :$height = 5000 ) {
 	require Renard::Curie::Model::Document::CairoImageSurface;
 	require Cairo;
 
 	my $colors = [
-		[ 1, 0, 0 ],
-		[ 0, 1, 0 ],
-		[ 0, 0, 1 ],
-		[ 0, 0, 0 ],
+		(
+			[ 1, 0, 0 ],
+			[ 0, 1, 0 ],
+			[ 0, 0, 1 ],
+			[ 0, 0, 0 ],
+		) x ( $repeat )
 	];
 
 	my @surfaces = map {
-		my ($width, $height) = (5000, 5000);
 		my $surface = Cairo::ImageSurface->create(
 			'rgb24', $width, $height
 		);

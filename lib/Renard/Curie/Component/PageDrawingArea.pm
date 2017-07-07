@@ -14,8 +14,6 @@ use Glib::Object::Subclass
 	;
 use Renard::Curie::Types qw(RenderableDocumentModel RenderablePageModel
 	PageNumber ZoomLevel Bool InstanceOf);
-use Renard::Curie::Model::View::SinglePage;
-use Renard::Curie::Model::View::ContinuousPage;
 
 =attr view_manager
 
@@ -241,7 +239,7 @@ Sets up the label that shows the number of pages in the document.
 =cut
 method setup_number_of_pages_label() {
 	$self->builder->get_object("number-of-pages-label")
-		->set_text( $self->view->document->last_page_number );
+		->set_text( $self->view->document->number_of_pages );
 }
 
 =method setup_keybindings
@@ -302,14 +300,14 @@ handlers.
 callback on_scroll_event_cb($window, $event, $self) {
 	if ( $event->state == 'control-mask' && $event->direction eq 'smooth') {
 		my ($delta_x, $delta_y) =  $event->get_scroll_deltas();
-		if ( $delta_y < 0 ) { $self->view->zoom_level ( $self->view->zoom_level - .05 ); }
-		elsif ( $delta_y > 0 ) { $self->view->zoom_level ( $self->view->zoom_level + .05 ); }
+		if ( $delta_y < 0 ) { $self->view_manager->set_zoom_level( $self->view->zoom_level - .05 ); }
+		elsif ( $delta_y > 0 ) { $self->view_manager->set_zoom_level( $self->view->zoom_level + .05 ); }
 		return 1;
 	} elsif ( $event->state == 'control-mask' && $event->direction eq 'up' ) {
-		$self->view->zoom_level ( $self->view->zoom_level + .05 );
+		$self->view_manager->set_zoom_level( $self->view->zoom_level + .05 );
 		return 1;
 	} elsif ( $event->state == 'control-mask' && $event->direction eq 'down' ) {
-		$self->view->zoom_level ( $self->view->zoom_level - .05 );
+		$self->view_manager->set_zoom_level( $self->view->zoom_level - .05 );
 		return 1;
 	}
 	return 0;
@@ -366,8 +364,13 @@ method on_draw_page_cb( (InstanceOf['Cairo::Context']) $cr ) {
 
 	$self->view->draw_page( $self->drawing_area, $cr );
 
+	my $page_number = $self->view->page_number;
+	if( $self->view->can('_first_page_in_viewport') ) {
+		$page_number = $self->view->_first_page_in_viewport;
+	}
+
 	$self->builder->get_object('page-number-entry')
-		->set_text($self->view->page_number);
+		->set_text($page_number);
 }
 
 =callback on_activate_page_number_entry_cb

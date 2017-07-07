@@ -16,6 +16,9 @@ has cairo_image_surface => (
 	required => 1
 );
 
-with qw(Renard::Curie::Model::Page::Role::CairoRenderable);
+with qw(
+	Renard::Curie::Model::Page::Role::CairoRenderable
+	Renard::Curie::Model::Page::Role::BoundsFromCairoImageSurface
+);
 
 1;

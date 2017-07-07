@@ -7,6 +7,7 @@ use Type::Library 0.008 -base,
 		DocumentModel
 		RenderableDocumentModel
 		PageNumber
+		PageCount
 		LaxPageNumber
 		ZoomLevel
 		SizeRequest
@@ -71,6 +72,13 @@ An alias to L<PositiveInt> that can be used for document page number semantics.
 
 =cut
 declare "PageNumber", parent => PositiveInt;
+
+=type PageCount
+
+An alias to L<PositiveInt> that can be used for document page number count semantics.
+
+=cut
+declare "PageCount", parent => PositiveInt;
 
 =type LaxPageNumber
 
