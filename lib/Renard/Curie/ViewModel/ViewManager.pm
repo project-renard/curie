@@ -4,8 +4,6 @@ package Renard::Curie::ViewModel::ViewManager;
 
 use Moo;
 use Renard::Curie::Types qw(InstanceOf DocumentModel Path FileUri PositiveInt ZoomLevel);
-use Renard::Curie::Model::View::SinglePage;
-use Renard::Curie::Model::View::ContinuousPage;
 use Renard::Curie::Model::Document::PDF;
 
 use Renard::Curie::Model::ViewOptions;
