@@ -134,7 +134,8 @@ subtest "Menu: View -> Continuous" => sub {
 	};
 
 	subtest "View is single page" => sub {
-		isa_ok $c->_test_current_view, 'Renard::Curie::Model::View::SinglePage';
+		isa_ok $c->_test_current_view, 'Renard::Curie::Model::View::Grid';
+		ok ! $c->_test_current_view->view_options->grid_options->is_continuous_view;
 	};
 
 	$continuous_item->set_active(TRUE);
@@ -144,7 +145,8 @@ subtest "Menu: View -> Continuous" => sub {
 	};
 
 	subtest "View is continuous page" => sub {
-		isa_ok $c->_test_current_view, 'Renard::Curie::Model::View::ContinuousPage';
+		isa_ok $c->_test_current_view, 'Renard::Curie::Model::View::Grid';
+		ok $c->_test_current_view->view_options->grid_options->is_continuous_view;
 	};
 };
 

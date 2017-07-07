@@ -7,6 +7,8 @@ use Renard::Curie::Types qw(InstanceOf);
 use Renard::Curie::Model::ViewOptions::Grid;
 use Renard::Curie::Model::ViewOptions::Zoom::Percentage;
 
+with qw(MooX::Role::CloneSet);
+
 =attr grid_options
 
 A L<Renard::Curie::Model::ViewOptions::Grid>.

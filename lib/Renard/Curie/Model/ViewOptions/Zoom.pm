@@ -4,4 +4,6 @@ package Renard::Curie::Model::ViewOptions::Zoom;
 
 use Moo;
 
+with qw(MooX::Role::CloneSet);
+
 1;

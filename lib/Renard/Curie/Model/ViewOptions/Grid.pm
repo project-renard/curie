@@ -7,6 +7,8 @@ use MooX::Lsub;
 use Renard::Curie::Types qw(Maybe PositiveInt);
 use Renard::Curie::Error;
 
+with qw(MooX::Role::CloneSet);
+
 =attr rows
 
   Maybe[PositiveInt]
@@ -60,6 +62,5 @@ method BUILD() {
 		});
 	}
 };
-
 
 1;
