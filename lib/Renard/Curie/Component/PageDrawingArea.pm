@@ -300,14 +300,14 @@ handlers.
 callback on_scroll_event_cb($window, $event, $self) {
 	if ( $event->state == 'control-mask' && $event->direction eq 'smooth') {
 		my ($delta_x, $delta_y) =  $event->get_scroll_deltas();
-		if ( $delta_y < 0 ) { $self->view->zoom_level ( $self->view->zoom_level - .05 ); }
-		elsif ( $delta_y > 0 ) { $self->view->zoom_level ( $self->view->zoom_level + .05 ); }
+		if ( $delta_y < 0 ) { $self->view_manager->set_zoom_level( $self->view->zoom_level - .05 ); }
+		elsif ( $delta_y > 0 ) { $self->view_manager->set_zoom_level( $self->view->zoom_level + .05 ); }
 		return 1;
 	} elsif ( $event->state == 'control-mask' && $event->direction eq 'up' ) {
-		$self->view->zoom_level ( $self->view->zoom_level + .05 );
+		$self->view_manager->set_zoom_level( $self->view->zoom_level + .05 );
 		return 1;
 	} elsif ( $event->state == 'control-mask' && $event->direction eq 'down' ) {
-		$self->view->zoom_level ( $self->view->zoom_level - .05 );
+		$self->view_manager->set_zoom_level( $self->view->zoom_level - .05 );
 		return 1;
 	}
 	return 0;

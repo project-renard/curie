@@ -249,7 +249,7 @@ where C<$data> is an C<ArrayRef> that contains C<< [ $self, $zoom_level ] >>.
 =cut
 callback on_menu_view_zoom_item_activate_cb($event, $data) {
 	my ($self, $zoom_level) = @$data;
-	$self->view_manager->current_view->zoom_level( $zoom_level );
+	$self->view_manager->set_zoom_level( $zoom_level );
 }
 
 =callback on_menu_view_column_item_activate_cb

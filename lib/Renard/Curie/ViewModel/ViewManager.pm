@@ -3,13 +3,14 @@ package Renard::Curie::ViewModel::ViewManager;
 # ABSTRACT: Manages the currently open views
 
 use Moo;
-use Renard::Curie::Types qw(InstanceOf DocumentModel Path FileUri PositiveInt);
+use Renard::Curie::Types qw(InstanceOf DocumentModel Path FileUri PositiveInt ZoomLevel);
 use Renard::Curie::Model::View::SinglePage;
 use Renard::Curie::Model::View::ContinuousPage;
 use Renard::Curie::Model::Document::PDF;
 
 use Renard::Curie::Model::ViewOptions;
 use Renard::Curie::Model::ViewOptions::Grid;
+use Renard::Curie::Model::ViewOptions::Zoom::Percentage;
 use Renard::Curie::Model::View::Grid;
 
 use Glib::Object::Subclass
@@ -88,6 +89,10 @@ method _trigger_view_options( $new_view_options ) {
 		( page_number => $page_number ) x !!( defined $page_number ),
 	);
 	$self->current_view( $view );
+
+	# TODO remove this part and have everything come from the zoom options
+	my $zoom_level = $new_view_options->zoom_options->zoom_level;
+	$self->current_view->zoom_level( $zoom_level );
 }
 
 =method open_pdf_document
@@ -147,6 +152,24 @@ C<GridOptions> set to C<1>.
 method set_view_to_single_page() {
 	my $grid_options = $self->view_options->grid_options->cset( rows => 1 );
 	my $view_options = $self->view_options->cset( grid_options => $grid_options );
+	$self->view_options( $view_options );
+}
+
+=method set_zoom_level
+
+  method set_zoom_level( (ZoomLevel) $zoom_level )
+
+Sets the L</current_view> to L<Renard::Curie::Model::View::Grid> with C<zoom_level>
+of L<Renard::Curie::Model::ViewOptions::Zoom::Percentage> set to C<$zoom_level>.
+
+=cut
+method set_zoom_level( (ZoomLevel) $zoom_level ) {
+	my $zoom_option = Renard::Curie::Model::ViewOptions::Zoom::Percentage->new(
+		zoom_level => $zoom_level,
+	);
+	my $view_options = $self->view_options->cset(
+		zoom_options => $zoom_option
+	);
 	$self->view_options( $view_options );
 }
 
