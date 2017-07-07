@@ -9,7 +9,6 @@ use POSIX qw(ceil);
 
 use Renard::Curie::Types qw(Str InstanceOf ZoomLevel PageNumber HashRef);
 
-extends 'Renard::Curie::Model::Page::RenderedFromPNG';
 
 has document => (
 	is => 'ro',
@@ -55,9 +54,8 @@ method _build__size() {
 }
 
 
-
 with qw(
-	Renard::Curie::Model::Page::Role::CairoRenderable
+	Renard::Curie::Model::Page::Role::CairoRenderableFromPNG
 );
 
 1;
