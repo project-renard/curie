@@ -26,6 +26,13 @@ extends 'Renard::Curie::Model::View';
 
 use Renard::Curie::Model::View::Grid::Subview;
 
+=classmethod FOREIGNBUILDARGS
+
+  classmethod FOREIGNBUILDARGS(@)
+
+Initialises the L<Glib::Object> super-class.
+
+=cut
 classmethod FOREIGNBUILDARGS(@) {
 	return ();
 }
@@ -34,6 +41,12 @@ classmethod FOREIGNBUILDARGS(@) {
 
 A L<Renard::Curie::Model::ViewOptions> that defines how the grid layout
 will be constructed.
+
+Predicate: L<has_view_options>
+
+=method has_view_options
+
+A predicate for the C<view_options> attribute.
 
 =cut
 has view_options => (
@@ -48,6 +61,11 @@ has _grid_schemes => (
 	isa => ArrayRef, # ArrayRef[GridScheme]
 );
 
+=method draw_page
+
+See L<Renard::Curie::Model::View::Role::Renderable/draw_page>.
+
+=cut
 method draw_page(
 	(InstanceOf['Gtk3::DrawingArea']) $widget,
 	(InstanceOf['Cairo::Context']) $cr
@@ -89,6 +107,11 @@ method draw_page(
 	}
 }
 
+=method get_size_request
+
+See L<Renard::Curie::Model::View::Role::Renderable/get_size_request>.
+
+=cut
 method get_size_request() :ReturnType( list => SizeRequest) {
 	return $self->_current_subview->get_size_request;
 }
@@ -164,6 +187,14 @@ has _need_to_scroll => (
 	default => sub { 1 },
 );
 
+=method update_scroll_adjustment
+
+  method update_scroll_adjustment($hadjustment, $vadjustment)
+
+A callback used to set the C<GtkAdjustment> objects for the associated view.
+
+=cut
+# TODO This is a hack that needs to be refactored.
 method update_scroll_adjustment($hadjustment, $vadjustment) {
 	$self->_adjustments( [$hadjustment, $vadjustment] );
 

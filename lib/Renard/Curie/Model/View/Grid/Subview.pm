@@ -88,6 +88,11 @@ method _build__page_info() {
 	};
 }
 
+=method get_size_request
+
+See L<Renard::Curie::Model::View::Role::Renderable/get_size_request>.
+
+=cut
 method get_size_request() :ReturnType( list => SizeRequest) {
 	my $page_info = $self->_page_info;
 	return ( $page_info->{largest_x}, $page_info->{total_y} );
