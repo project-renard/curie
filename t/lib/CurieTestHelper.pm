@@ -1,6 +1,6 @@
-use Renard::Curie::Setup;
+use Renard::Incunabula::Common::Setup;
 package CurieTestHelper;
-use Renard::Curie::Types qw(CodeRef InstanceOf Maybe PositiveInt DocumentModel Dir Tuple);
+use Renard::Incunabula::Common::Types qw(CodeRef InstanceOf Maybe PositiveInt DocumentModel Dir Tuple);
 
 =func test_data_directory
 
@@ -26,7 +26,7 @@ classmethod test_data_directory() :ReturnType(Dir) {
 
   CurieTestHelper->create_cairo_document
 
-Returns a L<Renard::Curie::Model::Document::CairoImageSurface> which can be
+Returns a L<Renard::Incunabula::Format::Cairo::ImageSurface::Document> which can be
 used for testing.
 
 The pages have the colors:
@@ -43,7 +43,7 @@ The pages have the colors:
 
 =cut
 classmethod create_cairo_document( :$repeat = 1, :$width = 5000, :$height = 5000 ) {
-	require Renard::Curie::Model::Document::CairoImageSurface;
+	require Renard::Incunabula::Format::Cairo::ImageSurface::Document;
 	require Cairo;
 
 	my $colors = [
@@ -69,7 +69,7 @@ classmethod create_cairo_document( :$repeat = 1, :$width = 5000, :$height = 5000
 		$surface;
 	} @$colors;
 
-	my $cairo_doc = Renard::Curie::Model::Document::CairoImageSurface->new(
+	my $cairo_doc = Renard::Incunabula::Format::Cairo::ImageSurface::Document->new(
 		image_surfaces => \@surfaces,
 	);
 }
@@ -151,7 +151,7 @@ classmethod refresh_gui( (Maybe[PositiveInt]) :$delay = ) {
   CurieTestHelper->create_app_with_document($document)
 
 
-Creates a C<Renard::Curie::App> with a C<Renard::Curie::Model::Document> C<$document> opened.
+Creates a C<Renard::Curie::App> with a C<Renard::Incunabula::Document> C<$document> opened.
 
 Returns two objects in a list
 

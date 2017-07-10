@@ -1,4 +1,4 @@
-use Renard::Curie::Setup;
+use Renard::Incunabula::Common::Setup;
 package Renard::Curie::Model::ViewOptions::Zoom;
 # ABSTRACT: An abstract class for a set of options for zooming
 

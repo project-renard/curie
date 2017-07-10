@@ -1,11 +1,11 @@
-use Renard::Curie::Setup;
+use Renard::Incunabula::Common::Setup;
 package Renard::Curie::Component::Outline;
 # ABSTRACT: Component that provides a list of headings for navigating
 
 use Moo;
-use Renard::Curie::Helper;
+use Renard::Incunabula::Frontend::Gtk3::Helper;
 use Glib 'TRUE', 'FALSE';
-use Renard::Curie::Types qw(InstanceOf PageNumber);
+use Renard::Incunabula::Common::Types qw(InstanceOf PageNumber);
 
 has _gtk_widget => (
 	is => 'lazy',
@@ -101,7 +101,7 @@ displayed document.
 
 =cut
 method update( $doc ) {
-	return unless $doc->DOES('Renard::Curie::Model::Document::Role::Outlineable');
+	return unless $doc->DOES('Renard::Incunabula::Document::Role::Outlineable');
 	$self->model( $doc->outline->tree_store );
 }
 

@@ -1,10 +1,10 @@
-use Renard::Curie::Setup;
+use Renard::Incunabula::Common::Setup;
 package Renard::Curie::Component::PageDrawingArea;
 # ABSTRACT: Component that implements document page navigation
 
 use Moo;
 
-use Renard::Curie::Helper;
+use Renard::Incunabula::Frontend::Gtk3::Helper;
 use Glib 'TRUE', 'FALSE';
 use Glib::Object::Subclass
 	'Gtk3::Bin',
@@ -12,7 +12,7 @@ use Glib::Object::Subclass
 		'update-scroll-adjustment' => {},
 	},
 	;
-use Renard::Curie::Types qw(RenderableDocumentModel RenderablePageModel
+use Renard::Incunabula::Common::Types qw(RenderableDocumentModel RenderablePageModel
 	PageNumber ZoomLevel Bool InstanceOf);
 
 =attr view_manager
@@ -385,7 +385,7 @@ callback on_activate_page_number_entry_cb( $entry, $self ) {
 	if( $self->view->document->is_valid_page_number($text) ) {
 		$self->view->page_number( $text );
 	} else {
-		Renard::Curie::Error::User::InvalidPageNumber->throw({
+		Renard::Incunabula::Common::Error::User::InvalidPageNumber->throw({
 			payload => {
 				text => $text,
 				range => [
@@ -447,8 +447,8 @@ method update_view($new_view) {
 }
 
 with qw(
-	Renard::Curie::Component::Role::FromBuilder
-	Renard::Curie::Component::Role::UIFileFromPackageName
+	Renard::Incunabula::Frontend::Gtk3::Component::Role::FromBuilder
+	Renard::Incunabula::Frontend::Gtk3::Component::Role::UIFileFromPackageName
 );
 
 1;

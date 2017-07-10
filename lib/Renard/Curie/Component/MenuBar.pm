@@ -1,12 +1,12 @@
-use Renard::Curie::Setup;
+use Renard::Incunabula::Common::Setup;
 package Renard::Curie::Component::MenuBar;
 # ABSTRACT: Component that provides a menu bar for the application
 
 use Moo;
-use Renard::Curie::Helper;
+use Renard::Incunabula::Frontend::Gtk3::Helper;
 use URI;
 use Glib 'TRUE', 'FALSE';
-use Renard::Curie::Types qw(InstanceOf);
+use Renard::Incunabula::Common::Types qw(InstanceOf);
 use Lingua::EN::Inflect qw(PL);
 
 has _gtk_widget => (
@@ -172,7 +172,7 @@ Callback for the C<< File -> Open >> menu item.
 
 =cut
 callback on_menu_file_open_activate_cb($event, $self) {
-	Renard::Curie::Helper->callback( $self->main_window, on_open_file_dialog_cb => $event );
+	Renard::Incunabula::Frontend::Gtk3::Helper->callback( $self->main_window, on_open_file_dialog_cb => $event );
 }
 
 =callback on_menu_file_quit_activate_cb
@@ -183,7 +183,7 @@ Callback for the C<< File -> Quit >> menu item.
 
 =cut
 callback on_menu_file_quit_activate_cb($event, $self) {
-	Renard::Curie::Helper->callback( $self->main_window, on_application_quit_cb => $event );
+	Renard::Incunabula::Frontend::Gtk3::Helper->callback( $self->main_window, on_application_quit_cb => $event );
 }
 
 =callback on_menu_file_recentfiles_item_activated_cb
@@ -270,8 +270,8 @@ callback on_menu_view_column_item_activate_cb($event, $data) {
 
 
 with qw(
-	Renard::Curie::Component::Role::FromBuilder
-	Renard::Curie::Component::Role::UIFileFromPackageName
+	Renard::Incunabula::Frontend::Gtk3::Component::Role::FromBuilder
+	Renard::Incunabula::Frontend::Gtk3::Component::Role::UIFileFromPackageName
 	Renard::Curie::Component::Role::HasParentMainWindow
 );
 

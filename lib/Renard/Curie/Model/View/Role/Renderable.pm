@@ -1,9 +1,9 @@
-use Renard::Curie::Setup;
+use Renard::Incunabula::Common::Setup;
 package Renard::Curie::Model::View::Role::Renderable;
 # ABSTRACT: Role for rendering a view model
 
 use Moo::Role;
-use Renard::Curie::Types qw(InstanceOf SizeRequest);
+use Renard::Incunabula::Common::Types qw(InstanceOf SizeRequest);
 
 =method draw_page
 

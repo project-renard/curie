@@ -1,4 +1,4 @@
-# NOTE: do not use Renard::Curie::Setup here due to Glib / Moo subclass conflict
+# NOTE: do not use Renard::Incunabula::Common::Setup here due to Glib / Moo subclass conflict
 use strict;
 use warnings;
 package Renard::Curie::Model::View;

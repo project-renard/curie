@@ -1,4 +1,4 @@
-use Renard::Curie::Setup;
+use Renard::Incunabula::Common::Setup;
 package Renard::Curie::Component::MainWindow::Role::MenuBar;
 # ABSTRACT: Role for menu bar
 
@@ -6,7 +6,7 @@ use Moo::Role;
 
 use Renard::Curie::Component::MenuBar;
 use Renard::Curie::Component::FileChooser;
-use Renard::Curie::Types qw(InstanceOf DocumentModel);
+use Renard::Incunabula::Common::Types qw(InstanceOf DocumentModel);
 
 use Glib 'TRUE', 'FALSE';
 

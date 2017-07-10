@@ -1,10 +1,10 @@
-use Renard::Curie::Setup;
+use Renard::Incunabula::Common::Setup;
 package Renard::Curie::Component::FileChooser;
 # ABSTRACT: Component that implements a file chooser dialog
 
 use Moo;
-use Renard::Curie::Helper;
-use Renard::Curie::Types qw(InstanceOf);
+use Renard::Incunabula::Frontend::Gtk3::Helper;
+use Renard::Incunabula::Common::Types qw(InstanceOf);
 
 =attr all_filter
 

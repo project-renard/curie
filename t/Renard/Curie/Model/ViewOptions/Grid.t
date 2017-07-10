@@ -2,9 +2,9 @@
 
 use Test::Most tests => 1;
 
-use Renard::Curie::Setup;
+use Renard::Incunabula::Common::Setup;
 use Renard::Curie::Model::ViewOptions::Grid;
-use Renard::Curie::Error;
+use Renard::Incunabula::Common::Error;
 
 use lib 't/lib';
 
@@ -36,7 +36,7 @@ subtest "Grid option construction" => sub {
 					Renard::Curie::Model::ViewOptions::Grid->new(
 						$option->{options}
 					);
-				} 'Renard::Curie::Error::ViewOptions::InvalidGridOptions',
+				} 'Renard::Incunabula::Common::Error::ViewOptions::InvalidGridOptions',
 					"Invalid options: @{[ $option->{reason} ]}";;
 			}
 		};

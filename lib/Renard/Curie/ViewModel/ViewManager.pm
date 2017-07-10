@@ -1,10 +1,10 @@
-use Renard::Curie::Setup;
+use Renard::Incunabula::Common::Setup;
 package Renard::Curie::ViewModel::ViewManager;
 # ABSTRACT: Manages the currently open views
 
 use Moo;
-use Renard::Curie::Types qw(InstanceOf DocumentModel Path FileUri PositiveInt ZoomLevel);
-use Renard::Curie::Model::Document::PDF;
+use Renard::Incunabula::Common::Types qw(InstanceOf DocumentModel Path FileUri PositiveInt ZoomLevel);
+use Renard::Incunabula::Format::PDF::Document;
 
 use Renard::Curie::Model::ViewOptions;
 use Renard::Curie::Model::ViewOptions::Grid;
@@ -103,12 +103,12 @@ Opens a PDF file stored on the disk.
 method open_pdf_document( (Path->coercibles) $pdf_filename ) {
 	$pdf_filename = Path->coerce( $pdf_filename );
 	if( not -f $pdf_filename ) {
-		Renard::Curie::Error::IO::FileNotFound
+		Renard::Incunabula::Common::Error::IO::FileNotFound
 			->throw("PDF filename does not exist: $pdf_filename");
 	}
 
 	$self->current_document(
-		Renard::Curie::Model::Document::PDF->new(
+		Renard::Incunabula::Format::PDF::Document->new(
 			filename => $pdf_filename,
 		)
 	);

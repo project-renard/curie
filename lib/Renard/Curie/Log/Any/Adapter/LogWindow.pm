@@ -1,4 +1,4 @@
-use Renard::Curie::Setup;
+use Renard::Incunabula::Common::Setup;
 package Renard::Curie::Log::Any::Adapter::LogWindow;
 # ABSTRACT: Log::Any adapter that directs messages to the log window component
 
@@ -12,7 +12,7 @@ is_alert is_critical is_debug is_emergency is_error is_info is_notice is_trace i
 
 use Moo;
 
-use Renard::Curie::Types qw(InstanceOf);
+use Renard::Incunabula::Common::Types qw(InstanceOf);
 use Log::Any::Adapter::Util ();
 
 extends 'Log::Any::Adapter::Base';

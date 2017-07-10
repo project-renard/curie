@@ -1,4 +1,4 @@
-use Renard::Curie::Setup;
+use Renard::Incunabula::Common::Setup;
 package Renard::Curie::Component::MainWindow::Role::DragAndDrop;
 # ABSTRACT: Role for drag-and-drop
 

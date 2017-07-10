@@ -5,7 +5,7 @@ use Test::Most;
 use lib 't/lib';
 use CurieTestHelper;
 
-use Renard::Curie::Setup;
+use Renard::Incunabula::Common::Setup;
 use Renard::Curie::App;
 
 my $pdf_ref_path = try {

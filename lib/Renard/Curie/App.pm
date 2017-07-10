@@ -1,15 +1,15 @@
-use Renard::Curie::Setup;
+use Renard::Incunabula::Common::Setup;
 package Renard::Curie::App;
 # ABSTRACT: A document viewing application
 
 use Moo 2.001001;
 
-use Renard::Curie::Helper;
+use Renard::Incunabula::Frontend::Gtk3::Helper;
 
 use File::Spec;
 use File::Basename;
 use Module::Util qw(:all);
-use Renard::Curie::Types qw(InstanceOf Str DocumentModel);
+use Renard::Incunabula::Common::Types qw(InstanceOf Str DocumentModel);
 use Getopt::Long::Descriptive;
 
 use MooX::Role::Logger ();

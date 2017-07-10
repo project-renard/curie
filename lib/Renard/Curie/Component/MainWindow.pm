@@ -1,8 +1,8 @@
-use Renard::Curie::Setup;
+use Renard::Incunabula::Common::Setup;
 package Renard::Curie::Component::MainWindow;
 # ABSTRACT: Main window of the application
 
-use Renard::Curie::Helper;
+use Renard::Incunabula::Frontend::Gtk3::Helper;
 
 use Gtk3;
 use Cairo;
@@ -14,7 +14,7 @@ use Moo 2.001001;
 use MooX::Role::Logger ();
 use MooX::Lsub;
 
-use Renard::Curie::Types qw(InstanceOf Path Str DocumentModel);
+use Renard::Incunabula::Common::Types qw(InstanceOf Path Str DocumentModel);
 
 =attr window
 
@@ -99,8 +99,8 @@ callback on_application_quit_cb( $event, $self ) {
 # }}}
 
 with qw(
-	Renard::Curie::Component::Role::FromBuilder
-	Renard::Curie::Component::Role::UIFileFromPackageName
+	Renard::Incunabula::Frontend::Gtk3::Component::Role::FromBuilder
+	Renard::Incunabula::Frontend::Gtk3::Component::Role::UIFileFromPackageName
 	MooX::Role::Logger
 
 	Renard::Curie::Component::MainWindow::Role::PageDrawingArea
