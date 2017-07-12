@@ -1,10 +1,10 @@
-use Renard::Curie::Setup;
+use Renard::Incunabula::Common::Setup;
 package Renard::Curie::Model::View::Role::SubviewPageable;
 # ABSTRACT: Role for view models that are paged
 
 use Moo::Role;
 use MooX::HandlesVia;
-use Renard::Curie::Types qw(Bool PositiveOrZeroInt ArrayRef);
+use Renard::Incunabula::Common::Types qw(Bool PositiveOrZeroInt ArrayRef);
 
 has _subviews => (
 	is => 'lazy', # _build__subviews

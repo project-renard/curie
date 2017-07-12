@@ -1,4 +1,4 @@
-use Renard::Curie::Setup;
+use Renard::Incunabula::Common::Setup;
 package Renard::Curie::Container::App;
 # ABSTRACT: A Bread::Board container for the application
 

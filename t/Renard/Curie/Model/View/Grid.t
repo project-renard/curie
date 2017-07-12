@@ -2,7 +2,7 @@
 
 use Test::Most tests => 3;
 
-use Renard::Curie::Setup;
+use Renard::Incunabula::Common::Setup;
 use Renard::Curie::App;
 use Renard::Curie::Model::View;
 use Renard::Curie::Model::View::Grid;

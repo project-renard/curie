@@ -5,8 +5,8 @@ use Test::Most tests => 8;
 use lib 't/lib';
 use CurieTestHelper;
 
-use Renard::Curie::Setup;
-use Renard::Curie::Helper;
+use Renard::Incunabula::Common::Setup;
+use Renard::Incunabula::Frontend::Gtk3::Helper;
 use Renard::Curie::App;
 use URI::file;
 use List::AllUtils qw(first);
@@ -50,7 +50,7 @@ subtest "Menu: File -> Open" => sub {
 
 		my $c = CurieTestHelper->get_app_container;
 		my $app = $c->app;
-		Renard::Curie::Helper->callback( $c->menu_bar,
+		Renard::Incunabula::Frontend::Gtk3::Helper->callback( $c->menu_bar,
 			'on_menu_file_open_activate_cb', undef );
 
 		ok( $got_file, "Callback retrieved the filename");
@@ -63,7 +63,7 @@ subtest "Menu: File -> Open" => sub {
 
 		my $c = CurieTestHelper->get_app_container;
 		my $app = $c->app;
-		Renard::Curie::Helper->callback( $c->menu_bar,
+		Renard::Incunabula::Frontend::Gtk3::Helper->callback( $c->menu_bar,
 			'on_menu_file_open_activate_cb', undef );
 		ok(!$got_file, "Callback did not retrieve the filename");
 		ok( $destroyed, "Callback destroyed the dialog");

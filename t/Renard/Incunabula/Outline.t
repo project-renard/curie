@@ -5,9 +5,9 @@ use Test::Most;
 use lib 't/lib';
 use CurieTestHelper;
 
-use Renard::Curie::Setup;
-use Renard::Curie::Model::Outline;
-use Renard::Curie::Model::Document::PDF;
+use Renard::Incunabula::Common::Setup;
+use Renard::Incunabula::Outline;
+use Renard::Incunabula::Format::PDF::Document;
 
 my $pdf_ref_path = try {
 	CurieTestHelper->test_data_directory->child(qw(PDF Adobe pdf_reference_1-7.pdf));
@@ -70,19 +70,19 @@ subtest 'Outline item type-checking' => sub {
 	plan tests => @valid_outlines + @invalid_outlines;
 
 	lives_ok {
-		Renard::Curie::Model::Outline->new( items => $_ );
+		Renard::Incunabula::Outline->new( items => $_ );
 	} 'Valid outline check' for @valid_outlines;
 
 	for (0..@invalid_outlines-1) {
 		throws_ok {
-			Renard::Curie::Model::Outline->new(
+			Renard::Incunabula::Outline->new(
 				items => $invalid_outlines[$_] );
 			} $invalid_message[$_], 'Invalid outline exception';
 	}
 };
 
 subtest 'Check that the tree store matches the items' => sub {
-	my $doc = Renard::Curie::Model::Document::PDF
+	my $doc = Renard::Incunabula::Format::PDF::Document
 		->new( filename => $pdf_ref_path );
 	my $outline = $doc->outline;
 

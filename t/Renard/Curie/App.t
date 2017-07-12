@@ -7,7 +7,7 @@ use Test::Exception 0.43;
 use lib 't/lib';
 use CurieTestHelper;
 
-use Renard::Curie::Setup;
+use Renard::Incunabula::Common::Setup;
 use Renard::Curie::Container::App;
 use Renard::Curie::App;
 use File::Temp;
@@ -46,7 +46,7 @@ subtest "Process arguments" => sub {
 		my $app = CurieTestHelper->get_app_container->app;
 		throws_ok {
 			$app->process_arguments;
-		} 'Renard::Curie::Error::IO::FileNotFound', "Throws exception when file not found";
+		} 'Renard::Incunabula::Common::Error::IO::FileNotFound', "Throws exception when file not found";
 		undef $app;
 	};
 

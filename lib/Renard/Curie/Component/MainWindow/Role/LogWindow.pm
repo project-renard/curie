@@ -1,11 +1,11 @@
-use Renard::Curie::Setup;
+use Renard::Incunabula::Common::Setup;
 package Renard::Curie::Component::MainWindow::Role::LogWindow;
 # ABSTRACT: Role for log window
 
 use Moo::Role;
 
 use Renard::Curie::Component::LogWindow;
-use Renard::Curie::Types qw(InstanceOf);
+use Renard::Incunabula::Common::Types qw(InstanceOf);
 
 use Log::Any::Adapter;
 

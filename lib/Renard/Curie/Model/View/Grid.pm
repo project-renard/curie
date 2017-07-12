@@ -1,10 +1,10 @@
-use Renard::Curie::Setup;
+use Renard::Incunabula::Common::Setup;
 package Renard::Curie::Model::View::Grid;
 # ABSTRACT: A view model for grid-based views
 
 use Moo;
 
-use Renard::Curie::Types qw(InstanceOf ArrayRef SizeRequest);
+use Renard::Incunabula::Common::Types qw(InstanceOf ArrayRef SizeRequest);
 use POSIX qw(ceil);
 use List::AllUtils qw(part first);
 use Glib qw(TRUE FALSE);
@@ -141,7 +141,7 @@ method _build__grid_schemes() {
 		$g_r = ceil($self->document->number_of_pages / $go_c);
 		$g_c = $go_c;
 	} else {
-		Renard::Curie::Error::Programmer::Logic->new(
+		Renard::Incunabula::Common::Error::Programmer::Logic->new(
 			msg => 'GridOption improperly constructed: both row and columns undef',
 		);
 	}

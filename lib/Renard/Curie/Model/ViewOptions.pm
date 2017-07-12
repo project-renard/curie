@@ -1,9 +1,9 @@
-use Renard::Curie::Setup;
+use Renard::Incunabula::Common::Setup;
 package Renard::Curie::Model::ViewOptions;
 # ABSTRACT: A high-level set of options for generating a view
 
 use Moo;
-use Renard::Curie::Types qw(InstanceOf);
+use Renard::Incunabula::Common::Types qw(InstanceOf);
 use Renard::Curie::Model::ViewOptions::Grid;
 use Renard::Curie::Model::ViewOptions::Zoom::Percentage;
 

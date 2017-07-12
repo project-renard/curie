@@ -3,10 +3,10 @@
 use Test::Most tests => 4;
 
 use lib 't/lib';
-use Renard::Curie::Setup;
+use Renard::Incunabula::Common::Setup;
 use Renard::Curie::App;
 use CurieTestHelper;
-use Renard::Curie::Types qw(InstanceOf Enum);
+use Renard::Incunabula::Common::Types qw(InstanceOf Enum);
 
 my $cairo_doc = CurieTestHelper->create_cairo_document;
 

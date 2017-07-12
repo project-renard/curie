@@ -3,11 +3,11 @@
 use Test::Most;
 
 use lib 't/lib';
-use Renard::Curie::Setup;
+use Renard::Incunabula::Common::Setup;
 use Renard::Curie::App;
-use Renard::Curie::Model::Document::PDF;
+use Renard::Incunabula::Format::PDF::Document;
 use CurieTestHelper;
-use Renard::Curie::Types qw(Int InstanceOf);
+use Renard::Incunabula::Common::Types qw(Int InstanceOf);
 
 my $cairo_doc = CurieTestHelper->create_cairo_document;
 

@@ -1,9 +1,9 @@
-use Renard::Curie::Setup;
+use Renard::Incunabula::Common::Setup;
 package Renard::Curie::Model::View::Role::ForDocument;
 # ABSTRACT: Role for view model based on a document
 
 use Moo::Role;
-use Renard::Curie::Types qw(RenderableDocumentModel);
+use Renard::Incunabula::Common::Types qw(RenderableDocumentModel);
 
 =attr document
 

@@ -5,7 +5,7 @@ use Test::Most tests => 1;
 use lib 't/lib';
 use CurieTestHelper;
 
-use Renard::Curie::Setup;
+use Renard::Incunabula::Common::Setup;
 use Glib 'TRUE', 'FALSE';
 use Renard::Curie::App;
 
