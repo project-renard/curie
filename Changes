@@ -1,4 +1,4 @@
-0.003
+0.003 2017-07-11 23:39:52-0500
   Refactoring
    - Split out repositories from Renard-Curie-0.002.
 
@@ -40,13 +40,45 @@
   Features
    - Add opened documents to `Gtk3::RecentManager` so that the
      `File -> Recent files` menu is updated.
+
      Fixes <https://github.com/project-renard/curie/issues/192>.
      See PR <https://github.com/project-renard/curie/pull/193>.
 
+   - Continuous page view and multiple columns (e.g., for dual page display)
+     using a grid-based view model.
+
+     See <https://github.com/project-renard/curie/issues/94>,
+     <https://github.com/project-renard/curie/pull/209>.
+
+   - Add exception handler popup window.
+
+     See <https://github.com/project-renard/curie/issues/180>,
+     <https://github.com/project-renard/curie/pull/208>.
+
+   - Improve drag-and-drop support for text/plain data that contains file:
+     URIs.
+
+     See <https://github.com/project-renard/curie/issues/204>,
+     <https://github.com/project-renard/curie/pull/206>.
+
+  Bug fixes
+   - Zooming causes two redraws because of the call to size request inside of
+     the draw callback. Seperating the size request from drawing fixes this.
+
+     See <https://github.com/project-renard/curie/issues/197>,
+     <https://github.com/project-renard/curie/pull/194>.
+
   Refactoring
    - Add method to check for valid page numbers.
+
      Fixes <https://github.com/project-renard/curie/issues/179>.
      See PR <https://github.com/project-renard/curie/pull/195>.
+
+   - Refactor the page view models to use seperated presentation.
+
+     See <https://github.com/project-renard/curie/issues/150>,
+     <https://github.com/project-renard/curie/pull/194>,
+     <https://github.com/project-renard/curie/pull/203>.
 
 0.002 2017-05-16 10:33:20-0500
   Features
