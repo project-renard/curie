@@ -4,6 +4,7 @@ cache:
   # cache local::lib
   - C:\msys64\mingw64\lib\perl5\site_perl -> appveyor.yml
   - C:\msys64\mingw64\bin\cpanm -> appveyor.yml
+  - C:\msys64\mingw64\bin\dzil -> appveyor.yml
   - C:\msys64\home\%Username%\perl5 -> appveyor.yml
 
 environment:
@@ -20,11 +21,11 @@ install:
   - set CI_TESTING=1
   - set DEVOPS_BRANCH=master
   - cinst curl -y
-  - 'cd %APPVEYOR_BUILD_FOLDER% & curl -fsS -o appveyor-ci-auto.bat https://raw.githubusercontent.com/project-renard/devops/%DEVOPS_BRANCH%/script/appveyor-ci-auto.bat & appveyor-ci-auto.bat install'
+  - 'cd %APPVEYOR_BUILD_FOLDER% & curl -fsS -o helper.pl https://raw.githubusercontent.com/project-renard/devops/%DEVOPS_BRANCH%/script/helper.pl & perl helper.pl install'
   - 'echo End intall at: & time /t'
 
 build_script:
   - 'echo Nothing to build'
 
 test_script:
-  - 'cd %APPVEYOR_BUILD_FOLDER% & appveyor-ci-auto.bat test'
+  - 'cd %APPVEYOR_BUILD_FOLDER% & perl helper.pl test'
