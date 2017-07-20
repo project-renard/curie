@@ -3,7 +3,7 @@ requires 'Renard::Incunabula',
 	branch => 'master';
 requires 'Renard::Incunabula::Format::PDF',
 	git => 'https://github.com/project-renard/p5-Renard-Incunabula-Format-PDF.git',
-	branch => 'master';
+	branch => 'curie-148-basic-speech-synthesis';
 requires 'Renard::Incunabula::Frontend::Gtk3',
 	git => 'https://github.com/project-renard/p5-Renard-Incunabula-Frontend-Gtk3.git',
 	branch => 'master';
