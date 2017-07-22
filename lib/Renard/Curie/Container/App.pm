@@ -27,6 +27,13 @@ has log_window => (
 	lifecycle => 'Singleton',
 );
 
+has tts_window => (
+	is => 'ro',
+	isa => 'Renard::Curie::Component::TTSWindow',
+	infer => 1,
+	lifecycle => 'Singleton',
+);
+
 # Main component
 has main_window => (
 	is => 'ro',
