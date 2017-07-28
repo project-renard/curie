@@ -20,7 +20,7 @@ environment:
 install:
   # running under CI
   - set CI_TESTING=1
-  - set DEVOPS_BRANCH=42-cpanfile-git-cache
+  - set DEVOPS_BRANCH=master
   - cinst curl -y
   - 'cd %APPVEYOR_BUILD_FOLDER% & curl -fsS -o helper.pl https://raw.githubusercontent.com/project-renard/devops/%DEVOPS_BRANCH%/script/helper.pl & perl helper.pl install'
   - 'echo End intall at: & time /t'
