@@ -35,7 +35,7 @@ matrix:
   allow_failures:
     - perl: blead       # ignore failures for blead perl
 before_install:
-  - export DEVOPS_BRANCH="48-helper-external-repo-outside-build"
+  - export DEVOPS_BRANCH="master"
   - function cover() { command cover -ignore_re '/Model/View/' "$@"; }
   - export PERL_CPANM_OPT="--skip-satisfied"
   - export RENARD_DEVOPS_HOOK_PRE_PERL='command cpanm autodie~2.22'
