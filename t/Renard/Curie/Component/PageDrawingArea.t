@@ -5,11 +5,12 @@ use Test::MockModule;
 
 use lib 't/lib';
 use CurieTestHelper;
+use Renard::Incunabula::Devel::TestHelper;
 
 use Renard::Incunabula::Common::Setup;
 use Renard::Curie::App;
 
-my $cairo_doc = CurieTestHelper->create_cairo_document;
+my $cairo_doc = Renard::Incunabula::Devel::TestHelper->create_cairo_document;
 
 subtest 'Check that moving forward and backward changes the page number' => sub {
 	my ($app, $page_comp) = CurieTestHelper->create_app_with_document($cairo_doc);
