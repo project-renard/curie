@@ -7,6 +7,7 @@ use Moo::Role;
 use Renard::Curie::Component::MenuBar;
 use Renard::Curie::Component::FileChooser;
 use Renard::Incunabula::Common::Types qw(InstanceOf DocumentModel);
+use Renard::Curie::Component::DocumentPropertiesWindow;
 
 use Glib 'TRUE', 'FALSE';
 
@@ -53,6 +54,20 @@ callback on_open_file_dialog_cb( $event, $self ) {
 	} else {
 		$dialog->destroy;
 	}
+}
+
+=callback on_document_properties_dialog_cb
+
+  callback on_document_properties_dialog_cb( $event, $self )
+
+Callback that opens a L<Renard::Curie::Component::DocumentPropertiesWindow>
+component for the current document.
+
+=cut
+callback on_document_properties_dialog_cb( $event, $self ) {
+	Renard::Curie::Component::DocumentPropertiesWindow->new(
+		document => $self->view_manager->current_document
+	)->show_all;
 }
 
 
