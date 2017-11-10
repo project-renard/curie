@@ -62,8 +62,14 @@ method BUILD(@) {
 
 		for my $label ($label_key, $label_value) {
 			$label->set_line_wrap(TRUE);
-			$label->set_xalign(0.0);
-			$label->set_yalign(0.0);
+			if( $label->can('set_xalign' ) ) {
+				# for Gtk3 >= 3.16
+				$label->set_xalign(0.0);
+				$label->set_yalign(0.0);
+			} else {
+				# for Gtk3 <= 3.14
+				$label->set_alignment(0.0, 0.0);
+			}
 		}
 		$label_value->set_selectable(TRUE);
 
