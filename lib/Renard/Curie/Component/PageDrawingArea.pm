@@ -106,88 +106,6 @@ method BUILD(@) {
 	$self->view->signal_emit('view-changed');
 }
 
-=method setup_button_events
-
-  method setup_button_events()
-
-Sets up the signals for the navigational buttons.
-
-=cut
-method setup_button_events() {
-	$self->builder->get_object('button-first')->signal_connect(
-		clicked => \&on_clicked_button_first_cb, $self );
-	$self->builder->get_object('button-last')->signal_connect(
-		clicked => \&on_clicked_button_last_cb, $self );
-
-	$self->builder->get_object('button-forward')->signal_connect(
-		clicked => \&on_clicked_button_forward_cb, $self );
-	$self->builder->get_object('button-back')->signal_connect(
-		clicked => \&on_clicked_button_back_cb, $self );
-
-	$self->set_navigation_buttons_sensitivity;
-}
-
-=callback on_clicked_button_first_cb
-
-  callback on_clicked_button_first_cb($button, $self)
-
-Callback for when the "First" button is pressed.
-See L</set_current_page_to_first>.
-
-=cut
-callback on_clicked_button_first_cb($button, $self) {
-	$self->view->set_current_page_to_first;
-}
-
-=callback on_clicked_button_last_cb
-
-  callback on_clicked_button_last_cb($button, $self)
-
-Callback for when the "Last" button is pressed.
-See L</set_current_page_to_last>.
-
-=cut
-callback on_clicked_button_last_cb($button, $self) {
-	$self->view->set_current_page_to_last;
-}
-
-=callback on_clicked_button_forward_cb
-
-  callback on_clicked_button_forward_cb($button, $self)
-
-Callback for when the "Forward" button is pressed.
-See L</set_current_page_forward>.
-
-=cut
-callback on_clicked_button_forward_cb($button, $self) {
-	$self->view->set_current_page_forward;
-}
-
-=callback on_clicked_button_back_cb
-
-  callback on_clicked_button_back_cb($button, $self)
-
-Callback for when the "Back" button is pressed.
-See L</set_current_page_back>.
-
-=cut
-callback on_clicked_button_back_cb($button, $self) {
-	$self->view->set_current_page_back;
-}
-
-=method setup_text_entry_events
-
-  method setup_text_entry_events()
-
-Sets up the signals for the text entry box so the user can enter in page
-numbers.
-
-=cut
-method setup_text_entry_events() {
-	$self->builder->get_object('page-number-entry')->signal_connect(
-		activate => \&on_activate_page_number_entry_cb, $self );
-}
-
 =method setup_drawing_area
 
   method setup_drawing_area()
@@ -230,113 +148,6 @@ method setup_drawing_area() {
 	$vbox->pack_start( $scrolled_window, TRUE, TRUE, 0);
 }
 
-=method setup_number_of_pages_label
-
-  method setup_number_of_pages_label()
-
-Sets up the label that shows the number of pages in the document.
-
-=cut
-method setup_number_of_pages_label() {
-	$self->builder->get_object("number-of-pages-label")
-		->set_text( $self->view->document->number_of_pages );
-}
-
-=method setup_keybindings
-
-  method setup_keybindings()
-
-Sets up the signals to capture key presses on this component.
-
-=cut
-method setup_keybindings() {
-	$self->signal_connect( key_press_event => \&on_key_press_event_cb, $self );
-}
-
-=callback on_key_press_event_cb
-
-  callback on_key_press_event_cb($window, $event, $self)
-
-Callback that responds to specific key events and dispatches to the appropriate
-handlers.
-
-=cut
-callback on_key_press_event_cb($window, $event, $self) {
-	if($event->keyval == Gtk3::Gdk::KEY_Page_Down){
-		$self->view->set_current_page_forward;
-	} elsif($event->keyval == Gtk3::Gdk::KEY_Page_Up){
-		$self->view->set_current_page_back;
-	} elsif($event->keyval == Gtk3::Gdk::KEY_Up){
-		decrement_scroll($self->scrolled_window->get_vadjustment);
-	} elsif($event->keyval == Gtk3::Gdk::KEY_Down){
-		increment_scroll($self->scrolled_window->get_vadjustment);
-	} elsif($event->keyval == Gtk3::Gdk::KEY_Right){
-		increment_scroll($self->scrolled_window->get_hadjustment);
-	} elsif($event->keyval == Gtk3::Gdk::KEY_Left){
-		decrement_scroll($self->scrolled_window->get_hadjustment);
-	}
-}
-
-=method setup_scroll_bindings
-
-  method setup_scroll_bindings()
-
-Sets up the signals to capture scroll events on this component.
-
-=cut
-method setup_scroll_bindings() {
-	$self->scrolled_window->signal_connect(
-		'scroll-event' => \&on_scroll_event_cb, $self );
-}
-
-=callback on_scroll_event_cb
-
-  callback on_scroll_event_cb($window, $event, $self)
-
-Callback that responds to specific scroll events and dispatches the associated
-handlers.
-
-=cut
-callback on_scroll_event_cb($window, $event, $self) {
-	if ( $event->state == 'control-mask' && $event->direction eq 'smooth') {
-		my ($delta_x, $delta_y) =  $event->get_scroll_deltas();
-		if ( $delta_y < 0 ) { $self->view_manager->set_zoom_level( $self->view->zoom_level - .05 ); }
-		elsif ( $delta_y > 0 ) { $self->view_manager->set_zoom_level( $self->view->zoom_level + .05 ); }
-		return 1;
-	} elsif ( $event->state == 'control-mask' && $event->direction eq 'up' ) {
-		$self->view_manager->set_zoom_level( $self->view->zoom_level + .05 );
-		return 1;
-	} elsif ( $event->state == 'control-mask' && $event->direction eq 'down' ) {
-		$self->view_manager->set_zoom_level( $self->view->zoom_level - .05 );
-		return 1;
-	}
-	return 0;
-}
-
-=func increment_scroll
-
-  fun increment_scroll( (InstanceOf['Gtk3::Adjustment']) $current )
-
-Helper function that scrolls down by the scrollbar's step increment.
-
-=cut
-fun increment_scroll( (InstanceOf['Gtk3::Adjustment']) $current ) {
-	my $adjustment = $current->get_value + $current->get_step_increment;
-	$current->set_value($adjustment);
-}
-
-=func decrement_scroll
-
-  fun decrement_scroll( (InstanceOf['Gtk3::Adjustment']) $current )
-
-Helper function that scrolls up by the scrollbar's step increment.
-
-=cut
-fun decrement_scroll( (InstanceOf['Gtk3::Adjustment']) $current ) {
-	my $adjustment = $current->get_value - $current->get_step_increment;
-	$current->set_value($adjustment);
-}
-
 =method refresh_drawing_area
 
   method refresh_drawing_area()
@@ -373,52 +184,6 @@ method on_draw_page_cb( (InstanceOf['Cairo::Context']) $cr ) {
 		->set_text($page_number);
 }
 
-=callback on_activate_page_number_entry_cb
-
-  callback on_activate_page_number_entry_cb( $entry, $self )
-
-Callback that is called when text has been entered into the page number entry.
-
-=cut
-callback on_activate_page_number_entry_cb( $entry, $self ) {
-	my $text = $entry->get_text;
-	if( $self->view->document->is_valid_page_number($text) ) {
-		$self->view->page_number( $text );
-	} else {
-		Renard::Incunabula::Common::Error::User::InvalidPageNumber->throw({
-			payload => {
-				text => $text,
-				range => [
-					$self->view->document->first_page_number,
-					$self->view->document->last_page_number
-				],
-			}
-		});
-	}
-}
-
-=method set_navigation_buttons_sensitivity
-
-  set_navigation_buttons_sensitivity()
-
-Enables and disables forward and back navigation buttons when at the end and
-start of the document respectively.
-
-=cut
-method set_navigation_buttons_sensitivity() {
-	my $can_move_forward = $self->view->can_move_to_next_page;
-	my $can_move_back = $self->view->can_move_to_previous_page;
-
-	for my $button_name ( qw(button-last button-forward) ) {
-		$self->builder->get_object($button_name)
-			->set_sensitive($can_move_forward);
-	}
-
-	for my $button_name ( qw(button-first button-back) ) {
-		$self->builder->get_object($button_name)
-			->set_sensitive($can_move_back);
-	}
-}
 
 =method update_view
 
@@ -449,6 +214,14 @@ method update_view($new_view) {
 with qw(
 	Renard::Incunabula::Frontend::Gtk3::Component::Role::FromBuilder
 	Renard::Incunabula::Frontend::Gtk3::Component::Role::UIFileFromPackageName
+
+	Renard::Curie::Component::PageDrawingArea::Role::KeyBindings
+	Renard::Curie::Component::PageDrawingArea::Role::MouseScrollBindings
+	Renard::Curie::Component::PageDrawingArea::Role::NavigationButtons
+	Renard::Curie::Component::PageDrawingArea::Role::PageEntry
+	Renard::Curie::Component::PageDrawingArea::Role::PageLabel
+	Renard::Curie::Component::PageDrawingArea::Role::ScrollWindow
 );
+
 
 1;
