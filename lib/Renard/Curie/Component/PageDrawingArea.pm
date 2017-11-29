@@ -85,12 +85,7 @@ method BUILD(@) {
 	});
 	$self->set_can_focus( TRUE );
 
-	$self->setup_button_events;
-	$self->setup_text_entry_events;
 	$self->setup_drawing_area;
-	$self->setup_number_of_pages_label;
-	$self->setup_keybindings;
-	$self->setup_scroll_bindings;
 
 	# add as child for this L<Gtk3::Bin>
 	$self->add(
