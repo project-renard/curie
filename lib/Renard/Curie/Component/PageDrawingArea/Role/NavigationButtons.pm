@@ -4,6 +4,10 @@ package Renard::Curie::Component::PageDrawingArea::Role::NavigationButtons;
 
 use Moo::Role;
 
+after BUILD => method(@) {
+	$self->setup_button_events;
+};
+
 =method setup_button_events
 
   method setup_button_events()

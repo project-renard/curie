@@ -4,6 +4,10 @@ package Renard::Curie::Component::PageDrawingArea::Role::PageLabel;
 
 use Moo::Role;
 
+after BUILD => method(@) {
+	$self->setup_number_of_pages_label;
+};
+
 =method setup_number_of_pages_label
 
   method setup_number_of_pages_label()

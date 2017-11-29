@@ -4,6 +4,10 @@ package Renard::Curie::Component::PageDrawingArea::Role::MouseScrollBindings;
 
 use Moo::Role;
 
+after BUILD => method(@) {
+	$self->setup_scroll_bindings;
+};
+
 =method setup_scroll_bindings
 
   method setup_scroll_bindings()

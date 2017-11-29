@@ -4,6 +4,10 @@ package Renard::Curie::Component::PageDrawingArea::Role::PageEntry;
 
 use Moo::Role;
 
+after BUILD => method(@) {
+	$self->setup_text_entry_events;
+};
+
 =method setup_text_entry_events
 
   method setup_text_entry_events()

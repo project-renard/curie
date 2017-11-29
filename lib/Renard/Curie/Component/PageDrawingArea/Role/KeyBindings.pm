@@ -5,6 +5,10 @@ package Renard::Curie::Component::PageDrawingArea::Role::KeyBindings;
 use Moo::Role;
 use Gtk3;
 
+after BUILD => method(@) {
+	$self->setup_keybindings;
+};
+
 =method setup_keybindings
 
   method setup_keybindings()
