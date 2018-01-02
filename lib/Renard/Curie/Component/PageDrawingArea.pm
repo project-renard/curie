@@ -12,8 +12,9 @@ use Glib::Object::Subclass
 		'update-scroll-adjustment' => {},
 	},
 	;
-use Renard::Incunabula::Common::Types qw(RenderableDocumentModel RenderablePageModel
-	PageNumber ZoomLevel Bool InstanceOf);
+use Renard::Incunabula::Common::Types qw(Bool InstanceOf);
+use Renard::Incunabula::Document::Types qw(PageNumber ZoomLevel);
+use Renard::Incunabula::Format::Cairo::Types qw(RenderableDocumentModel RenderablePageModel);
 
 =attr view_manager
 

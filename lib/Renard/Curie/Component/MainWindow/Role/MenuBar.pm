@@ -6,7 +6,8 @@ use Moo::Role;
 
 use Renard::Curie::Component::MenuBar;
 use Renard::Curie::Component::FileChooser;
-use Renard::Incunabula::Common::Types qw(InstanceOf DocumentModel);
+use Renard::Incunabula::Common::Types qw(InstanceOf);
+use Renard::Incunabula::Document::Types qw(DocumentModel);
 use Renard::Curie::Component::DocumentPropertiesWindow;
 
 use Glib 'TRUE', 'FALSE';

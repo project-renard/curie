@@ -3,11 +3,11 @@ package Renard::Curie::Model::View::Role::Zoomable;
 # ABSTRACT: Role for view models that support zooming
 
 use Moo::Role;
-use Renard::Incunabula::Common::Types qw(ZoomLevel);
+use Renard::Incunabula::Document::Types qw(ZoomLevel);
 
 =attr zoom_level
 
-A L<ZoomLevel|Renard::Incunabula::Common::Types/ZoomLevel> for the current zoom level for
+A L<ZoomLevel|Renard::Incunabula::Document::Types/ZoomLevel> for the current zoom level for
 the document.
 
 =cut

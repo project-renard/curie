@@ -3,11 +3,12 @@ package Renard::Curie::Model::View::Role::Pageable;
 # ABSTRACT: Role for view models that are paged
 
 use Moo::Role;
-use Renard::Incunabula::Common::Types qw(Bool PageNumber);
+use Renard::Incunabula::Common::Types qw(Bool);
+use Renard::Incunabula::Document::Types qw(PageNumber);
 
 =attr page_number
 
-A L<PageNumber|Renard:Curie::Types/PageNumber> for the current page being
+A L<PageNumber|Renard::Incunabula::Document::Types/PageNumber> for the current page being
 drawn.
 
 =cut

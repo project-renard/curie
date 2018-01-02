@@ -1,6 +1,7 @@
 use Renard::Incunabula::Common::Setup;
 package CurieTestHelper;
-use Renard::Incunabula::Common::Types qw(CodeRef InstanceOf Maybe PositiveInt DocumentModel Tuple);
+use Renard::Incunabula::Common::Types qw(CodeRef InstanceOf Maybe PositiveInt Tuple);
+use Renard::Incunabula::Document::Types qw(DocumentModel );
 
 
 =func run_app_with_document

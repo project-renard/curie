@@ -33,7 +33,7 @@ callback on_activate_page_number_entry_cb( $entry, $self ) {
 	if( $self->view->document->is_valid_page_number($text) ) {
 		$self->view->page_number( $text );
 	} else {
-		Renard::Incunabula::Common::Error::User::InvalidPageNumber->throw({
+		Renard::Curie::Error::User::InvalidPageNumber->throw({
 			payload => {
 				text => $text,
 				range => [

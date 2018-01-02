@@ -3,7 +3,8 @@ package Renard::Curie::ViewModel::ViewManager;
 # ABSTRACT: Manages the currently open views
 
 use Moo;
-use Renard::Incunabula::Common::Types qw(InstanceOf DocumentModel Path FileUri PositiveInt ZoomLevel);
+use Renard::Incunabula::Common::Types qw(InstanceOf Path FileUri PositiveInt);
+use Renard::Incunabula::Document::Types qw(DocumentModel ZoomLevel);
 use Renard::Incunabula::Format::PDF::Document;
 
 use Renard::Curie::Model::ViewOptions;

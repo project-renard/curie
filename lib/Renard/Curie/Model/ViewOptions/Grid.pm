@@ -5,7 +5,7 @@ package Renard::Curie::Model::ViewOptions::Grid;
 use Moo;
 use MooX::Lsub;
 use Renard::Incunabula::Common::Types qw(Maybe PositiveInt);
-use Renard::Incunabula::Common::Error;
+use Renard::Curie::Error;
 
 # Need to use the ::BuildArgs version since is_continuous_view is a lsub.
 with qw(MooX::BuildArgs MooX::Role::CloneSet::BuildArgs);
@@ -34,7 +34,7 @@ has [ qw/rows columns/ ] => (
 	required => 1,
 	isa => sub {
 		( Maybe[PositiveInt] )->check($_[0]) or
-			Renard::Incunabula::Common::Error::ViewOptions::InvalidGridOptions->throw(
+			Renard::Curie::Error::ViewOptions::InvalidGridOptions->throw(
 				msg => 'Grid extent must be Maybe[PositiveInt]',
 			);
 	},
@@ -62,7 +62,7 @@ non-C<undef> attribute is used to compute the C<undef> attribute.
 =cut
 method BUILD() {
 	unless( defined $self->rows or defined $self->columns ) {
-		Renard::Incunabula::Common::Error::ViewOptions::InvalidGridOptions->throw({
+		Renard::Curie::Error::ViewOptions::InvalidGridOptions->throw({
 			msg => "At least one of the grid extents must be defined",
 		});
 	}

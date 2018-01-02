@@ -4,7 +4,7 @@ package Renard::Curie::Component::PageDrawingArea::Role::MouseScrollBindings;
 
 use Moo::Role;
 
-use Renard::Incunabula::Common::Types qw(ZoomLevel);
+use Renard::Incunabula::Document::Types qw(ZoomLevel);
 use List::AllUtils qw(max);
 
 =attr MIN_ZOOM_LEVEL

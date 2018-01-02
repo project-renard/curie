@@ -5,7 +5,8 @@ package Renard::Curie::Component::Outline;
 use Moo;
 use Renard::Incunabula::Frontend::Gtk3::Helper;
 use Glib 'TRUE', 'FALSE';
-use Renard::Incunabula::Common::Types qw(InstanceOf PageNumber);
+use Renard::Incunabula::Common::Types qw(InstanceOf);
+use Renard::Incunabula::Document::Types qw(PageNumber);
 
 has _gtk_widget => (
 	is => 'lazy',

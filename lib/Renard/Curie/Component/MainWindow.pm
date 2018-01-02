@@ -14,7 +14,8 @@ use Moo 2.001001;
 use MooX::Role::Logger ();
 use MooX::Lsub;
 
-use Renard::Incunabula::Common::Types qw(InstanceOf Path Str DocumentModel);
+use Renard::Incunabula::Common::Types qw(InstanceOf Path Str);
+use Renard::Incunabula::Document::Types qw(DocumentModel);
 
 =attr window
 
