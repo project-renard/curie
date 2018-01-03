@@ -25,6 +25,7 @@ install:
   - set CI_TESTING=1
   - set DEVOPS_BRANCH=master
   - cinst curl -y
+  - set RENARD_DEVOPS_HOOK_SKIP_PM_UNINSTALL=1
   - 'cd %APPVEYOR_BUILD_FOLDER% & curl -fsS -o helper.pl https://raw.githubusercontent.com/project-renard/devops/%DEVOPS_BRANCH%/script/helper.pl & perl helper.pl install'
   - 'echo End intall at: & time /t'
 
