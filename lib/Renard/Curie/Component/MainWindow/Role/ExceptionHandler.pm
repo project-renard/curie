@@ -14,7 +14,7 @@ has _exception_handler => (
 
 method _build__exception_handler() {
 	Glib->install_exception_handler( fun( $exception ) {
-		if ( $exception->isa('Renard::Incunabula::Common::Error::User::InvalidPageNumber') ) {
+		if ( $exception->isa('Renard::Curie::Error::User::InvalidPageNumber') ) {
 			$self->_show_exception_dialog_box(
 				'Page number entered is invalid: entered "%s", should be between %s and %s.',
 				[

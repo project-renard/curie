@@ -5,7 +5,8 @@ package Renard::Curie::Component::DocumentPropertiesWindow;
 use Moo;
 use Glib 'TRUE', 'FALSE';
 use Renard::Incunabula::Frontend::Gtk3::Helper;
-use Renard::Incunabula::Common::Types qw(DocumentModel InstanceOf);
+use Renard::Incunabula::Common::Types qw(InstanceOf);
+use Renard::Incunabula::Document::Types qw(DocumentModel);
 use Renard::Incunabula::Format::PDF::InformationDictionary;
 
 =attr document

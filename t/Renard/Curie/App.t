@@ -7,6 +7,7 @@ use Test::Exception 0.43;
 use lib 't/lib';
 use CurieTestHelper;
 use Renard::Incunabula::Devel::TestHelper;
+use Renard::Incunabula::Format::Cairo::Devel::TestHelper;
 
 use Renard::Incunabula::Common::Setup;
 use Renard::Curie::Container::App;
@@ -107,8 +108,8 @@ subtest "Run app and destroy" => sub {
 subtest "Open document twice" => sub {
 	my $c = CurieTestHelper->get_app_container;
 	my $app = $c->app;
-	my $cairo_doc_a = Renard::Incunabula::Devel::TestHelper->create_cairo_document;
-	my $cairo_doc_b = Renard::Incunabula::Devel::TestHelper->create_cairo_document;
+	my $cairo_doc_a = Renard::Incunabula::Format::Cairo::Devel::TestHelper->create_cairo_document;
+	my $cairo_doc_b = Renard::Incunabula::Format::Cairo::Devel::TestHelper->create_cairo_document;
 
 	$c->view_manager->current_document($cairo_doc_a);
 	cmp_deeply $c->_test_current_view->document, $cairo_doc_a, 'First document loaded';

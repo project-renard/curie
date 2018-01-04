@@ -4,7 +4,8 @@ package Renard::Curie::Component::MainWindow::Role::Outline;
 
 use Moo::Role;
 use Renard::Curie::Component::Outline;
-use Renard::Incunabula::Common::Types qw(InstanceOf DocumentModel);
+use Renard::Incunabula::Common::Types qw(InstanceOf);
+use Renard::Incunabula::Document::Types qw(DocumentModel);
 
 use Glib 'TRUE', 'FALSE';
 

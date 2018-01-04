@@ -9,7 +9,8 @@ use Renard::Incunabula::Frontend::Gtk3::Helper;
 use File::Spec;
 use File::Basename;
 use Module::Util qw(:all);
-use Renard::Incunabula::Common::Types qw(InstanceOf Str DocumentModel);
+use Renard::Incunabula::Common::Types qw(InstanceOf Str);
+use Renard::Incunabula::Document::Types qw(DocumentModel);
 use Getopt::Long::Descriptive;
 
 use MooX::Role::Logger ();

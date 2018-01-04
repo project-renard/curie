@@ -3,7 +3,7 @@ package Renard::Curie::Model::ViewOptions::Zoom::Percentage;
 # ABSTRACT: A set of options for zooming by a fixed amount
 
 use Moo;
-use Renard::Incunabula::Common::Types qw(ZoomLevel);
+use Renard::Incunabula::Document::Types qw(ZoomLevel);
 
 extends 'Renard::Curie::Model::ViewOptions::Zoom';
 

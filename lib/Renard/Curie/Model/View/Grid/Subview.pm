@@ -3,7 +3,8 @@ package Renard::Curie::Model::View::Grid::Subview;
 # ABSTRACT: A subview for a grid-layout
 
 use Moo;
-use Renard::Incunabula::Common::Types qw(InstanceOf ArrayRef SizeRequest);
+use Renard::Incunabula::Common::Types qw(InstanceOf ArrayRef);
+use Renard::Incunabula::Frontend::Gtk3::Types qw(SizeRequest);
 use List::AllUtils qw(part sum max);
 
 has _grid_view => (

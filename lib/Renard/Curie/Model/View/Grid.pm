@@ -4,7 +4,8 @@ package Renard::Curie::Model::View::Grid;
 
 use Moo;
 
-use Renard::Incunabula::Common::Types qw(InstanceOf ArrayRef SizeRequest);
+use Renard::Incunabula::Common::Types qw(InstanceOf ArrayRef);
+use Renard::Incunabula::Frontend::Gtk3::Types qw(SizeRequest);
 use POSIX qw(ceil);
 use List::AllUtils qw(part first);
 use Glib qw(TRUE FALSE);
