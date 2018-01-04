@@ -1,9 +1,9 @@
 requires 'Renard::Incunabula',
 	git => 'https://github.com/project-renard/p5-Renard-Incunabula.git',
-	branch => '5-split-out-doc-code';
+	branch => 'master';
 requires 'Renard::Incunabula::Format::PDF',
 	git => 'https://github.com/project-renard/p5-Renard-Incunabula-Format-PDF.git',
-	branch => 'r-i-5-split-out-doc-code';
+	branch => 'master';
 requires 'Renard::Incunabula::Frontend::Gtk3',
 	git => 'https://github.com/project-renard/p5-Renard-Incunabula-Frontend-Gtk3.git',
-	branch => 'r-i-5-split-out-doc-code';
+	branch => 'master';
