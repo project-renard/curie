@@ -1,7 +1,12 @@
-use Renard::Incunabula::Common::Setup;
-package Renard::Curie;
-# ABSTRACT: A document reader written with GTK+.
-$Renard::Curie::VERSION = '0.004';
+use Modern::Perl;
+package Renard::Curie::Error;
+# ABSTRACT: Exceptions for Curie
+$Renard::Curie::Error::VERSION = '0.004';
+use custom::failures qw/
+	User::InvalidPageNumber
+	ViewOptions::InvalidGridOptions
+	/;
+
 1;
 
 __END__
@@ -12,15 +17,21 @@ __END__
 
 =head1 NAME
 
-Renard::Curie - A document reader written with GTK+.
+Renard::Curie::Error - Exceptions for Curie
 
 =head1 VERSION
 
 version 0.004
 
-=head1 SEE ALSO
+=head1 EXTENDS
 
-L<Repository information|http://project-renard.github.io/doc/development/repo/curie/>
+=over 4
+
+=item * L<failure>
+
+=item * L<failure>
+
+=back
 
 =head1 AUTHOR
 
