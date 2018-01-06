@@ -8,7 +8,7 @@ Renard::Curie - A document reader written with GTK+.
 
 =head1 VERSION
 
-version 0.003
+version 0.004
 
 =head1 SEE ALSO
 
