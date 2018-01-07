@@ -1,5 +1,6 @@
 #!perl
-# PODNAME: curie: a document reader
+# PODNAME: curie
+# ABSTRACT: a document reader
 
 use strict;
 use warnings;
