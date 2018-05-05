@@ -172,4 +172,75 @@ method set_zoom_level( (ZoomLevel) $zoom_level ) {
 	$self->view_options( $view_options );
 }
 
+method current_text_page() {
+	return [] unless $self->current_document->can('get_textual_page');
+
+	my $page_number = $self->current_view->page_number;
+	my $txt = $self->current_document->get_textual_page($page_number);
+
+	use Renard::Incunabula::Language::EN;
+	use Scalar::Util qw(refaddr);
+	Renard::Incunabula::Language::EN::apply_sentence_offsets_to_blocks($txt);
+
+	my @sentence_spans = ();
+	$txt->iter_extents(sub {
+		my ($extent, $tag_name, $tag_value) = @_;
+		my $data = {
+			sentence => $extent->substr,
+			extent => $extent,
+		};
+		$data->{sentence}->iter_extents( sub {
+			my ($extent, $tag_name, $tag_value) = @_;
+			push @{  $data->{spans} }, $tag_value;
+		}, only => ['font']);
+		push @sentence_spans, $data;
+	}, only => ['sentence'] );
+
+	for my $sentence (@sentence_spans) {
+		my $extent = $sentence->{extent};
+		$sentence->{first_char} = $txt->get_tag_at( $extent->start, 'char' );
+		$sentence->{last_char} = $txt->get_tag_at( $extent->end-1, 'char' );
+		my @spans = @{ $sentence->{spans} };
+		my @bb = ();
+		if( @spans == 1 ) {
+			# must be in the same span
+			my $first_span = $spans[0];
+			my $in_range = 0;
+			for my $c (@{ $first_span->{char} }) {
+				if( refaddr $c == refaddr $sentence->{first_char} ) {
+					$in_range = 1;
+				}
+
+				push @bb, $c->{bbox} if $in_range;
+
+				if( refaddr $c == refaddr $sentence->{last_char} ) {
+					$in_range = 0;
+					last;
+				}
+			}
+		} else {
+			for my $span (@spans) {
+				push @bb, $span->{bbox};
+			}
+			if( $sentence->{first_char} != $spans[0]{char}[0] ) {
+				shift @bb;
+				for my $char (reverse @{$spans[0]{char}}) {
+					unshift @bb, $char->{bbox};
+					last if refaddr $sentence->{first_char} == refaddr $char;
+				}
+			}
+			if( $sentence->{last_char} != $spans[-1]{char}[-1] ) {
+				pop @bb;
+				for my $char (@{$spans[-1]{char}}) {
+					push @bb, $char->{bbox};
+					last if refaddr $sentence->{last_char} == refaddr $char;
+				}
+			}
+		}
+		$sentence->{bbox} = \@bb;
+	}
+
+	\@sentence_spans;
+}
+
 1;
