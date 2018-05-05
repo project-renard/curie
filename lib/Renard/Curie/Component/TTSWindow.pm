@@ -3,11 +3,25 @@ package Renard::Curie::Component::TTSWindow;
 # ABSTRACT: Component used to control speech synthesis
 
 use Moo;
-use Function::Parameters;
 use Speech::Synthesis;
 use Renard::Incunabula::Language::EN;
+use Renard::Incunabula::Common::Types qw(InstanceOf);
 use List::AllUtils qw(first);
 use IO::Async::Function;
+
+=attr view_manager
+
+The view manager model for this application.
+
+=cut
+has view_manager => (
+	is => 'ro',
+	required => 1,
+	isa => InstanceOf['Renard::Curie::ViewModel::ViewManager'],
+	handles => {
+		view => current_view =>,
+	},
+);
 
 has playing => (
 	is => 'rw',
@@ -52,7 +66,7 @@ callback on_clicked_button_play_cb( $button, $self ) {
 	$self->playing( ! $self->playing );
 	$self->builder->get_object('button-play')
 		->set_label(
-			  $self->playing
+			$self->playing
 			? 'gtk-media-pause'
 			: 'gtk-media-play'
 		);
@@ -60,15 +74,14 @@ callback on_clicked_button_play_cb( $button, $self ) {
 }
 
 method update() {
-	return unless defined $self->app->page_document_component;
-	my $page_doc = $self->app->page_document_component;
-	my $text = $page_doc->current_text_page;
+	return unless defined $self->view_manager->current_document;
+	my $text = $self->view_manager->current_text_page;
 	$self->builder->get_object('label-sentence-count')
 		->set_text(
-			"@{[ @$text == 0 ? 0 : $page_doc->current_sentence_number + 1 ]} / @{[ scalar @$text ]}"
+			"@{[ @$text == 0 ? 0 : $self->view_manager->current_sentence_number + 1 ]} / @{[ scalar @$text ]}"
 		);
 	my $current_sentence_text =
-		$text->[$page_doc->current_sentence_number]{sentence} // '';
+		$text->[$self->view_manager->current_sentence_number]{sentence} // '';
 	$self->builder->get_object('tts-text')
 		->get_buffer
 		->set_text($current_sentence_text);
@@ -95,8 +108,7 @@ method update() {
 }
 
 method num_of_sentences_on_page() {
-	my $page_doc = $self->app->page_document_component;
-	my $text = $page_doc->current_text_page;
+	my $text = $self->view_manager->current_text_page;
 	return @{ $text };
 }
 
@@ -109,24 +121,31 @@ callback on_clicked_button_next_cb( $button, $self ) {
 }
 
 method choose_previous_sentence() {
-	my $page_doc = $self->app->page_document_component;
-	if( $page_doc->current_sentence_number > 0 ) {
-		$page_doc->current_sentence_number( $page_doc->current_sentence_number - 1 );
-	} elsif( $page_doc->can_move_to_previous_page ) {
-		$page_doc->set_current_page_back;
-		$page_doc->current_sentence_number(
+	my $v = $self->view;
+	my $vm = $self->view_manager;
+	if( $vm->current_sentence_number > 0 ) {
+		$vm->current_sentence_number( $vm->current_sentence_number - 1 );
+	} elsif( $v->can_move_to_previous_page ) {
+		$v->set_current_page_back;
+		$vm->current_sentence_number(
 			$self->num_of_sentences_on_page - 1
 		);
 	}
+
+	$self->update;
 }
 
 method choose_next_sentence() {
-	my $page_doc = $self->app->page_document_component;
-	if( $page_doc->current_sentence_number < $self->num_of_sentences_on_page - 1 ) {
-		$page_doc->current_sentence_number( $page_doc->current_sentence_number + 1 );
-	} elsif( $page_doc->can_move_to_next_page ) {
-		$page_doc->set_current_page_forward;
+	my $v = $self->view;
+	my $vm = $self->view_manager;
+	if( $vm->current_sentence_number < $self->num_of_sentences_on_page - 1 ) {
+		$vm->current_sentence_number( $vm->current_sentence_number + 1 );
+	} elsif( $v->can_move_to_next_page ) {
+		$v->set_current_page_forward;
+		$self->view_manager->current_sentence_number(0);
 	}
+
+	$self->update;
 }
 
 sub _build_synth_param {
