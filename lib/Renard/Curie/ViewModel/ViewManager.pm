@@ -205,10 +205,18 @@ method current_text_page() {
 			sentence => $extent->substr,
 			extent => $extent,
 		};
-		$data->{sentence}->iter_extents( sub {
-			my ($extent, $tag_name, $tag_value) = @_;
-			push @{  $data->{spans} }, $tag_value;
-		}, only => ['font']);
+
+		my $start = $extent->start;
+		my $end = $extent->end;
+		my $last_span = {};
+		for my $pos ($start..$end-1) {
+			my $value = $txt->get_tag_at($pos,'font');
+			if( defined $value && refaddr $last_span != refaddr $value ) {
+				$last_span = $value;
+				push @{ $data->{spans} }, $value;
+			}
+		}
+
 		push @sentence_spans, $data;
 	}, only => ['sentence'] );
 
@@ -218,10 +226,8 @@ method current_text_page() {
 		$sentence->{last_char} = $txt->get_tag_at( $extent->end-1, 'char' );
 		my @spans = @{ $sentence->{spans} };
 		my @bb = ();
-		if( @spans == 1 ) {
-			# must be in the same span
-			my $first_span = $spans[0];
-			my $in_range = 0;
+		my $in_range = 0;
+		for my $first_span ( @spans ) {
 			for my $c (@{ $first_span->{char} }) {
 				if( refaddr $c == refaddr $sentence->{first_char} ) {
 					$in_range = 1;
@@ -234,25 +240,8 @@ method current_text_page() {
 					last;
 				}
 			}
-		} else {
-			for my $span (@spans) {
-				push @bb, $span->{bbox};
-			}
-			if( $sentence->{first_char} != $spans[0]{char}[0] ) {
-				shift @bb;
-				for my $char (reverse @{$spans[0]{char}}) {
-					unshift @bb, $char->{bbox};
-					last if refaddr $sentence->{first_char} == refaddr $char;
-				}
-			}
-			if( $sentence->{last_char} != $spans[-1]{char}[-1] ) {
-				pop @bb;
-				for my $char (@{$spans[-1]{char}}) {
-					push @bb, $char->{bbox};
-					last if refaddr $sentence->{last_char} == refaddr $char;
-				}
-			}
 		}
+
 		$sentence->{bbox} = \@bb;
 	}
 
