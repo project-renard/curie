@@ -174,7 +174,7 @@ sub _build_synth_function {
 with qw(
 	Renard::Incunabula::Frontend::Gtk3::Component::Role::FromBuilder
 	Renard::Incunabula::Frontend::Gtk3::Component::Role::UIFileFromPackageName
-	Renard::Curie::Component::Role::HasParentApp
+	Renard::Curie::Component::Role::HasParentMainWindow
 );
 
 1;
