@@ -38,7 +38,7 @@ has tts_window => (
 has main_window => (
 	is => 'ro',
 	isa => 'Renard::Curie::Component::MainWindow',
-	dependencies => [qw(log_window outline menu_bar view_manager)],
+	dependencies => [qw(log_window outline menu_bar view_manager tts_window)],
 	lifecycle => 'Singleton',
 );
 

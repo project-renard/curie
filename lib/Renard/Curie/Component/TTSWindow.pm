@@ -42,7 +42,6 @@ method BUILD(@) {
 			\&on_clicked_button_previous_cb, $self );
 
 	$self->builder->get_object('tts-window')->show_all;
-	$self->app->loop->add( $self->synth_function );
 }
 
 method speak( $text ) {
