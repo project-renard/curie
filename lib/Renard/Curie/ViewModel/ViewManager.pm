@@ -3,7 +3,7 @@ package Renard::Curie::ViewModel::ViewManager;
 # ABSTRACT: Manages the currently open views
 
 use Moo;
-use Renard::Incunabula::Common::Types qw(InstanceOf Path FileUri PositiveInt);
+use Renard::Incunabula::Common::Types qw(InstanceOf Path FileUri PositiveInt PositiveOrZeroInt);
 use Renard::Incunabula::Document::Types qw(DocumentModel ZoomLevel);
 use Renard::Incunabula::Format::PDF::Document;
 
@@ -58,8 +58,24 @@ has current_view => (
 	trigger => 1, # _trigger_current_view
 );
 
+=attr current_sentence_number
+
+TODO
+
+=cut
+has current_sentence_number => (
+	is => 'rw',
+	isa => PositiveOrZeroInt,
+	trigger => 1, # _trigger_current_sentence_number
+	default => 0,
+);
+
 method _trigger_current_view($view) {
 	$self->signal_emit( 'update-view' => $view );
+}
+
+method _trigger_current_sentence_number($new_current_sentence_number) {
+	$self->signal_emit( 'update-view' => $self->current_view );
 }
 
 method _trigger_number_of_columns($new_number_of_columns) {
