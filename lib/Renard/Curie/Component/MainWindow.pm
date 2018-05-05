@@ -17,6 +17,19 @@ use MooX::Lsub;
 use Renard::Incunabula::Common::Types qw(InstanceOf Path Str);
 use Renard::Incunabula::Document::Types qw(DocumentModel);
 
+use IO::Async::Loop::Glib;
+
+=attr loop
+
+Glib event loop.
+
+=cut
+has loop => ( is => 'lazy' );
+
+sub _build_loop {
+	IO::Async::Loop::Glib->new;
+}
+
 =attr window
 
 A L<Gtk3::Window> that contains the main window for the application.
