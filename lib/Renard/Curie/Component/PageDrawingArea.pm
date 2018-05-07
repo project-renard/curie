@@ -181,7 +181,14 @@ method on_draw_page_cb( (InstanceOf['Cairo::Context']) $cr ) {
 		->set_text($page_number);
 }
 
-method on_draw_page_cb_highlight( $cr ) {
+=method on_draw_page_cb_highlight
+
+  method on_draw_page_cb_highlight( (InstanceOf['Cairo::Context']) $cr )
+
+Highlights the current sentence on the page.
+
+=cut
+method on_draw_page_cb_highlight( (InstanceOf['Cairo::Context']) $cr ) {
 	my @top_left = (0,0);
 	if( @{ $self->view_manager->current_text_page } ) {
 		my $sentence = $self->view_manager->current_text_page->[

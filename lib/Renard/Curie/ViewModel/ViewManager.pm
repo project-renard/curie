@@ -60,7 +60,7 @@ has current_view => (
 
 =attr current_sentence_number
 
-TODO
+Stores the current sentence number index (0-based): C<PositiveOrZeroInt>.
 
 =cut
 has current_sentence_number => (

@@ -5,7 +5,7 @@ package Renard::Curie::Component::TTSWindow;
 use Moo;
 use Speech::Synthesis;
 use Renard::Incunabula::Language::EN;
-use Renard::Incunabula::Common::Types qw(InstanceOf);
+use Renard::Incunabula::Common::Types qw(InstanceOf Bool Str);
 use List::AllUtils qw(first);
 use IO::Async::Function;
 
@@ -23,8 +23,14 @@ has view_manager => (
 	},
 );
 
+=attr playing
+
+A C<Bool> that indicates if the TTS is playing or not.
+
+=cut
 has playing => (
 	is => 'rw',
+	isa => Bool,
 	default => sub { 0 },
 );
 
@@ -36,6 +42,11 @@ has synth_function => (
 	is => 'lazy',
 );
 
+=method BUILD
+
+Constructor that sets up the TTS window and its buttons.
+
+=cut
 method BUILD(@) {
 	$self->builder->get_object('tts-window')
 		->signal_connect(
@@ -58,10 +69,24 @@ method BUILD(@) {
 	$self->builder->get_object('tts-window')->show_all;
 }
 
-method speak( $text ) {
+=method speak
+
+  method speak( (Str) $text )
+
+Say the contents of C<$str>.
+
+=cut
+method speak( (Str) $text ) {
 	$self->synth->speak($text);
 }
 
+=callback on_clicked_button_play_cb
+
+   callback on_clicked_button_play_cb( $button, $self )
+
+Callback that toggles between play and pause states.
+
+=cut
 callback on_clicked_button_play_cb( $button, $self ) {
 	$self->playing( ! $self->playing );
 	$self->builder->get_object('button-play')
@@ -73,6 +98,15 @@ callback on_clicked_button_play_cb( $button, $self ) {
 	$self->update;
 }
 
+=method update
+
+  method update()
+
+Updates the TTS window.
+
+This sets the sentence label, sentence text, and plays the text if L<playing> is true.
+
+=cut
 method update() {
 	return unless defined $self->view_manager->current_document;
 	my $text = $self->view_manager->current_text_page;
@@ -107,19 +141,47 @@ method update() {
 	}
 }
 
+=method num_of_sentences_on_page
+
+  method num_of_sentences_on_page()
+
+Retrieves the number of sentences on the page.
+
+=cut
 method num_of_sentences_on_page() {
 	my $text = $self->view_manager->current_text_page;
 	return @{ $text };
 }
 
+=callback on_clicked_button_previous_cb
+
+  callback on_clicked_button_previous_cb( $button, $self )
+
+Calls L<choose_previous_sentence>.
+
+=cut
 callback on_clicked_button_previous_cb( $button, $self ) {
 	$self->choose_previous_sentence;
 }
 
+=callback on_clicked_button_next_cb
+
+  callback on_clicked_button_next_cb( $button, $self )
+
+Calls L<choose_next_sentence>.
+
+=cut
 callback on_clicked_button_next_cb( $button, $self ) {
 	$self->choose_next_sentence;
 }
 
+=method choose_previous_sentence
+
+  method choose_previous_sentence()
+
+Move to the previous sentence or the last sentence on the previous page.
+
+=cut
 method choose_previous_sentence() {
 	my $v = $self->view;
 	my $vm = $self->view_manager;
@@ -135,6 +197,14 @@ method choose_previous_sentence() {
 	$self->update;
 }
 
+=method choose_next_sentence
+
+  method choose_next_sentence()
+
+Move to the next sentence on this page or to the first sentence on the next
+page.
+
+=cut
 method choose_next_sentence() {
 	my $v = $self->view;
 	my $vm = $self->view_manager;

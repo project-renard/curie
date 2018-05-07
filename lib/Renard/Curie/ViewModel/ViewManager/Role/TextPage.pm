@@ -6,6 +6,24 @@ use Moo::Role;
 use Renard::Incunabula::Language::EN;
 use Scalar::Util qw(refaddr);
 
+=method current_text_page
+
+  method current_text_page()
+
+Returns a C<HashRef> of sentences on the page.
+
+Keys:
+
+=for :list
+* C<sentence>: C<String::Tagged> of the sentence substring
+* C<bbox>: C<ArrayRef> of bounding boxes
+* C<extent>: extent
+* C<spans>: C<ArrayRef> of font spans
+* C<first_char>: first character information
+* C<last_char>: last character information
+
+
+=cut
 method current_text_page() {
 	return [] unless $self->current_document->can('get_textual_page');
 
