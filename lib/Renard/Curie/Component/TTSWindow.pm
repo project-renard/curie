@@ -65,7 +65,14 @@ method BUILD(@) {
 		->signal_connect(
 			clicked =>
 			\&on_clicked_button_previous_cb, $self );
+}
 
+=method show_all
+
+Show the TTS window.
+
+=cut
+method show_all() {
 	$self->builder->get_object('tts-window')->show_all;
 }
 

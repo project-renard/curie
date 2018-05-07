@@ -23,7 +23,10 @@ has tts_window => (
 );
 
 after setup_window => method() {
-	$self->loop->add( $self->tts_window->synth_function );
+	if( $^O ne 'MSWin32' ) {
+		$self->tts_window->show_all;
+		$self->loop->add( $self->tts_window->synth_function );
+	}
 };
 
 1;
