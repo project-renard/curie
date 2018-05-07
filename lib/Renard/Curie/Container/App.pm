@@ -27,11 +27,18 @@ has log_window => (
 	lifecycle => 'Singleton',
 );
 
+has tts_window => (
+	is => 'ro',
+	isa => 'Renard::Curie::Component::TTSWindow',
+	infer => 1,
+	lifecycle => 'Singleton',
+);
+
 # Main component
 has main_window => (
 	is => 'ro',
 	isa => 'Renard::Curie::Component::MainWindow',
-	dependencies => [qw(log_window outline menu_bar view_manager)],
+	dependencies => [qw(log_window outline menu_bar view_manager tts_window)],
 	lifecycle => 'Singleton',
 );
 

@@ -7,3 +7,6 @@ requires 'Renard::Incunabula::Format::PDF',
 requires 'Renard::Incunabula::Frontend::Gtk3',
 	git => 'https://github.com/project-renard/p5-Renard-Incunabula-Frontend-Gtk3.git',
 	branch => 'master';
+requires 'Renard::Incunabula::Language::EN',
+	git => 'https://github.com/project-renard/p5-Renard-Incunabula-Language-EN.git',
+	branch => 'master';
