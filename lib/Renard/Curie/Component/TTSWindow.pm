@@ -83,8 +83,8 @@ method show_all() {
 Say the contents of C<$str>.
 
 =cut
-method speak( (Str) $text ) {
-	$self->synth->speak($text);
+method speak( (Str) $text ) { # uncoverable subroutine
+	$self->synth->speak($text); # uncoverable statement
 }
 
 =callback on_clicked_button_play_cb
