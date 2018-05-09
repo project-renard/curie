@@ -6,6 +6,8 @@ use Moo::Role;
 use Renard::Curie::Component::ActionNotebookWindow;
 use Renard::Incunabula::Common::Types qw(InstanceOf);
 
+use Renard::Curie::Component::TextRanker;
+
 use Glib 'TRUE', 'FALSE';
 
 requires 'content_box';
@@ -23,13 +25,12 @@ has action_notebook_window => (
 
 after setup_window => method() {
 	$self->action_notebook_window->append_notebook_tab(
-		"Test 0",
-		Gtk3::Button->new('Button 0'),
+		"Text ranker",
+		Renard::Curie::Component::TextRanker->new(
+			view_manager => $self->view_manager
+		),
 	);
-	$self->action_notebook_window->append_notebook_tab(
-		"Test 1",
-		Gtk3::Button->new('Button 1'),
-	);
+
 	$self->action_notebook_window->show_all;
 };
 
