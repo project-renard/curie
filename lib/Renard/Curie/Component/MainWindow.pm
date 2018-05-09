@@ -125,6 +125,7 @@ with qw(
 	Renard::Curie::Component::MainWindow::Role::MenuBar
 	Renard::Curie::Component::MainWindow::Role::Outline
 	Renard::Curie::Component::MainWindow::Role::TTSWindow
+	Renard::Curie::Component::MainWindow::Role::ActionNotebookWindow
 	Renard::Curie::Component::MainWindow::Role::ExceptionHandler
 );
 

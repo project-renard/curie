@@ -34,11 +34,18 @@ has tts_window => (
 	lifecycle => 'Singleton',
 );
 
+has action_notebook_window => (
+	is => 'ro',
+	isa => 'Renard::Curie::Component::ActionNotebookWindow',
+	infer => 1,
+	lifecycle => 'Singleton',
+);
+
 # Main component
 has main_window => (
 	is => 'ro',
 	isa => 'Renard::Curie::Component::MainWindow',
-	dependencies => [qw(log_window outline menu_bar view_manager tts_window)],
+	dependencies => [qw(log_window outline menu_bar view_manager tts_window action_notebook_window)],
 	lifecycle => 'Singleton',
 );
 
