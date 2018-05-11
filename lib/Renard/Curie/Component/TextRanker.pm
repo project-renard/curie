@@ -31,19 +31,9 @@ method BUILD(@) {
 	$self->builder->get_object('text-ranker-refresh')->signal_connect(
 		clicked => fun() {
 			my $text = $self->view_manager->current_text_page;
-			use Alien::Poppler;
-			use Capture::Tiny qw(capture_merged);
-			my $pdftotext = Alien::Poppler->pdftotext_path;
 
-			my ($merged, $result) = capture_merged {
-				system($pdftotext, $self->view_manager->current_document->filename , qw(-));
-			};
-			#my $page_number = $self->view_manager->current_view->page_number;
-			#my $txt = $self->view_manager->current_document->get_textual_page($page_number);
-			my $txt = $merged;
-			use Renard::Incunabula::NLP::PyTextRank;
-			my $tr = Renard::Incunabula::NLP::PyTextRank->new();
-			my $data = $tr->get_text_rank( $txt );
+			use Renard::Curie::Document;
+			my $data = $self->view_manager->current_document->pytextrank;
 			use Data::Dumper; my $output = Dumper $data;
 			$self->builder->get_object('text-ranker-textview')
 				->get_buffer

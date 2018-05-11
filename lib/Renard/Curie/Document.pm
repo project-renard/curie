@@ -1,0 +1,17 @@
+package Renard::Curie::Document;
+# ABSTRACT: Loads the roles
+
+use Modern::Perl;
+
+sub import {
+	Role::Tiny->apply_roles_to_package(
+		'Renard::Incunabula::Format::PDF::Document',
+		qw(
+			Renard::Curie::Document::Role::MD5
+			Renard::Curie::Document::Role::PopplerText
+			Renard::Curie::Document::Role::PyTextRank
+		),
+	);
+}
+
+1;
