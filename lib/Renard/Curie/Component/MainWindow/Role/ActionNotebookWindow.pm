@@ -27,15 +27,24 @@ has action_notebook_window => (
 after setup_window => method() {
 	$self->action_notebook_window->append_notebook_tab(
 		"FM01",
-		Renard::Curie::Component::FileCategoryTree->new( root => path('~/sw_projects/wiki/medicine/medicine.data-canvas/RUSM/semester/Summer2018/canvas/Foundations_of_Medicine_1') ),
+		Renard::Curie::Component::FileCategoryTree->new(
+			root => path('~/sw_projects/wiki/medicine/medicine.data-canvas/RUSM/semester/Summer2018/canvas/Foundations_of_Medicine_1'),
+			view_manager => $self->view_manager,
+		),
 	);
 	$self->action_notebook_window->append_notebook_tab(
 		"CS01",
-		Renard::Curie::Component::FileCategoryTree->new( root => path('~/sw_projects/wiki/medicine/medicine.data-canvas/RUSM/semester/Summer2018/canvas/Clinical_Skills_1') ),
+		Renard::Curie::Component::FileCategoryTree->new(
+			root => path('~/sw_projects/wiki/medicine/medicine.data-canvas/RUSM/semester/Summer2018/canvas/Clinical_Skills_1'),
+			view_manager => $self->view_manager,
+		),
 	);
 	$self->action_notebook_window->append_notebook_tab(
 		"All",
-		Renard::Curie::Component::FileCategoryTree->new( root => path('~/sw_projects/wiki/medicine') ),
+		Renard::Curie::Component::FileCategoryTree->new(
+			root => path('~/sw_projects/wiki/medicine'),
+			view_manager => $self->view_manager,
+		),
 	);
 
 	$self->action_notebook_window->append_notebook_tab(
