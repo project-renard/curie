@@ -9,6 +9,8 @@ use Renard::Incunabula::Common::Types qw(InstanceOf Bool Str);
 use List::AllUtils qw(first);
 use IO::Async::Function;
 
+use Pango;
+
 =attr view_manager
 
 The view manager model for this application.
@@ -65,6 +67,10 @@ method BUILD(@) {
 		->signal_connect(
 			clicked =>
 			\&on_clicked_button_previous_cb, $self );
+
+	$self->builder->get_object('tts-text')
+		->modify_font(Pango::FontDescription->from_string('Monospace 32'));
+
 }
 
 =method show_all
