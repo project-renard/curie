@@ -13,6 +13,21 @@ use Glib::IO;
 use Path::Tiny;
 use Sort::Naturally qw(nsort);
 
+=attr view_manager
+
+The view manager model for this application.
+
+=cut
+has view_manager => (
+	is => 'ro',
+	required => 1,
+	isa => InstanceOf['Renard::Curie::ViewModel::ViewManager'],
+	handles => {
+		view => current_view =>,
+	},
+);
+
+
 =attr root
 
 The FS root of the tree.
@@ -88,7 +103,21 @@ method BUILD(@) {
 		$self
 	);
 	$self->tree_view->signal_connect(
-		'row-activated' => \&on_tree_view_row_activate_cb, $self );
+		'row-activated' => method($path, $column, $component) {
+			my $iter = $component->model->get_iter($path);
+			my $value = $component->model->get_value($iter, 0);
+			if( -d path($value) ) {
+				if( $self->row_expanded($path) ) {
+					$self->collapse_row($path);
+				} else {
+					$self->expand_to_path($path);
+				}
+			} else {
+				$component->view_manager->open_pdf_document( $value );
+			}
+		},
+		$self
+	);
 
 	$self->tree_view->set_model( $self->model );
 	$self->tree_view->signal_connect(
