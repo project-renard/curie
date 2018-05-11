@@ -196,11 +196,17 @@ method on_draw_page_cb_highlight( (InstanceOf['Cairo::Context']) $cr ) {
 		];
 		for my $bbox_str ( @{ $sentence->{bbox} } ) {
 			my $bbox = [ split ' ', $bbox_str ];
+			my $z_bbox = [ map {
+				$_ * $self->view_manager
+					->view_options
+					->zoom_options
+					->zoom_level
+			} @$bbox ];
 			$cr->rectangle(
-				$top_left[0] + $bbox->[0],
-				$top_left[1] + $bbox->[1],
-				$bbox->[2] - $bbox->[0],
-				$bbox->[3] - $bbox->[1],
+				$top_left[0] + $z_bbox->[0],
+				$top_left[1] + $z_bbox->[1],
+				$z_bbox->[2] - $z_bbox->[0],
+				$z_bbox->[3] - $z_bbox->[1],
 			);
 			$cr->set_source_rgba(1, 0, 0, 0.2);
 			$cr->fill;
