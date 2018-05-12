@@ -25,17 +25,6 @@ has view_manager => (
 	},
 );
 
-=attr playing
-
-A C<Bool> that indicates if the TTS is playing or not.
-
-=cut
-has playing => (
-	is => 'rw',
-	isa => Bool,
-	default => sub { 0 },
-);
-
 has synth_param => (
 	is => 'lazy', # _build_synth_param
 );
@@ -101,10 +90,10 @@ Callback that toggles between play and pause states.
 
 =cut
 callback on_clicked_button_play_cb( $button, $self ) {
-	$self->playing( ! $self->playing );
+	$self->view_manager->tts_playing( ! $self->view_manager->tts_playing );
 	$self->builder->get_object('button-play')
 		->set_label(
-			$self->playing
+			$self->view_manager->tts_playing
 			? 'gtk-media-pause'
 			: 'gtk-media-play'
 		);
@@ -117,7 +106,7 @@ callback on_clicked_button_play_cb( $button, $self ) {
 
 Updates the TTS window.
 
-This sets the sentence label, sentence text, and plays the text if L<playing> is true.
+This sets the sentence label, sentence text, and plays the text if L<ViewManager::tts_playing> is true.
 
 =cut
 method update() {
@@ -132,7 +121,7 @@ method update() {
 	$self->builder->get_object('tts-text')
 		->get_buffer
 		->set_text($current_sentence_text);
-	if( $self->playing && @$text > 0 ) {
+	if( $self->view_manager->tts_playing && @$text > 0 ) {
 		# NOTE This error occurs if you send UTF-8:
 		# ***   Wide character in syswrite at .../Festival/Client/Async.pm line 127.
 
@@ -146,7 +135,8 @@ method update() {
 			],
 			on_result => sub {
 				Glib::Timeout->add(0, sub {
-					$self->choose_next_sentence;
+					$self->view_manager->choose_next_sentence;
+					$self->update;
 					return 0;
 				});
 			},
@@ -154,80 +144,27 @@ method update() {
 	}
 }
 
-=method num_of_sentences_on_page
-
-  method num_of_sentences_on_page()
-
-Retrieves the number of sentences on the page.
-
-=cut
-method num_of_sentences_on_page() {
-	my $text = $self->view_manager->current_text_page;
-	return @{ $text };
-}
-
 =callback on_clicked_button_previous_cb
 
   callback on_clicked_button_previous_cb( $button, $self )
 
-Calls L<choose_previous_sentence>.
+Calls L<ViewManager::choose_previous_sentence>.
 
 =cut
 callback on_clicked_button_previous_cb( $button, $self ) {
-	$self->choose_previous_sentence;
+	$self->view_manager->choose_previous_sentence;
+	$self->update;
 }
 
 =callback on_clicked_button_next_cb
 
   callback on_clicked_button_next_cb( $button, $self )
 
-Calls L<choose_next_sentence>.
+Calls L<ViewManager::choose_next_sentence>.
 
 =cut
 callback on_clicked_button_next_cb( $button, $self ) {
-	$self->choose_next_sentence;
-}
-
-=method choose_previous_sentence
-
-  method choose_previous_sentence()
-
-Move to the previous sentence or the last sentence on the previous page.
-
-=cut
-method choose_previous_sentence() {
-	my $v = $self->view;
-	my $vm = $self->view_manager;
-	if( $vm->current_sentence_number > 0 ) {
-		$vm->current_sentence_number( $vm->current_sentence_number - 1 );
-	} elsif( $v->can_move_to_previous_page ) {
-		$v->set_current_page_back;
-		$vm->current_sentence_number(
-			$self->num_of_sentences_on_page - 1
-		);
-	}
-
-	$self->update;
-}
-
-=method choose_next_sentence
-
-  method choose_next_sentence()
-
-Move to the next sentence on this page or to the first sentence on the next
-page.
-
-=cut
-method choose_next_sentence() {
-	my $v = $self->view;
-	my $vm = $self->view_manager;
-	if( $vm->current_sentence_number < $self->num_of_sentences_on_page - 1 ) {
-		$vm->current_sentence_number( $vm->current_sentence_number + 1 );
-	} elsif( $v->can_move_to_next_page ) {
-		$v->set_current_page_forward;
-		$self->view_manager->current_sentence_number(0);
-	}
-
+	$self->view_manager->choose_next_sentence;
 	$self->update;
 }
 

@@ -18,6 +18,7 @@ Highlights the current sentence on the page.
 
 =cut
 method on_draw_page_cb_highlight( (InstanceOf['Cairo::Context']) $cr ) {
+	return unless $self->view_manager->tts_playing;
 	my @top_left = (0,0);
 	if( @{ $self->view_manager->current_text_page } ) {
 		my $sentence = $self->view_manager->current_text_page->[
