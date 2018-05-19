@@ -31,7 +31,7 @@ with qw(
 	Renard::Curie::ViewModel::ViewManager::Role::GridView
 	Renard::Curie::ViewModel::ViewManager::Role::Zoom
 
-	Renard::Curie::ViewModel::ViewManager::Role::TextPage
+	Renard::Curie::ViewModel::ViewManager::Role::TTS
 );
 
 1;

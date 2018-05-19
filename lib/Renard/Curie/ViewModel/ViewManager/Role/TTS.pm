@@ -1,5 +1,5 @@
 use Renard::Incunabula::Common::Setup;
-package Renard::Curie::ViewModel::ViewManager::Role::TextPage;
+package Renard::Curie::ViewModel::ViewManager::Role::TTS;
 
 use Moo::Role;
 
