@@ -13,6 +13,8 @@ use Glib::IO;
 use Path::Tiny;
 use Sort::Naturally qw(nsort);
 
+use Renard::Curie::Document;
+
 =attr view_manager
 
 The view manager model for this application.

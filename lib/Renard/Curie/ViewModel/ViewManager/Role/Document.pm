@@ -40,7 +40,7 @@ method open_pdf_document( (Path->coercibles) $pdf_filename ) {
 	}
 
 	$self->current_document(
-		Renard::Incunabula::Format::PDF::Document->new(
+		Renard::Curie::Document->new(
 			filename => $pdf_filename,
 		)
 	);

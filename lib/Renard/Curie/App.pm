@@ -4,6 +4,8 @@ package Renard::Curie::App;
 
 use Moo 2.001001;
 
+use Renard::Curie::Document;
+
 use Renard::Incunabula::Frontend::Gtk3::Helper;
 
 use File::Spec;
