@@ -8,6 +8,7 @@ use Renard::Incunabula::Common::Types qw(InstanceOf);
 
 use Renard::Curie::Component::FileCategoryTree;
 use Renard::Curie::Component::ReviewTable;
+use Renard::Curie::Component::ReviewControl;
 use Renard::Curie::Component::TextRanker;
 
 use Glib 'TRUE', 'FALSE';
@@ -51,6 +52,13 @@ after setup_window => method() {
 	$self->action_notebook_window->append_notebook_tab(
 		"Review table",
 		Renard::Curie::Component::ReviewTable->new(
+			view_manager => $self->view_manager
+		),
+	);
+
+	$self->action_notebook_window->append_notebook_tab(
+		"Review control",
+		Renard::Curie::Component::ReviewControl->new(
 			view_manager => $self->view_manager
 		),
 	);
