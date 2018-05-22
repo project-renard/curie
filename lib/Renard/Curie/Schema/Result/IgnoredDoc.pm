@@ -12,7 +12,7 @@ primary_column id => {
 	is_auto_increment => 1,
 };
 
-unique_column document_id => {
+column document_id => {
 	data_type => 'integer',
 	is_nullable => 0,
 };
