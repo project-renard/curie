@@ -1,12 +1,23 @@
 use Renard::Incunabula::Common::Setup;
-package Renard::Curie::ViewModel::ViewManager::Role::TextPage;
+package Renard::Curie::ViewModel::ViewManager::Role::TTS;
 
 use Moo::Role;
 
 use Renard::Incunabula::Language::EN;
 use Scalar::Util qw(refaddr);
 
-use Renard::Incunabula::Common::Types qw(PositiveOrZeroInt);
+use Renard::Incunabula::Common::Types qw(Bool PositiveOrZeroInt);
+
+=attr tts_playing
+
+A C<Bool> that indicates if the TTS is playing or not.
+
+=cut
+has tts_playing => (
+	is => 'rw',
+	isa => Bool,
+	default => sub { 0 },
+);
 
 =attr current_sentence_number
 
@@ -99,5 +110,59 @@ method current_text_page() {
 
 	\@sentence_spans;
 }
+
+=method num_of_sentences_on_page
+
+  method num_of_sentences_on_page()
+
+Retrieves the number of sentences on the page.
+
+=cut
+method num_of_sentences_on_page() {
+	my $text = $self->current_text_page;
+	return @{ $text };
+}
+
+=method choose_previous_sentence
+
+  method choose_previous_sentence()
+
+Move to the previous sentence or the last sentence on the previous page.
+
+=cut
+method choose_previous_sentence() {
+	my $v = $self->current_view;
+	my $vm = $self;
+	if( $vm->current_sentence_number > 0 ) {
+		$vm->current_sentence_number( $vm->current_sentence_number - 1 );
+	} elsif( $v->can_move_to_previous_page ) {
+		$v->set_current_page_back;
+		$vm->current_sentence_number(
+			$self->num_of_sentences_on_page - 1
+		);
+	}
+}
+
+=method choose_next_sentence
+
+  method choose_next_sentence()
+
+Move to the next sentence on this page or to the first sentence on the next
+page.
+
+=cut
+method choose_next_sentence() {
+	my $v = $self->current_view;
+	my $vm = $self;
+	if( $vm->current_sentence_number < $self->num_of_sentences_on_page - 1 ) {
+		$vm->current_sentence_number( $vm->current_sentence_number + 1 );
+	} elsif( $v->can_move_to_next_page ) {
+		$v->set_current_page_forward;
+		$vm->current_sentence_number(0);
+	} else {
+		$self->tts_playing(0);
+	}
+}
+
 
 1;

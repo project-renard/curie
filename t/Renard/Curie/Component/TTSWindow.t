@@ -41,12 +41,12 @@ subtest "Toggle play" => sub {
 	my $app = $c->app;
 	$c->tts_window;
 
-	is $c->tts_window->playing, 0, 'not playing';
+	is $c->view_manager->tts_playing, 0, 'not playing';
 
 	$c->tts_window->builder->get_object('button-play')
 		->signal_emit( clicked => );
 
-	is $c->tts_window->playing, 1, 'playing';
+	is $c->view_manager->tts_playing, 1, 'playing';
 };
 
 subtest "Sentences" => sub {
@@ -55,7 +55,7 @@ subtest "Sentences" => sub {
 	$c->view_manager->open_pdf_document( $pdf_ref_path );
 
 	is $c->view_manager->current_view->page_number, 1, 'first page';
-	is $c->tts_window->num_of_sentences_on_page, 6, 'there are 6 sentences on page 1';
+	is $c->view_manager->num_of_sentences_on_page, 6, 'there are 6 sentences on page 1';
 	is $c->view_manager->current_sentence_number, 0, 'start on the first sentence';
 
 	note 'Clicking next sentence button';

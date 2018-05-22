@@ -170,7 +170,6 @@ method on_draw_page_cb( (InstanceOf['Cairo::Context']) $cr ) {
 	$self->set_navigation_buttons_sensitivity;
 
 	$self->view->draw_page( $self->drawing_area, $cr );
-	$self->on_draw_page_cb_highlight( $cr );
 
 	my $page_number = $self->view->page_number;
 	if( $self->view->can('_first_page_in_viewport') ) {
@@ -179,33 +178,6 @@ method on_draw_page_cb( (InstanceOf['Cairo::Context']) $cr ) {
 
 	$self->builder->get_object('page-number-entry')
 		->set_text($page_number);
-}
-
-=method on_draw_page_cb_highlight
-
-  method on_draw_page_cb_highlight( (InstanceOf['Cairo::Context']) $cr )
-
-Highlights the current sentence on the page.
-
-=cut
-method on_draw_page_cb_highlight( (InstanceOf['Cairo::Context']) $cr ) {
-	my @top_left = (0,0);
-	if( @{ $self->view_manager->current_text_page } ) {
-		my $sentence = $self->view_manager->current_text_page->[
-			$self->view_manager->current_sentence_number
-		];
-		for my $bbox_str ( @{ $sentence->{bbox} } ) {
-			my $bbox = [ split ' ', $bbox_str ];
-			$cr->rectangle(
-				$top_left[0] + $bbox->[0],
-				$top_left[1] + $bbox->[1],
-				$bbox->[2] - $bbox->[0],
-				$bbox->[3] - $bbox->[1],
-			);
-			$cr->set_source_rgba(1, 0, 0, 0.2);
-			$cr->fill;
-		}
-	}
 }
 
 
@@ -245,6 +217,8 @@ with qw(
 	Renard::Curie::Component::PageDrawingArea::Role::PageEntry
 	Renard::Curie::Component::PageDrawingArea::Role::PageLabel
 	Renard::Curie::Component::PageDrawingArea::Role::ScrollWindow
+
+	Renard::Curie::Component::PageDrawingArea::Role::HighlightCurrentSentence
 );
 
 
