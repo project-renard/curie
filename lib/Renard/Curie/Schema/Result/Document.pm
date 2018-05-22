@@ -23,7 +23,7 @@ column path => {
 inflate_column path => {
 	inflate => sub {
 		my ($raw_value_from_db, $result_object) = @_;
-		path($raw_value_from_db);
+		Path::Tiny::path($raw_value_from_db);
 	},
 	deflate => sub {
 		my ($inflated_value_from_user, $result_object) = @_;
