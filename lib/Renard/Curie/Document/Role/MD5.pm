@@ -5,10 +5,12 @@ package Renard::Curie::Document::Role::MD5;
 use Moo::Role;
 
 use Digest::MD5;
+use Path::Tiny;
 
 method md5sum_hex() {
 	my $md5 = Digest::MD5->new;
-	$md5->addfile( $self->filename->openr_raw );
+	# TODO figure out why the coercion of C<< $self->filename >> is not working
+	$md5->addfile( path($self->filename)->openr_raw );
 
 	$md5->hexdigest;
 }
