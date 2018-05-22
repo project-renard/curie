@@ -6,6 +6,24 @@ use Moo::Role;
 use Renard::Incunabula::Language::EN;
 use Scalar::Util qw(refaddr);
 
+use Renard::Incunabula::Common::Types qw(PositiveOrZeroInt);
+
+=attr current_sentence_number
+
+Stores the current sentence number index (0-based): C<PositiveOrZeroInt>.
+
+=cut
+has current_sentence_number => (
+	is => 'rw',
+	isa => PositiveOrZeroInt,
+	trigger => 1, # _trigger_current_sentence_number
+	default => 0,
+);
+
+method _trigger_current_sentence_number($new_current_sentence_number) {
+	$self->signal_emit( 'update-view' => $self->current_view );
+}
+
 =method current_text_page
 
   method current_text_page()
