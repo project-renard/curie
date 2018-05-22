@@ -221,6 +221,7 @@ with qw(
 	Renard::Curie::Component::PageDrawingArea::Role::ScrollWindow
 
 	Renard::Curie::Component::PageDrawingArea::Role::HighlightCurrentSentence
+	Renard::Curie::Component::PageDrawingArea::Role::HighlightCurrentPhraseCloze
 );
 
 
