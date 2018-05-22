@@ -159,6 +159,8 @@ method choose_next_sentence() {
 	} elsif( $v->can_move_to_next_page ) {
 		$v->set_current_page_forward;
 		$vm->current_sentence_number(0);
+	} else {
+		$self->tts_playing(0);
 	}
 }
 
