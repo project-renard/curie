@@ -109,6 +109,8 @@ method _add_pytextrank_phrase_cloze() {
 				text => $match_data->{phrase}->text,
 				offset_start => $match_data->{offsets}[0],
 				offset_end   => $match_data->{offsets}[1],
+				suspended => 0,
+				ignored => 0,
 			});
 			$phrase->create_related('pytextrank_cloze', {
 				pytextrank_data_id => $match_data->{phrase}->id,

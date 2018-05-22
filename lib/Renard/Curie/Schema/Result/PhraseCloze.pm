@@ -1,7 +1,9 @@
 package Renard::Curie::Schema::Result::PhraseCloze;
 
 use Modern::Perl;
-use DBIx::Class::Candy;
+use DBIx::Class::Candy
+	-components => [ qw/InflateColumn::Boolean/ ]
+	;
 
 table 'phrase_cloze';
 
@@ -32,6 +34,18 @@ column offset_start => {
 
 column offset_end => {
 	data_type => 'integer',
+	is_nullable => 0,
+};
+
+column 'suspended' => {
+	data_type => 'integer',
+	is_boolean => 1,
+	is_nullable => 0,
+};
+
+column 'ignored' => {
+	data_type => 'integer',
+	is_boolean => 1,
 	is_nullable => 0,
 };
 
