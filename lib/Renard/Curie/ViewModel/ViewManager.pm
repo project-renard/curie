@@ -32,6 +32,7 @@ with qw(
 	Renard::Curie::ViewModel::ViewManager::Role::Zoom
 
 	Renard::Curie::ViewModel::ViewManager::Role::TTS
+	Renard::Curie::ViewModel::ViewManager::Role::PhraseCloze
 );
 
 1;
