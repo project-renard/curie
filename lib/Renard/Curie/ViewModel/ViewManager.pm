@@ -33,6 +33,7 @@ with qw(
 
 	Renard::Curie::ViewModel::ViewManager::Role::TTS
 	Renard::Curie::ViewModel::ViewManager::Role::PhraseCloze
+	Renard::Curie::ViewModel::ViewManager::Role::CardReview
 );
 
 1;
