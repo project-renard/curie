@@ -68,12 +68,15 @@ method _add_pytextrank_phrase_cloze() {
 
 	my $re_to_id = {};
 	while( my $data = $pytextrank_data->next ) {
+		next if length $data->text == 1;
+
 		my $re = quotemeta($data->text);
 		$re = join "", @{ $ra->lexstr( $re ) };
 		$re_to_id->{$re} = $data->id;
 
 		$ra->add($re);
 	}
+	$ra->anchor_word(1);
 
 	my $page_num = 1;
 	for my $page (@page_text) {
