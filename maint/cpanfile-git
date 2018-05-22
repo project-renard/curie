@@ -13,3 +13,6 @@ requires 'Renard::Incunabula::Language::EN',
 requires 'Alien::Poppler',
 	git => 'https://github.com/project-renard/p5-Alien-Poppler.git',
 	branch => 'master';
+requires 'Renard::Incunabula::NLP::PyTextRank',
+	git => 'https://github.com/project-renard/p5-Renard-Incunabula-NLP-PyTextRank.git',
+	branch => 'master';
