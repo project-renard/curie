@@ -16,3 +16,6 @@ requires 'Alien::Poppler',
 requires 'Renard::Incunabula::NLP::PyTextRank',
 	git => 'https://github.com/project-renard/p5-Renard-Incunabula-NLP-PyTextRank.git',
 	branch => 'master';
+requires 'Renard::Taffeta',
+	git => 'https://github.com/project-renard/p5-Renard-Taffeta.git',
+	branch => 'master';
