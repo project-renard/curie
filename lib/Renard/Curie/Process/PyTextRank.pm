@@ -23,17 +23,11 @@ has document => (
 );
 
 lsub document_result => method() {
-	my $doc = $self->schema->resultset('Document')->find_or_create(
-		{
-			md5sum => $self->document->md5sum_hex,
-			path => $self->document->filename
-		},
-	);
+	my $doc = $self->document->get_schema_result( $self->schema );
 };
 
 method is_already_processed() {
-	defined $self->document_result->processed_doc_pytextrank
-		&& $self->document_result->processed_doc_pytextrank->processed;
+	$self->document->is_processed_pytextrank( $self->schema );
 }
 
 method process() {
