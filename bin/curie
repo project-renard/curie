@@ -46,5 +46,10 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";
 use Renard::Incunabula::Common::Setup;
 use Renard::Curie::Container::App;
+use Renard::Curie::Container::DBdefault;
 
-Renard::Curie::Container::App->new->app->main;
+my $db = Renard::Curie::Container::DBdefault->new;
+$db->prepare_db;
+Renard::Curie::Container::App->new(
+	database => $db,
+)->app->main;
