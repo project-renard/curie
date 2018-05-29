@@ -23,6 +23,15 @@ use Glib::Object::Subclass
 	},
 	;
 
+=classmethod FOREIGNBUILDARGS
+
+Initialises the L<Glib::Object> super-class.
+
+=cut
+classmethod FOREIGNBUILDARGS(@) {
+	();
+}
+
 
 with qw(
 	Renard::Curie::ViewModel::ViewManager::Role::Document

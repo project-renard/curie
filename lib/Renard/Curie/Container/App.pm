@@ -49,10 +49,26 @@ has main_window => (
 	lifecycle => 'Singleton',
 );
 
+# Model
+
+has database => (
+	traits => [ 'Container' ],
+	is => 'ro',
+	isa => 'Renard::Curie::Container::DB',
+	default => sub {
+		Renard::Curie::Container::DB->new(
+			dsn => 'dbi:SQLite:dbname=:memory:',
+			user => '',
+			password => '',
+			attr => +{ sqlite_unicode => 1},
+		);
+	},
+);
+
 has view_manager => (
 	is => 'ro',
 	isa => 'Renard::Curie::ViewModel::ViewManager',
-	infer => 1,
+	dependencies => [qw(database/schema)],
 	lifecycle => 'Singleton',
 );
 

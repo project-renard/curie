@@ -4,7 +4,7 @@ package Renard::Curie::ViewModel::ViewManager::Role::PhraseCloze;
 use Moo::Role;
 use MooX::Lsub;
 
-use Path::Tiny;
+use Renard::Incunabula::Common::Types qw(InstanceOf);
 use Renard::Curie::Schema;
 use Renard::Curie::Process::PyTextRank;
 
@@ -25,18 +25,11 @@ method _trigger_current_phrase_schema_result($phrase) {
 	}
 }
 
-lsub schema => method() {
-	my $sqlite_db = path('~/sw_projects/wiki/medicine/db/curie-cards.db');
-	$sqlite_db->parent->mkpath;
-	my $schema = Renard::Curie::Schema->connection("dbi:SQLite:${sqlite_db}",
-		'', '',
-		{ sqlite_unicode => 1} );
-	if( ! -f $sqlite_db ) {
-		$schema->deploy( { add_drop_table => 1 } );
-	}
-
-	$schema;
-};
+has schema => (
+	is => 'ro',
+	required => 1,
+	isa => InstanceOf['Renard::Curie::Schema'],
+);
 
 method current_document_schema_result() {
 	$self->_get_pytextrank_process->document_result;
