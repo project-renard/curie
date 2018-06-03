@@ -56,12 +56,15 @@ has database => (
 	is => 'ro',
 	isa => 'Renard::Curie::Container::DB',
 	default => sub {
-		Renard::Curie::Container::DB->new(
+		my $db_ctr = Renard::Curie::Container::DB->new(
 			dsn => 'dbi:SQLite:dbname=:memory:',
 			user => '',
 			password => '',
 			attr => +{ sqlite_unicode => 1},
 		);
+		$db_ctr->schema->deploy( { add_drop_table => 1 } );
+
+		$db_ctr;
 	},
 );
 
