@@ -22,6 +22,13 @@ has document => (
 	isa => DocumentModel,
 );
 
+has page_range => (
+	is => 'ro',
+	default => method() {
+		[ $self->document->first_page_number, $self->document->last_page_number ];
+	},
+);
+
 lsub document_result => method() {
 	my $doc = $self->document->get_schema_result( $self->schema );
 };
@@ -47,7 +54,7 @@ method process() {
 }
 
 method _add_pytextrank_data($processed) {
-	my $pytextrank_data = $self->document->pytextrank;
+	my $pytextrank_data = $self->document->pytextrank( pages => $self->page_range );
 	for my $phrase (@$pytextrank_data) {
 		delete $phrase->{ids};
 		$phrase->{text} =~ s/\s+/ /g;
@@ -61,7 +68,7 @@ method _add_pytextrank_phrase_cloze() {
 
 	my @page_text = map {
 		$self->document->get_textual_page( $_ );
-	} $self->document->first_page_number..$self->document->last_page_number;
+	} $self->page_range->[0]..$self->page_range->[1];
 
 	my $ra = Regexp::Assemble->new->track(1);
 	$ra->flags('is'); # case insensitive, single string
@@ -78,7 +85,7 @@ method _add_pytextrank_phrase_cloze() {
 	}
 	$ra->anchor_word(1);
 
-	my $page_num = 1;
+	my $page_num = $self->page_range->[0];
 	for my $page (@page_text) {
 		my @matches;
 		my $str = $page->str;

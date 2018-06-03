@@ -6,9 +6,9 @@ use Moo::Role;
 
 use Renard::Incunabula::NLP::PyTextRank;
 
-method pytextrank() {
+method pytextrank( :$pages = undef ) {
 	my $tr = Renard::Incunabula::NLP::PyTextRank->new();
-	my $data = $tr->get_text_rank( $self->pdftotext_text );
+	my $data = $tr->get_text_rank( $self->pdftotext_text( pages => $pages ) );
 
 	$data;
 }

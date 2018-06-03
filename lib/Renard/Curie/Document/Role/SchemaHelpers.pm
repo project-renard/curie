@@ -30,14 +30,15 @@ method is_processed_pytextrank($schema) {
 		&& $self->get_schema_result($schema)->processed_doc_pytextrank->processed;
 }
 
-method process_pytextrank($schema) {
-	$self->get_pytextrank_process($schema)->process;
+method process_pytextrank($schema, @rest) {
+	$self->get_pytextrank_process($schema, @rest)->process;
 }
 
-method get_pytextrank_process($schema) {
+method get_pytextrank_process($schema, @rest) {
 	my $pytextrank_process = Renard::Curie::Process::PyTextRank->new(
 		schema => $schema,
 		document => $self,
+		@rest,
 	);
 }
 
