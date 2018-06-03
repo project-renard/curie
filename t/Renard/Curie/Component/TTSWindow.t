@@ -3,12 +3,12 @@
 use Test::Most;
 
 use lib 't/lib';
-use Renard::Incunabula::Devel::TestHelper;
+use Renard::Incunabula::Format::PDF::Devel::TestHelper;
 use Renard::Curie::App;
 use CurieTestHelper;
 
 my $pdf_ref_path = try {
-	Renard::Incunabula::Devel::TestHelper->test_data_directory->child(qw(PDF Adobe pdf_reference_1-7.pdf));
+	Renard::Incunabula::Format::PDF::Devel::TestHelper->pdf_reference_document_path;
 } catch {
 	plan skip_all => "$_";
 };

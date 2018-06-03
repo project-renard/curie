@@ -4,7 +4,7 @@ use Test::Most tests => 9;
 
 use lib 't/lib';
 use CurieTestHelper;
-use Renard::Incunabula::Devel::TestHelper;
+use Renard::Incunabula::Format::PDF::Devel::TestHelper;
 
 use Renard::Incunabula::Common::Setup;
 use Renard::Incunabula::Frontend::Gtk3::Helper;
@@ -35,7 +35,7 @@ subtest 'Check that the menu item File -> Open exists' => sub {
 
 subtest "Menu: File -> Open" => sub {
 	my $pdf_ref_path = try {
-		Renard::Incunabula::Devel::TestHelper->test_data_directory->child(qw(PDF Adobe pdf_reference_1-7.pdf));
+		Renard::Incunabula::Format::PDF::Devel::TestHelper->pdf_reference_document_path;
 	} catch {
 		plan skip_all => "$_";
 	};
@@ -73,7 +73,7 @@ subtest "Menu: File -> Open" => sub {
 
 subtest "Menu: File -> Properties" => sub {
 	my $pdf_ref_path = try {
-		Renard::Incunabula::Devel::TestHelper->test_data_directory->child(qw(PDF Adobe pdf_reference_1-7.pdf));
+		Renard::Incunabula::Format::PDF::Devel::TestHelper->pdf_reference_document_path;
 	} catch {
 		plan skip_all => "$_";
 	};
@@ -117,7 +117,7 @@ subtest "Menu: File -> Quit" => sub {
 
 subtest "Menu: File -> Recent files" => sub {
 	my $pdf_ref_path = try {
-		Renard::Incunabula::Devel::TestHelper->test_data_directory->child(qw(PDF Adobe pdf_reference_1-7.pdf));
+		Renard::Incunabula::Format::PDF::Devel::TestHelper->pdf_reference_document_path;
 	} catch {
 		plan skip_all => "$_";
 	};
@@ -143,7 +143,7 @@ subtest "Menu: File -> Recent files" => sub {
 
 subtest "Menu: View -> Continuous" => sub {
 	my $pdf_ref_path = try {
-		Renard::Incunabula::Devel::TestHelper->test_data_directory->child(qw(PDF Adobe pdf_reference_1-7.pdf));
+		Renard::Incunabula::Format::PDF::Devel::TestHelper->pdf_reference_document_path;
 	} catch {
 		plan skip_all => "$_";
 	};
@@ -180,7 +180,7 @@ subtest "Menu: View -> Continuous" => sub {
 
 subtest "Menu: View -> Zoom" => sub {
 	my $pdf_ref_path = try {
-		Renard::Incunabula::Devel::TestHelper->test_data_directory->child(qw(PDF Adobe pdf_reference_1-7.pdf));
+		Renard::Incunabula::Format::PDF::Devel::TestHelper->pdf_reference_document_path;
 	} catch {
 		plan skip_all => "$_";
 	};

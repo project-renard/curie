@@ -2,19 +2,19 @@
 
 use Test::Most tests => 1;
 use Renard::Incunabula::Format::PDF::Document;
-use Renard::Incunabula::Devel::TestHelper;
+use Renard::Incunabula::Format::PDF::Devel::TestHelper;
 use Renard::Curie::ViewModel::ViewManager;
 use List::AllUtils qw(first);
 
 subtest "Text page" => sub {
 	my $pdf_ref_path = try {
-		Renard::Incunabula::Devel::TestHelper->test_data_directory->child(qw(PDF Adobe pdf_reference_1-7.pdf));
+		Renard::Incunabula::Format::PDF::Devel::TestHelper->pdf_reference_document_path;
 	} catch {
 		plan skip_all => "$_";
 	};
 
 	my $view_manager = Renard::Curie::ViewModel::ViewManager->new;
-	my $doc = Renard::Incunabula::Format::PDF::Document->new( filename => $pdf_ref_path );
+	my $doc = Renard::Incunabula::Format::PDF::Devel::TestHelper->pdf_reference_document_object;
 	$view_manager->current_document( $doc );
 
 	$view_manager->current_view->page_number( 23 );
