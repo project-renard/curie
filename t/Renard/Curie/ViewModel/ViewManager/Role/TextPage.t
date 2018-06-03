@@ -1,9 +1,12 @@
 #!/usr/bin/env perl
 
 use Test::Most tests => 1;
+
+use lib 't/lib';
+use CurieTestHelper;
+
 use Renard::Incunabula::Format::PDF::Document;
 use Renard::Incunabula::Format::PDF::Devel::TestHelper;
-use Renard::Curie::ViewModel::ViewManager;
 use List::AllUtils qw(first);
 
 subtest "Text page" => sub {
@@ -13,7 +16,10 @@ subtest "Text page" => sub {
 		plan skip_all => "$_";
 	};
 
-	my $view_manager = Renard::Curie::ViewModel::ViewManager->new;
+	my $c = CurieTestHelper->get_app_container;
+	my $app = $c->app;
+
+	my $view_manager = $c->view_manager;
 	my $doc = Renard::Incunabula::Format::PDF::Devel::TestHelper->pdf_reference_document_object;
 	$view_manager->current_document( $doc );
 
