@@ -6,7 +6,7 @@ use Test::Exception 0.43;
 
 use lib 't/lib';
 use CurieTestHelper;
-use Renard::Incunabula::Devel::TestHelper;
+use Renard::Incunabula::Format::PDF::Devel::TestHelper;
 use Renard::Incunabula::Format::Cairo::Devel::TestHelper;
 
 use Renard::Incunabula::Common::Setup;
@@ -21,7 +21,7 @@ use version 0.77 ();
 subtest "Process arguments" => sub {
 	subtest "Process arguments for PDF file" => sub {
 		my $pdf_ref_path = try {
-			Renard::Incunabula::Devel::TestHelper->test_data_directory->child(qw(PDF Adobe pdf_reference_1-7.pdf));
+			Renard::Incunabula::Format::PDF::Devel::TestHelper->pdf_reference_document_path;
 		} catch {
 			plan skip_all => "$_";
 		};
@@ -122,7 +122,7 @@ subtest "Open document twice" => sub {
 
 subtest "Drag and drop of file" => sub {
 	my $pdf_ref_path = try {
-		Renard::Incunabula::Devel::TestHelper->test_data_directory->child(qw(PDF Adobe pdf_reference_1-7.pdf));
+		Renard::Incunabula::Format::PDF::Devel::TestHelper->pdf_reference_document_path;
 	} catch {
 		plan skip_all => "$_";
 	};
@@ -181,7 +181,7 @@ subtest "Drag and drop of file" => sub {
 
 subtest "Opening document adds to recent manager" => sub {
 	my $pdf_ref_path = try {
-		Renard::Incunabula::Devel::TestHelper->test_data_directory->child(qw(PDF Adobe pdf_reference_1-7.pdf));
+		Renard::Incunabula::Format::PDF::Devel::TestHelper->pdf_reference_document_path;
 	} catch {
 		plan skip_all => "$_";
 	};
