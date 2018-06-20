@@ -140,6 +140,8 @@ method setup_drawing_area() {
 		$adjustment->signal_connect( 'changed' => $callback );
 	}
 
+	$drawing_area->add_events('scroll-mask');
+
 	my $vbox = $self->builder->get_object('page-drawing-component');
 	$vbox->pack_start( $scrolled_window, TRUE, TRUE, 0);
 }
