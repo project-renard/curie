@@ -13,6 +13,11 @@ my $pdf_ref_path = try {
 	plan skip_all => "$_";
 };
 
+use Renard::Curie::Component::TTSWindow;
+
+plan skip_all => 'Can not load Speech::Synthesis'
+	unless Renard::Curie::Component::TTSWindow->can_load_speech_synthesis;
+
 plan tests => 3;
 
 # Mock TTS engine and loop
