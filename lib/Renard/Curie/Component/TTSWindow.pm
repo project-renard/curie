@@ -3,11 +3,12 @@ package Renard::Curie::Component::TTSWindow;
 # ABSTRACT: Component used to control speech synthesis
 
 use Moo;
-use Speech::Synthesis;
+use Module::Load;
 use Renard::Incunabula::Language::EN;
 use Renard::Incunabula::Common::Types qw(InstanceOf Bool Str);
 use List::AllUtils qw(first);
 use IO::Async::Function;
+use Try::Tiny;
 
 use Pango;
 
@@ -33,12 +34,32 @@ has synth_function => (
 	is => 'lazy',
 );
 
+=classmethod can_load_speech_synthesis
+
+Returns true if the system can load Speech::Synthesis.
+
+=cut
+classmethod can_load_speech_synthesis() {
+	if($^O eq 'linux') {
+		return try {
+			load 'Speech::Synthesis';
+			1;
+		} catch {
+			0;
+		};
+	}
+
+	return 0;
+}
+
 =method BUILD
 
 Constructor that sets up the TTS window and its buttons.
 
 =cut
 method BUILD(@) {
+	return unless $self->can_load_speech_synthesis;
+
 	$self->builder->get_object('tts-window')
 		->signal_connect(
 			'delete-event'
@@ -68,6 +89,8 @@ Show the TTS window.
 
 =cut
 method show_all() {
+	return unless $self->can_load_speech_synthesis;
+
 	$self->builder->get_object('tts-window')->show_all;
 }
 
