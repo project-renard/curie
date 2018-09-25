@@ -3,9 +3,7 @@ version: 1.0.{build}
 cache:
   # cache local::lib
   - C:\msys64\mingw64\lib\perl5\site_perl -> appveyor.yml
-  - C:\msys64\mingw64\bin\cpanm -> appveyor.yml
-  - C:\msys64\mingw64\bin\dzil -> appveyor.yml
-  - C:\msys64\mingw64\bin\pm-uninstall -> appveyor.yml
+  - C:\msys64\mingw64\bin\site_perl -> appveyor.yml
   - C:\msys64\home\%Username%\perl5 -> appveyor.yml
   - maint/cpanfile-git-log -> appveyor.yml
   # cache for devops helper.pl
