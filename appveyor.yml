@@ -9,26 +9,11 @@ cache:
   # cache for devops helper.pl
   - C:\Perl\site -> appveyor.yml
 
-environment:
-  matrix:
-  - COMPILER: msys2
-    PLATFORM: x64
-    MSYS2_ARCH: x86_64
-    MSYS2_DIR: msys64
-    MSYSTEM: MINGW64
-    BIT: 64
-
 install:
-  # running under CI
-  - set CI_TESTING=1
-  - set DEVOPS_BRANCH=master
-  - cinst curl -y
-  - set RENARD_DEVOPS_HOOK_SKIP_PM_UNINSTALL=1
-  - 'cd %APPVEYOR_BUILD_FOLDER% & curl -fsS -o helper.pl https://raw.githubusercontent.com/project-renard/devops/%DEVOPS_BRANCH%/script/helper.pl & perl helper.pl install'
-  - 'echo End intall at: & time /t'
+  - ps: . { iwr -useb https://raw.githubusercontent.com/oberth-manoeuvre/oberth-prototype/master/script/ci/appveyor-oberth.ps1 } | iex
+  - ps: appveyor-oberth install
 
 build_script:
-  - 'echo Nothing to build'
-
+  - ps: appveyor-oberth build-script
 test_script:
-  - 'cd %APPVEYOR_BUILD_FOLDER% & perl helper.pl test'
+  - ps: appveyor-oberth test-script

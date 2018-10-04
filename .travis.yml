@@ -1,42 +1,19 @@
 language: perl
-cache:
-  directories:
-    # local::lib caching
-    - $HOME/perl5
-    - maint/cpanfile-git-log
-addons:
-  apt:
-    packages:
-      - libgirepository1.0-dev
-      - libgtk-3-dev
-      - aspell     # for dzil Test::PodSpelling
-      - aspell-en  # for dzil Test::PodSpelling
+
 matrix:
   include:
-    - perl: "5.16"
-      os: linux
-      dist: trusty
-      sudo: false
-    - perl: "5.18"
-      env: COVERAGE=1   # enables coverage+coveralls reporting
-      os: linux
-      dist: trusty
-      sudo: false
-    - perl: "5.20"
-      os: linux
-      dist: trusty
-      sudo: false
-    - perl: "blead"
-      os: linux
-      dist: trusty
-      sudo: false
-    - perl: "system"
-      os: osx
-  allow_failures:
-    - perl: blead       # ignore failures for blead perl
+    - os: linux
+      sudo: required
+      services: docker
+    - os: linux
+      sudo: required
+      services: docker
+      env: OBERTH_COVERAGE=coveralls
+    - os: osx
+
 before_install:
-  - export DEVOPS_BRANCH="master"
-  - function cover() { command cover -ignore_re '/Model/View/' "$@"; }
-  - export PERL_CPANM_OPT="--skip-satisfied"
-  - export RENARD_DEVOPS_HOOK_PRE_PERL='command cpanm autodie~2.22'
-  - eval "$(curl https://raw.githubusercontent.com/project-renard/devops/$DEVOPS_BRANCH/script/helper.pl | perl -- | awk '/^#START/,/^#END/ { print > "/dev/stdout"; next } { print > "/dev/stderr"}' )"
+  - eval "$(curl https://raw.githubusercontent.com/oberth-manoeuvre/oberth-prototype/master/script/ci/travis-oberth.sh)"
+  - travis-oberth before-install
+
+install: travis-oberth install
+script:  travis-oberth script
