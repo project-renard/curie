@@ -12,7 +12,7 @@ use Glib 'TRUE', 'FALSE';
 use Moo 2.001001;
 
 use MooX::Role::Logger ();
-use MooX::Lsub;
+use MooX::ShortHas;
 
 use Renard::Incunabula::Common::Types qw(InstanceOf Path Str);
 use Renard::Incunabula::Document::Types qw(DocumentModel);
@@ -35,11 +35,11 @@ sub _build_loop {
 A L<Gtk3::Window> that contains the main window for the application.
 
 =cut
-lsub window => method() { # :ReturnType(InstanceOf['Gtk3::Window'])
+lazy window => method() {
 	(InstanceOf['Gtk3::Window'])->(
 		$self->builder->get_object('main-window')
 	);
-};
+}, isa => InstanceOf['Gtk3::Window'];
 
 =attr content_box
 
@@ -49,11 +49,11 @@ two different regions.
 The left region contains L</outline> and the right region contains L</page_document_component>.
 
 =cut
-lsub content_box => method() { # :ReturnType(InstanceOf['Gtk3::Box'])
+lazy content_box => method() {
 	(InstanceOf['Gtk3::Box'])->(
 		Gtk3::Box->new( 'horizontal', 0 )
 	);
-};
+}, isa => InstanceOf['Gtk3::Box'];
 
 =method setup_window
 

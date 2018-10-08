@@ -3,12 +3,12 @@ package Renard::Curie::Component::MainWindow::Role::DragAndDrop;
 # ABSTRACT: Role for drag-and-drop
 
 use Moo::Role;
-use MooX::Lsub;
+use MooX::ShortHas;
 
 use URI::file;
 
-lsub DND_TARGET_URI_LIST => sub { 0 };
-lsub DND_TARGET_TEXT     => sub { 1 };
+lazy DND_TARGET_URI_LIST => sub { 0 };
+lazy DND_TARGET_TEXT     => sub { 1 };
 
 requires 'content_box';
 
