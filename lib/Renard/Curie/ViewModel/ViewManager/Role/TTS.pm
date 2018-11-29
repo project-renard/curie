@@ -3,7 +3,7 @@ package Renard::Curie::ViewModel::ViewManager::Role::TTS;
 
 use Moo::Role;
 
-use Renard::Incunabula::Language::EN;
+use Renard::Incunabula::Block::NLP;
 use Scalar::Util qw(refaddr);
 
 use Renard::Incunabula::Common::Types qw(Bool PositiveOrZeroInt);
@@ -59,7 +59,7 @@ method current_text_page() {
 	my $page_number = $self->current_view->page_number;
 	my $txt = $self->current_document->get_textual_page($page_number);
 
-	Renard::Incunabula::Language::EN::apply_sentence_offsets_to_blocks($txt);
+	Renard::Incunabula::Block::NLP::apply_sentence_offsets_to_blocks($txt);
 
 	my @sentence_spans = ();
 	$txt->iter_extents(sub {

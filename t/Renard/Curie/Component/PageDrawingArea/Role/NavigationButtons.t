@@ -4,12 +4,12 @@ use Test::Most tests => 3;
 
 use lib 't/lib';
 use CurieTestHelper;
-use Renard::Incunabula::Format::Cairo::Devel::TestHelper;
+use Renard::Incunabula::Block::Format::Cairo::Devel::TestHelper;
 
 use Renard::Incunabula::Common::Setup;
 use Renard::Curie::App;
 
-my $cairo_doc = Renard::Incunabula::Format::Cairo::Devel::TestHelper->create_cairo_document;
+my $cairo_doc = Renard::Incunabula::Block::Format::Cairo::Devel::TestHelper->create_cairo_document;
 
 subtest 'Check that moving forward and backward changes the page number' => sub {
 	my ($app, $page_comp) = CurieTestHelper->create_app_with_document($cairo_doc);

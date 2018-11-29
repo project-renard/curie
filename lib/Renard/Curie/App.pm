@@ -4,7 +4,7 @@ package Renard::Curie::App;
 
 use Moo 2.001001;
 
-use Renard::Incunabula::Frontend::Gtk3::Helper;
+use Renard::Incunabula::API::Gtk3::Helper;
 
 use File::Spec;
 use File::Basename;

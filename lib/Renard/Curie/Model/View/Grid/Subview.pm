@@ -4,7 +4,7 @@ package Renard::Curie::Model::View::Grid::Subview;
 
 use Moo;
 use Renard::Incunabula::Common::Types qw(InstanceOf ArrayRef);
-use Renard::Incunabula::Frontend::Gtk3::Types qw(SizeRequest);
+use Renard::Incunabula::API::Gtk3::Types qw(SizeRequest);
 use List::AllUtils qw(part sum max);
 
 has _grid_view => (

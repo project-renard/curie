@@ -4,14 +4,14 @@ use Test::Most;
 
 use lib 't/lib';
 use CurieTestHelper;
-use Renard::Incunabula::Format::PDF::Devel::TestHelper;
+use Renard::Incunabula::Block::Format::PDF::Devel::TestHelper;
 
 use Renard::Incunabula::Common::Setup;
 use Renard::Incunabula::Outline;
-use Renard::Incunabula::Format::PDF::Document;
+use Renard::Incunabula::Block::Format::PDF::Document;
 
 my $pdf_ref_path = try {
-	Renard::Incunabula::Format::PDF::Devel::TestHelper->pdf_reference_document_path;
+	Renard::Incunabula::Block::Format::PDF::Devel::TestHelper->pdf_reference_document_path;
 } catch {
 	plan skip_all => "$_";
 };
@@ -83,7 +83,7 @@ subtest 'Outline item type-checking' => sub {
 };
 
 subtest 'Check that the tree store matches the items' => sub {
-	my $doc = Renard::Incunabula::Format::PDF::Devel::TestHelper->pdf_reference_document_object;
+	my $doc = Renard::Incunabula::Block::Format::PDF::Devel::TestHelper->pdf_reference_document_object;
 	my $outline = $doc->outline;
 
 	#print_tree_store($app->outline->model);
