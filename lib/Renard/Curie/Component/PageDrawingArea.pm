@@ -4,7 +4,7 @@ package Renard::Curie::Component::PageDrawingArea;
 
 use Moo;
 
-use Renard::Incunabula::Frontend::Gtk3::Helper;
+use Renard::Incunabula::API::Gtk3::Helper;
 use Glib 'TRUE', 'FALSE';
 use Glib::Object::Subclass
 	'Gtk3::Bin',
@@ -14,7 +14,7 @@ use Glib::Object::Subclass
 	;
 use Renard::Incunabula::Common::Types qw(Bool InstanceOf);
 use Renard::Incunabula::Document::Types qw(PageNumber ZoomLevel);
-use Renard::Incunabula::Format::Cairo::Types qw(RenderableDocumentModel RenderablePageModel);
+use Renard::Incunabula::Block::Format::Cairo::Types qw(RenderableDocumentModel RenderablePageModel);
 
 =attr view_manager
 
@@ -210,8 +210,8 @@ method update_view($new_view) {
 }
 
 with qw(
-	Renard::Incunabula::Frontend::Gtk3::Component::Role::FromBuilder
-	Renard::Incunabula::Frontend::Gtk3::Component::Role::UIFileFromPackageName
+	Renard::Incunabula::API::Gtk3::Component::Role::FromBuilder
+	Renard::Incunabula::API::Gtk3::Component::Role::UIFileFromPackageName
 
 	Renard::Curie::Component::PageDrawingArea::Role::KeyBindings
 	Renard::Curie::Component::PageDrawingArea::Role::MouseScrollBindings

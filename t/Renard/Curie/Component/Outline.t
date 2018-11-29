@@ -4,13 +4,13 @@ use Test::Most;
 
 use lib 't/lib';
 use CurieTestHelper;
-use Renard::Incunabula::Format::PDF::Devel::TestHelper;
+use Renard::Incunabula::Block::Format::PDF::Devel::TestHelper;
 
 use Renard::Incunabula::Common::Setup;
 use Renard::Curie::App;
 
 my $pdf_ref_path = try {
-	Renard::Incunabula::Format::PDF::Devel::TestHelper->pdf_reference_document_path;
+	Renard::Incunabula::Block::Format::PDF::Devel::TestHelper->pdf_reference_document_path;
 } catch {
 	plan skip_all => "$_";
 };

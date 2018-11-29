@@ -1,12 +1,12 @@
 requires 'Renard::Incunabula',
 	git => 'https://github.com/project-renard/p5-Renard-Incunabula.git',
 	branch => 'master';
-requires 'Renard::Incunabula::Format::PDF',
-	git => 'https://github.com/project-renard/p5-Renard-Incunabula-Format-PDF.git',
+requires 'Renard::Incunabula::Block::Format::PDF',
+	git => 'https://github.com/project-renard/p5-Renard-Incunabula-Block-Format-PDF.git',
 	branch => 'master';
-requires 'Renard::Incunabula::Frontend::Gtk3',
-	git => 'https://github.com/project-renard/p5-Renard-Incunabula-Frontend-Gtk3.git',
+requires 'Renard::Incunabula::API::Gtk3',
+	git => 'https://github.com/project-renard/p5-Renard-Incunabula-API-Gtk3.git',
 	branch => 'master';
-requires 'Renard::Incunabula::Language::EN',
-	git => 'https://github.com/project-renard/p5-Renard-Incunabula-Language-EN.git',
+requires 'Renard::Incunabula::Block::NLP',
+	git => 'https://github.com/project-renard/p5-Renard-Incunabula-Block-NLP.git',
 	branch => 'master';

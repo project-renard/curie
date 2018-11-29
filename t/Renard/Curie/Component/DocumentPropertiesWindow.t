@@ -4,14 +4,14 @@ use Test::Most;
 
 use lib 't/lib';
 use CurieTestHelper;
-use Renard::Incunabula::Format::PDF::Devel::TestHelper;
+use Renard::Incunabula::Block::Format::PDF::Devel::TestHelper;
 
 use Renard::Incunabula::Common::Setup;
 use Renard::Curie::Component::DocumentPropertiesWindow;
-use Renard::Incunabula::Format::PDF::Document;
+use Renard::Incunabula::Block::Format::PDF::Document;
 
 my $pdf_ref_path = try {
-	Renard::Incunabula::Format::PDF::Devel::TestHelper->pdf_reference_document_path;
+	Renard::Incunabula::Block::Format::PDF::Devel::TestHelper->pdf_reference_document_path;
 } catch {
 	plan skip_all => "$_";
 };
@@ -19,7 +19,7 @@ my $pdf_ref_path = try {
 plan tests => 1;
 
 subtest "Document properties window" => sub {
-	my $doc = Renard::Incunabula::Format::PDF::Devel::TestHelper->pdf_reference_document_object;
+	my $doc = Renard::Incunabula::Block::Format::PDF::Devel::TestHelper->pdf_reference_document_object;
 
 	my $prop_window = Renard::Curie::Component::DocumentPropertiesWindow->new(
 		document => $doc,

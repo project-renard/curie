@@ -6,10 +6,10 @@ use lib 't/lib';
 use Renard::Incunabula::Common::Setup;
 use Renard::Curie::App;
 use CurieTestHelper;
-use Renard::Incunabula::Format::Cairo::Devel::TestHelper;
+use Renard::Incunabula::Block::Format::Cairo::Devel::TestHelper;
 use Renard::Incunabula::Common::Types qw(InstanceOf Enum);
 
-my $cairo_doc = Renard::Incunabula::Format::Cairo::Devel::TestHelper->create_cairo_document;
+my $cairo_doc = Renard::Incunabula::Block::Format::Cairo::Devel::TestHelper->create_cairo_document;
 
 fun Scroll_Event( (InstanceOf['Renard::Curie::Component::PageDrawingArea']) $pd,
 		(Enum[qw(up down smooth)]) $direction,
