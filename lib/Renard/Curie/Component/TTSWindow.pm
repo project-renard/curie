@@ -4,7 +4,7 @@ package Renard::Curie::Component::TTSWindow;
 
 use Moo;
 use Module::Load;
-use Renard::Incunabula::Block::NLP;
+use Renard::Block::NLP;
 use Renard::Incunabula::Common::Types qw(InstanceOf Bool Str);
 use List::AllUtils qw(first);
 use IO::Async::Function;
@@ -148,7 +148,7 @@ method update() {
 		# NOTE This error occurs if you send UTF-8:
 		# ***   Wide character in syswrite at .../Festival/Client/Async.pm line 127.
 
-		my $preproc_tts = Renard::Incunabula::Block::NLP::preprocess_for_tts(
+		my $preproc_tts = Renard::Block::NLP::preprocess_for_tts(
 			"" . $current_sentence_text
 		);
 		$self->synth_function->call(
@@ -233,8 +233,8 @@ sub _build_synth_function {
 
 
 with qw(
-	Renard::Incunabula::API::Gtk3::Component::Role::FromBuilder
-	Renard::Incunabula::API::Gtk3::Component::Role::UIFileFromPackageName
+	Renard::API::Gtk3::Component::Role::FromBuilder
+	Renard::API::Gtk3::Component::Role::UIFileFromPackageName
 	Renard::Curie::Component::Role::HasParentMainWindow
 );
 

@@ -5,7 +5,7 @@ package Renard::Curie::ViewModel::ViewManager;
 use Moo;
 use Renard::Incunabula::Common::Types qw(InstanceOf Path FileUri PositiveInt PositiveOrZeroInt);
 use Renard::Incunabula::Document::Types qw(DocumentModel ZoomLevel);
-use Renard::Incunabula::Block::Format::PDF::Document;
+use Renard::Block::Format::PDF::Document;
 
 use Glib::Object::Subclass
 	'Glib::Object',

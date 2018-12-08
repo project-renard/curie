@@ -3,7 +3,7 @@ package Renard::Curie::Component::LogWindow;
 # ABSTRACT: Component that collects log messages
 
 use Moo;
-use Renard::Incunabula::API::Gtk3::Helper;
+use Renard::API::Gtk3::Helper;
 use MooX::HandlesVia;
 use Glib 'TRUE', 'FALSE';
 use Renard::Incunabula::Common::Types qw(ArrayRef HashRef Str);
@@ -130,8 +130,8 @@ callback on_clicked_button_clear_cb( $event, $self ) {
 }
 
 with qw(
-	Renard::Incunabula::API::Gtk3::Component::Role::FromBuilder
-	Renard::Incunabula::API::Gtk3::Component::Role::UIFileFromPackageName
+	Renard::API::Gtk3::Component::Role::FromBuilder
+	Renard::API::Gtk3::Component::Role::UIFileFromPackageName
 );
 
 1;

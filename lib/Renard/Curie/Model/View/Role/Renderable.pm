@@ -4,7 +4,7 @@ package Renard::Curie::Model::View::Role::Renderable;
 
 use Moo::Role;
 use Renard::Incunabula::Common::Types qw(InstanceOf);
-use Renard::Incunabula::API::Gtk3::Types qw(SizeRequest);
+use Renard::API::Gtk3::Types qw(SizeRequest);
 
 =method draw_page
 

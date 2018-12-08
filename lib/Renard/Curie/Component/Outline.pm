@@ -3,7 +3,7 @@ package Renard::Curie::Component::Outline;
 # ABSTRACT: Component that provides a list of headings for navigating
 
 use Moo;
-use Renard::Incunabula::API::Gtk3::Helper;
+use Renard::API::Gtk3::Helper;
 use Glib 'TRUE', 'FALSE';
 use Renard::Incunabula::Common::Types qw(InstanceOf);
 use Renard::Incunabula::Document::Types qw(PageNumber);

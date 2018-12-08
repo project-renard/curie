@@ -1,20 +1,20 @@
 #!/usr/bin/env perl
 
 use Test::Most tests => 1;
-use Renard::Incunabula::Block::Format::PDF::Document;
-use Renard::Incunabula::Block::Format::PDF::Devel::TestHelper;
+use Renard::Block::Format::PDF::Document;
+use Renard::Block::Format::PDF::Devel::TestHelper;
 use Renard::Curie::ViewModel::ViewManager;
 use List::AllUtils qw(first);
 
 subtest "Text page" => sub {
 	my $pdf_ref_path = try {
-		Renard::Incunabula::Block::Format::PDF::Devel::TestHelper->pdf_reference_document_path;
+		Renard::Block::Format::PDF::Devel::TestHelper->pdf_reference_document_path;
 	} catch {
 		plan skip_all => "$_";
 	};
 
 	my $view_manager = Renard::Curie::ViewModel::ViewManager->new;
-	my $doc = Renard::Incunabula::Block::Format::PDF::Devel::TestHelper->pdf_reference_document_object;
+	my $doc = Renard::Block::Format::PDF::Devel::TestHelper->pdf_reference_document_object;
 	$view_manager->current_document( $doc );
 
 	$view_manager->current_view->page_number( 23 );
