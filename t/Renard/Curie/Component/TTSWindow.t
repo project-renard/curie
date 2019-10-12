@@ -60,11 +60,12 @@ subtest "Sentences" => sub {
 	$c->view_manager->open_pdf_document( $pdf_ref_path );
 
 	is $c->view_manager->current_view->page_number, 1, 'first page';
-	is $c->view_manager->num_of_sentences_on_page, 6, 'there are 6 sentences on page 1';
+	my $sentences = $c->view_manager->num_of_sentences_on_page;
+	cmp_ok $sentences, '>=', 1, 'there multiple sentences on page 1';
 	is $c->view_manager->current_sentence_number, 0, 'start on the first sentence';
 
 	note 'Clicking next sentence button';
-	for (0..5) {
+	for (0..$sentences-1) {
 		$c->tts_window->builder->get_object('button-next')
 			->signal_emit( clicked => );
 		note "Sentence number ". $c->view_manager->current_sentence_number;
@@ -78,7 +79,7 @@ subtest "Sentences" => sub {
 		->signal_emit( clicked => );
 
 	is $c->view_manager->current_view->page_number, 1, 'first page';
-	is $c->view_manager->current_sentence_number, 5, 'last sentence';
+	is $c->view_manager->current_sentence_number, $sentences-1, 'last sentence';
 };
 
 done_testing;
