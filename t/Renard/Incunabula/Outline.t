@@ -96,7 +96,8 @@ subtest 'Check that the tree store matches the items' => sub {
 				page => $data->[1],
 			};
 	});
-	is_deeply( $tree_store_data, $outline->items,
+	cmp_deeply( $tree_store_data,
+		[ map { subhashof($_) } @{ $outline->items } ],
 		'Outline tree store matches outline items');
 };
 
