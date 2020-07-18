@@ -218,7 +218,6 @@ with qw(
 	Renard::Curie::Component::PageDrawingArea::Role::NavigationButtons
 	Renard::Curie::Component::PageDrawingArea::Role::PageEntry
 	Renard::Curie::Component::PageDrawingArea::Role::PageLabel
-	Renard::Curie::Component::PageDrawingArea::Role::ScrollWindow
 
 	Renard::Curie::Component::PageDrawingArea::Role::HighlightCurrentSentence
 );

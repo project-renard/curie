@@ -34,17 +34,14 @@ callback on_key_press_event_cb($window, $event, $self) {
 	} elsif($event->keyval == Gtk3::Gdk::KEY_Page_Up){
 		$self->view->set_current_page_back;
 	} elsif($event->keyval == Gtk3::Gdk::KEY_Up){
-		$self->decrement_scroll($self->scrolled_window->get_vadjustment);
+		$self->scrolled_window->get_vadjustment->decrement_step;
 	} elsif($event->keyval == Gtk3::Gdk::KEY_Down){
-		$self->increment_scroll($self->scrolled_window->get_vadjustment);
+		$self->scrolled_window->get_vadjustment->increment_step;
 	} elsif($event->keyval == Gtk3::Gdk::KEY_Right){
-		$self->increment_scroll($self->scrolled_window->get_hadjustment);
+		$self->scrolled_window->get_hadjustment->increment_step;
 	} elsif($event->keyval == Gtk3::Gdk::KEY_Left){
-		$self->decrement_scroll($self->scrolled_window->get_hadjustment);
+		$self->scrolled_window->get_hadjustment->decrement_step;
 	}
 }
-
-requires 'increment_scroll';
-requires 'decrement_scroll';
 
 1;
