@@ -14,7 +14,11 @@ use Renard::Jacquard::Layout::Grid;
 use Renard::Jacquard::Layout::Box;
 use Path::Tiny;
 
+use Devel::Timer;
+
 use constant BOX_LAYOUT => 1;
+
+my $t = Devel::Timer->new();
 
 my $document = Renard::Block::Format::PDF::Document->new(
 	filename => path('~/Downloads/Anatomy Shelf Notes copy.pdf'),
@@ -35,6 +39,7 @@ fun create_group( :$start, :$end, :$margin = 10 ) {
 		layout => Renard::Jacquard::Layout::Grid->new( rows => 3, columns => 2 ),
 	);
 
+	$t->mark("Adding pages $start..$end");
 	for my $page_no ($start..$end) {
 		my $actor = Renard::Curie::Model::View::Grid::PageActor->new(
 			document => $document,
@@ -72,21 +77,32 @@ sub main {
 		__SUB__->($_) for @{ $g->children };
 		$g->update_layout if $g->can('update_layout');
 	};
+	$t->mark('Updating layouts');
 	update_layouts($group);
+	say "done";
 
+	$t->mark('Computing bounds');
 	my $bounds = $group->bounds;
 
+	$t->mark('Rendering to SVG');
 	my $svg = SVG->new;
 	$group->render($svg);
 
 	$svg->{-childs}[0]->setAttribute('height', $bounds->size->height);
 	$svg->{-childs}[0]->setAttribute('width', $bounds->size->width);
+
+	$t->mark('Writing SVG to file');
 	my $svg_file = path('a.svg');
 	$svg_file->spew_utf8( $svg->xmlify );
+
+	$t->mark('Opening in browser');
 	use Browser::Open qw(open_browser);
 	open_browser($svg_file);
 
+	$t->mark('END');
+
 	#require Carp::REPL; Carp::REPL->import('repl'); repl();#DEBUG
+	$t->report();
 }
 
 main;
