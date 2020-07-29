@@ -25,20 +25,6 @@ lazy _rendered_page => method() {
 lazy height => method() { $self->_rendered_page->height };
 lazy width => method() { $self->_rendered_page->width };
 
-lazy size => method() {
-	Renard::Yarn::Graphene::Size->new(
-		height => $self->height,
-		width => $self->width,
-	);
-};
-
-lazy bounds => method() {
-	Renard::Yarn::Graphene::Rect->new(
-		origin => $self->origin_point,
-		size => $self->size,
-	);
-};
-
 method render($svg) {
 	my $rp = $self->_rendered_page;
 	my $taffeta = Renard::Taffeta::Graphics::Image::PNG->new(
@@ -48,6 +34,10 @@ method render($svg) {
 	$taffeta->render_svg( $svg );
 }
 
-with qw(Renard::Jacquard::Role::Geometry::Position2D);
+with qw(
+	Renard::Jacquard::Role::Render::QnD::SVG
+	Renard::Jacquard::Role::Geometry::Position2D
+	Renard::Jacquard::Role::Render::QnD::Size::Direct
+);
 
 1;
