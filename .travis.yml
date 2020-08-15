@@ -8,12 +8,12 @@ matrix:
     - os: linux
       sudo: required
       services: docker
-      env: OBERTH_COVERAGE=coveralls
+      env: ORBITAL_COVERAGE=coveralls
     - os: osx
 
 before_install:
-  - eval "$(curl https://raw.githubusercontent.com/oberth-manoeuvre/oberth-prototype/master/script/ci/travis-oberth.sh)"
-  - travis-oberth before-install
+  - eval "$(curl https://raw.githubusercontent.com/orbital-transfer/launch-site/master/script/ci/travis-orbital.sh)"
+  - travis-orbital before-install
 
-install: travis-oberth install
-script:  travis-oberth script
+install: travis-orbital install
+script:  travis-orbital script
