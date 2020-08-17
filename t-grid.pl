@@ -59,7 +59,7 @@ fun create_group( :$start, :$end, :$margin = 10 ) {
 	$group;
 }
 
-sub main {
+sub create_scene_graph {
 	my $group = $_LayoutGroup->new(
 		layout => Renard::Jacquard::Layout::Grid->new( rows => 2, columns => 2 ),
 	);
@@ -72,15 +72,24 @@ sub main {
 	$group->x->value( 0 );
 	$group->y->value( 0 );
 
-	sub update_layouts {
-		my ($g) = @_;
-		__SUB__->($_) for @{ $g->children };
-		$g->update_layout if $g->can('update_layout');
-	};
-	$t->mark('Updating layouts');
-	update_layouts($group);
-	say "done";
+	return $group;
+}
 
+sub _update_layouts {
+	my ($g) = @_;
+	__SUB__->($_) for @{ $g->children };
+	$g->update_layout if $g->can('update_layout');
+}
+
+sub update_layout {
+	my ($group) = @_;
+	$t->mark('Updating layouts');
+	_update_layouts($group);
+	say "done";
+}
+
+sub render_to_svg {
+	my ($group) = @_;
 	$t->mark('Computing bounds');
 	my $bounds = $group->bounds;
 
@@ -91,18 +100,38 @@ sub main {
 	$svg->{-childs}[0]->setAttribute('height', $bounds->size->height);
 	$svg->{-childs}[0]->setAttribute('width', $bounds->size->width);
 
+	return $svg;
+}
+
+sub write_out_svg {
+	my ($svg) = @_;
 	$t->mark('Writing SVG to file');
 	my $svg_file = path('a.svg');
 	$svg_file->spew_utf8( $svg->xmlify );
 
+	return $svg_file;
+}
+
+sub open_svg_file {
+	my ($svg_file) = @_;
 	$t->mark('Opening in browser');
 	use Browser::Open qw(open_browser);
 	open_browser($svg_file);
+}
 
-	$t->mark('END');
+sub do_svg_things {
+	my $group = create_scene_graph;
+	update_layout($group);
+	my $svg = render_to_svg($group);
+	my $svg_file = write_out_svg($svg);
+	open_svg_file($svg_file);
+}
 
-	#require Carp::REPL; Carp::REPL->import('repl'); repl();#DEBUG
-	$t->report();
+sub main {
+	do_svg_things;
 }
 
 main;
+$t->mark('END');
+#require Carp::REPL; Carp::REPL->import('repl'); repl();#DEBUG
+$t->report();
