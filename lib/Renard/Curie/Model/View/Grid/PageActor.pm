@@ -25,17 +25,25 @@ lazy _rendered_page => method() {
 lazy height => method() { $self->_rendered_page->height };
 lazy width => method() { $self->_rendered_page->width };
 
-method render($svg) {
+lazy _taffeta => method() {
 	my $rp = $self->_rendered_page;
 	my $taffeta = Renard::Taffeta::Graphics::Image::PNG->new(
 		data => $rp->png_data,
 		origin => $self->origin_point,
 	);
-	$taffeta->render_svg( $svg );
+};
+
+method render($svg) {
+	$self->_taffeta->render_svg( $svg );
+}
+
+method render_cairo($cr) {
+	$self->_taffeta->render_cairo( $cr );
 }
 
 with qw(
 	Renard::Jacquard::Role::Render::QnD::SVG
+	Renard::Jacquard::Role::Render::QnD::Cairo
 	Renard::Jacquard::Role::Geometry::Position2D
 	Renard::Jacquard::Role::Render::QnD::Size::Direct
 );

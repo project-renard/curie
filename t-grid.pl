@@ -14,6 +14,9 @@ use Renard::Jacquard::Layout::Grid;
 use Renard::Jacquard::Layout::Box;
 use Path::Tiny;
 
+use Renard::API::Cairo;
+use Gtk3 -init;
+
 use Devel::Timer;
 
 use constant BOX_LAYOUT => 1;
@@ -29,6 +32,7 @@ my $_LayoutGroup = Moo::Role->create_class_with_roles(
 	Renard::Jacquard::Role::Geometry::Position2D
 	Renard::Jacquard::Role::Geometry::Size2D
 	Renard::Jacquard::Role::Render::QnD::SVG::Group
+	Renard::Jacquard::Role::Render::QnD::Cairo::Group
 	Renard::Jacquard::Role::Render::QnD::Layout
 	Renard::Jacquard::Role::Render::QnD::Size::Direct
 	Renard::Jacquard::Role::Render::QnD::Bounds::Direct
@@ -127,8 +131,52 @@ sub do_svg_things {
 	open_svg_file($svg_file);
 }
 
+sub cb_on_draw {
+	my ($widget, $cr, $data) = @_;
+
+	$cr->save;
+
+	$cr->scale($data->{scale}, $data->{scale});
+
+	$cr->set_source_rgb(0, 0, 0);
+	$cr->paint;
+
+	$data->{sg}->render_cairo( $cr );
+
+	$cr->restore;
+}
+
+sub do_gtk_things {
+	my $data = {};
+
+	$data->{scale} = 0.3;
+
+	$data->{sg} = create_scene_graph;
+	update_layout( $data->{sg} );
+	my $bounds = $data->{sg}->bounds;
+
+	my $window = Gtk3::Window->new('toplevel');
+	$window->signal_connect( destroy => sub { Gtk3::main_quit } );
+	$window->set_default_size(800, 600);
+
+	my $scrolled = Gtk3::ScrolledWindow->new;
+	$window->add($scrolled);
+	$data->{scroll} = $scrolled;
+
+	my $drawing_area = Gtk3::DrawingArea->new;
+	$drawing_area->set_size_request(
+		$data->{scale} * $bounds->size->width,
+		$data->{scale} * $bounds->size->height,
+	);
+	$drawing_area->signal_connect( draw => \&cb_on_draw, $data );
+	$scrolled->add($drawing_area);
+
+	$window->show_all;
+	Gtk3::main;
+}
+
 sub main {
-	do_svg_things;
+	do_gtk_things;
 }
 
 main;
