@@ -16,6 +16,7 @@ use Path::Tiny;
 
 use Renard::API::Cairo;
 use Gtk3 -init;
+use Glib qw(TRUE FALSE);
 
 use Devel::Timer;
 
@@ -159,8 +160,10 @@ sub do_gtk_things {
 	$window->signal_connect( destroy => sub { Gtk3::main_quit } );
 	$window->set_default_size(800, 600);
 
+	my $vbox = Gtk3::Box->new( 'vertical', 0 );
+	$window->add( $vbox );
+
 	my $scrolled = Gtk3::ScrolledWindow->new;
-	$window->add($scrolled);
 	$data->{scroll} = $scrolled;
 
 	my $drawing_area = Gtk3::DrawingArea->new;
@@ -170,6 +173,11 @@ sub do_gtk_things {
 	);
 	$drawing_area->signal_connect( draw => \&cb_on_draw, $data );
 	$scrolled->add($drawing_area);
+
+	my $status_bar = Gtk3::Statusbar->new;
+
+	$vbox->pack_start($scrolled, TRUE, TRUE, 0 );
+	$vbox->pack_end($status_bar, FALSE, FALSE, 0);
 
 	$window->show_all;
 	Gtk3::main;
