@@ -13,9 +13,10 @@ use Renard::Curie::Model::View::Grid::PageActor;
 use Renard::Jacquard::Layout::Grid;
 use Renard::Jacquard::Layout::Box;
 use Path::Tiny;
+use Renard::Yarn::Types qw(Point Size);
 
 use Renard::API::Cairo;
-use Gtk3 -init;
+use Renard::API::Gtk3::Helper;
 use Glib qw(TRUE FALSE);
 
 use Devel::Timer;
@@ -147,6 +148,51 @@ sub cb_on_draw {
 	$cr->restore;
 }
 
+sub cb_on_scroll {
+	my ($widget, $data) = @_;
+
+	if( ! exists $data->{status_bar_scroll_context} ) {
+		$data->{status_bar_scroll_context} =
+			$data->{status_bar}->get_context_id('pages');
+	}
+
+	$data->{status_bar}->remove_all($data->{status_bar_scroll_context});
+
+	my ($h, $v) = (
+		$data->{scroll}->get_hadjustment,
+		$data->{scroll}->get_vadjustment,
+	);
+
+	my $vp_origin = Point->coerce([ $h->get_value, $v->get_value ]);
+	my $vp_size = Size->coerce([ $h->get_page_size, $v->get_page_size ]);
+
+	my $vp_bounds = Renard::Yarn::Graphene::Rect->new(
+		origin => $vp_origin,
+		size => $vp_size,
+	);
+
+	my @pages;
+	my $vp_is_visible = sub {
+		my ($g, $g_matrix) = @_;
+		my $t_matrix = Renard::Yarn::Graphene::Matrix->new;
+		$t_matrix->init_from_2d( 1, 0 , 0 , 1, $g->x->value, $g->y->value );
+		my $matrix = $t_matrix x $g_matrix;
+		if( $g->isa('Renard::Curie::Model::View::Grid::PageActor') &&
+			( $matrix->transform_bounds($g->bounds)->intersection($vp_bounds) )[0]
+		) {
+			push @pages, $g->page_number;
+		}
+		__SUB__->($_, $matrix) for @{ $g->children };
+	};
+
+	my $matrix = Renard::Yarn::Graphene::Matrix->new;
+	$matrix->init_scale($data->{scale}, $data->{scale}, 0);
+	$vp_is_visible->($data->{sg}, $matrix);
+
+	#say "Box: $vp_bounds ; Pages: @pages";
+	$data->{status_bar}->push($data->{status_bar_scroll_context}, "Pages: @pages");
+}
+
 sub do_gtk_things {
 	my $data = {};
 
@@ -171,13 +217,21 @@ sub do_gtk_things {
 		$data->{scale} * $bounds->size->width,
 		$data->{scale} * $bounds->size->height,
 	);
-	$drawing_area->signal_connect( draw => \&cb_on_draw, $data );
 	$scrolled->add($drawing_area);
 
 	my $status_bar = Gtk3::Statusbar->new;
+	$data->{status_bar} = $status_bar;
 
 	$vbox->pack_start($scrolled, TRUE, TRUE, 0 );
 	$vbox->pack_end($status_bar, FALSE, FALSE, 0);
+
+	$drawing_area->signal_connect( draw => \&cb_on_draw, $data );
+	for my $adj (qw(get_hadjustment get_vadjustment)) {
+		for my $sig (qw(changed value-changed)) {
+			$scrolled->$adj->signal_connect(
+				$sig => \&cb_on_scroll, $data );
+		}
+	}
 
 	$window->show_all;
 	Gtk3::main;
