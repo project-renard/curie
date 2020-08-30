@@ -92,7 +92,7 @@ sub update_layout {
 	my ($group) = @_;
 	$t->mark('Updating layouts');
 	_update_layouts($group);
-	say "done";
+	$t->mark('Done updating layouts');
 }
 
 sub render_to_svg {
