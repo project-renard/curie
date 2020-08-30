@@ -38,6 +38,7 @@ method render($svg) {
 }
 
 method render_cairo($cr) {
+	return unless $self->{visible};
 	$self->_taffeta->render_cairo( $cr );
 }
 

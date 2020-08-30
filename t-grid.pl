@@ -13,7 +13,6 @@ use Renard::Curie::Model::View::Grid::PageActor;
 use Renard::Jacquard::Layout::Grid;
 use Renard::Jacquard::Layout::Box;
 use Path::Tiny;
-use Renard::Yarn::Types qw(Point Size);
 
 use Renard::API::Cairo;
 use Renard::API::Gtk3::Helper;
@@ -22,7 +21,6 @@ use Glib qw(TRUE FALSE);
 use Devel::Timer;
 
 use constant BOX_LAYOUT => 1;
-use constant HIGHLIGHT_BOUNDS => $ENV{T_GRID_HIGHLIGHT_BOUNDS} // 0;
 
 my $t = Devel::Timer->new();
 
@@ -134,35 +132,7 @@ sub do_svg_things {
 	open_svg_file($svg_file);
 }
 
-sub cb_on_draw {
-	my ($widget, $cr, $data) = @_;
-
-	$cr->save;
-
-	$cr->scale($data->{scale}, $data->{scale});
-
-	$cr->set_source_rgb(0, 0, 0);
-	$cr->paint;
-
-	$data->{sg}->render_cairo( $cr );
-
-	$cr->restore;
-
-	if( HIGHLIGHT_BOUNDS ) {
-		for my $bounds (@{ $data->{view}{bounds} }) {
-			$cr->rectangle(
-				$bounds->get_x,
-				$bounds->get_y,
-				$bounds->get_width,
-				$bounds->get_height,
-			);
-			$cr->set_source_rgba(1, 0, 0, 0.2);
-			$cr->fill;
-		}
-	}
-}
-
-sub cb_on_scroll {
+sub cb_on_view_changed {
 	my ($widget, $data) = @_;
 
 	if( ! exists $data->{status_bar_scroll_context} ) {
@@ -172,51 +142,171 @@ sub cb_on_scroll {
 
 	$data->{status_bar}->remove_all($data->{status_bar_scroll_context});
 
-	my ($h, $v) = (
-		$data->{scroll}->get_hadjustment,
-		$data->{scroll}->get_vadjustment,
-	);
-
-	my $vp_origin = Point->coerce([ $h->get_value, $v->get_value ]);
-	my $vp_size = Size->coerce([ $h->get_page_size, $v->get_page_size ]);
-
-	my $vp_bounds = Renard::Yarn::Graphene::Rect->new(
-		origin => $vp_origin,
-		size => $vp_size,
-	);
-
-	my @pages;
-	my @bounds;
-	my $vp_is_visible = sub {
-		my ($g, $g_matrix) = @_;
-		my $t_matrix = Renard::Yarn::Graphene::Matrix->new;
-		if( $g->does('Renard::Jacquard::Role::Render::QnD::Layout') ) {
-			$t_matrix->init_from_2d( 1, 0 , 0 , 1, $g->x->value, $g->y->value );
-		} else {
-			# position translation is already incorporated into bounds of non-layout
-			$t_matrix->init_from_2d( 1, 0 , 0 , 1, 0, 0 );
-		}
-		my $matrix = $t_matrix x $g_matrix;
-		if( $g->isa('Renard::Curie::Model::View::Grid::PageActor') &&
-			( (my $t_bounds = $matrix->transform_bounds($g->bounds))->intersection($vp_bounds) )[0]
-		) {
-			push @pages, $g->page_number;
-			push @bounds, $t_bounds;
-		}
-		__SUB__->($_, $matrix) for @{ $g->children };
-	};
-
-	my $matrix = Renard::Yarn::Graphene::Matrix->new;
-	$matrix->init_scale($data->{scale}, $data->{scale}, 0);
-	$vp_is_visible->($data->{sg}, $matrix);
-
-	#say "Box: $vp_bounds ; Pages: @pages";
+	my @pages = @{ $data->{drawing_area}->{pages} };
 	$data->{status_bar}->push($data->{status_bar_scroll_context}, "Pages: @pages");
-
-	$data->{view}{pages} = \@pages;
-	$data->{view}{bounds} = \@bounds;
-	$data->{drawing_area}->queue_draw;
 }
+
+package JacquardCanvas {
+	use Glib::Object::Subclass
+		'Gtk3::DrawingArea',
+		interfaces => [ 'Gtk3::Scrollable', ],
+		properties => [
+			# Gtk3::Scrollable interface
+			Glib::ParamSpec->object ('hadjustment','hadj','', Gtk3::Adjustment::, [qw/readable writable construct/] ),
+			Glib::ParamSpec->object ('vadjustment','vadj','', Gtk3::Adjustment::, [qw/readable writable construct/] ),
+			Glib::ParamSpec->enum   ('hscroll-policy','hpol','', "Gtk3::ScrollablePolicy", "GTK_SCROLL_MINIMUM", [qw/readable writable/]),
+			Glib::ParamSpec->enum   ('vscroll-policy','vpol','', "Gtk3::ScrollablePolicy", "GTK_SCROLL_MINIMUM", [qw/readable writable/]),
+		],
+		signals => {
+			'view-changed' => {},
+		},
+	;
+
+	use Object::Util magic => 0;
+	use Glib qw(TRUE FALSE);
+
+	use Renard::Yarn::Types qw(Point Size);
+
+	use constant HIGHLIGHT_BOUNDS => $ENV{T_GRID_HIGHLIGHT_BOUNDS} // 0;
+
+	sub new {
+		my ($class, %args) = @_;
+
+		my $data = {
+			sg => delete $args{sg},
+			scale => delete $args{scale}
+		};
+
+		my $self = $class->SUPER::new(%args);
+
+		$self->{sg} = $data->{sg};
+		$self->{scale} = $data->{scale};
+
+		$self->signal_connect(
+			realize => sub {
+				my $bounds = $self->{sg}->bounds;
+
+				$self->get_hadjustment
+					->$_tap( set_lower => 0 )
+					->$_tap( set_upper =>  $self->{scale} * $bounds->size->width)
+					;
+				$self->get_vadjustment
+					->$_tap( set_lower => 0 )
+					->$_tap( set_upper => $self->{scale} * $bounds->size->height )
+					;
+
+				for my $adj (qw(get_hadjustment get_vadjustment)) {
+					for my $sig (qw(changed value-changed)) {
+						$self->$adj->signal_connect(
+							$sig => \&cb_on_scroll, $self );
+					}
+				}
+				cb_on_scroll(undef, $self);
+			}
+		);
+
+		$self->signal_connect(
+			'size-allocate' => sub {
+				my ($widget, $allocation) = @_;
+				$self->get_hadjustment
+					->set_page_size( $allocation->{width} );
+				$self->get_vadjustment
+					->set_page_size( $allocation->{height} );
+			}
+		);
+
+		$self->signal_connect( draw => \&cb_on_draw );
+
+		$self->add_events('scroll-mask');
+
+		$self;
+	}
+
+	sub cb_on_scroll {
+		my ($adjustment, $self) = @_;
+		my ($h, $v) = (
+			$self->get_hadjustment,
+			$self->get_vadjustment,
+		);
+
+		my $vp_origin = Point->coerce([ $h->get_value, $v->get_value ]);
+		my $vp_size = Size->coerce([ $h->get_page_size, $v->get_page_size ]);
+
+		my $vp_bounds = Renard::Yarn::Graphene::Rect->new(
+			origin => $vp_origin,
+			size => $vp_size,
+		);
+
+		my @pages;
+		my @bounds;
+		my $vp_is_visible = sub {
+			my ($g, $g_matrix) = @_;
+			my $t_matrix = Renard::Yarn::Graphene::Matrix->new;
+			if( $g->does('Renard::Jacquard::Role::Render::QnD::Layout') ) {
+				$t_matrix->init_from_2d( 1, 0 , 0 , 1, $g->x->value, $g->y->value );
+			} else {
+				# position translation is already incorporated into bounds of non-layout
+				$t_matrix->init_from_2d( 1, 0 , 0 , 1, 0, 0 );
+			}
+			my $matrix = $t_matrix x $g_matrix;
+			if( $g->isa('Renard::Curie::Model::View::Grid::PageActor') &&
+				( (my $t_bounds = $matrix->transform_bounds($g->bounds))->intersection($vp_bounds) )[0]
+			) {
+				$g->{visible} = 1;
+				push @pages, $g->page_number;
+				push @bounds, $t_bounds;
+			}
+			__SUB__->($_, $matrix) for @{ $g->children };
+		};
+
+		my $matrix = Renard::Yarn::Graphene::Matrix->new;
+		$matrix->init_scale($self->{scale}, $self->{scale}, 0);
+		$vp_is_visible->($self->{sg}, $matrix);
+
+		$self->{pages} = \@pages;
+		$self->{bounds} = \@bounds;
+
+		$self->signal_emit( 'view-changed' );
+	}
+
+	sub cb_on_draw {
+		my ($self, $cr) = @_;
+
+		$cr->save;
+
+		my ($h, $v) = (
+			$self->get_hadjustment,
+			$self->get_vadjustment,
+		);
+
+		$cr->translate( -$h->get_value, -$v->get_value );
+
+		$cr->scale($self->{scale}, $self->{scale});
+
+		$cr->set_source_rgb(0, 0, 0);
+		$cr->paint;
+
+		$self->{sg}->render_cairo( $cr );
+
+		$cr->restore;
+
+		if( HIGHLIGHT_BOUNDS ) {
+			#say "Drawing # of bounds: @{[ scalar @{ $self->{bounds} } ]}";
+			for my $bounds (@{ $self->{bounds} }) {
+				$cr->rectangle(
+					$bounds->get_x - $h->get_value,
+					$bounds->get_y - $v->get_value,
+					$bounds->get_width,
+					$bounds->get_height,
+				);
+				$cr->set_source_rgba(1, 0, 0, 0.2);
+				$cr->fill;
+			}
+		}
+	}
+
+	sub GET_BORDER { (FALSE, undef); }
+};
 
 sub do_gtk_things {
 	my $data = {};
@@ -225,7 +315,6 @@ sub do_gtk_things {
 
 	$data->{sg} = create_scene_graph;
 	update_layout( $data->{sg} );
-	my $bounds = $data->{sg}->bounds;
 
 	my $window = Gtk3::Window->new('toplevel');
 	$window->signal_connect( destroy => sub { Gtk3::main_quit } );
@@ -237,12 +326,11 @@ sub do_gtk_things {
 	my $scrolled = Gtk3::ScrolledWindow->new;
 	$data->{scroll} = $scrolled;
 
-	my $drawing_area = Gtk3::DrawingArea->new;
-	$data->{drawing_area} = $drawing_area;
-	$drawing_area->set_size_request(
-		$data->{scale} * $bounds->size->width,
-		$data->{scale} * $bounds->size->height,
+	my $drawing_area = JacquardCanvas->new(
+		sg => $data->{sg},
+		scale => $data->{scale},
 	);
+	$data->{drawing_area} = $drawing_area;
 	$scrolled->add($drawing_area);
 
 	my $status_bar = Gtk3::Statusbar->new;
@@ -251,13 +339,8 @@ sub do_gtk_things {
 	$vbox->pack_start($scrolled, TRUE, TRUE, 0 );
 	$vbox->pack_end($status_bar, FALSE, FALSE, 0);
 
-	$drawing_area->signal_connect( draw => \&cb_on_draw, $data );
-	for my $adj (qw(get_hadjustment get_vadjustment)) {
-		for my $sig (qw(changed value-changed)) {
-			$scrolled->$adj->signal_connect(
-				$sig => \&cb_on_scroll, $data );
-		}
-	}
+	$data->{drawing_area}->signal_connect( 'view-changed',
+		\&cb_on_view_changed, $data );
 
 	$window->show_all;
 	Gtk3::main;
