@@ -175,7 +175,12 @@ sub cb_on_scroll {
 	my $vp_is_visible = sub {
 		my ($g, $g_matrix) = @_;
 		my $t_matrix = Renard::Yarn::Graphene::Matrix->new;
-		$t_matrix->init_from_2d( 1, 0 , 0 , 1, $g->x->value, $g->y->value );
+		if( $g->does('Renard::Jacquard::Role::Render::QnD::Layout') ) {
+			$t_matrix->init_from_2d( 1, 0 , 0 , 1, $g->x->value, $g->y->value );
+		} else {
+			# position translation is already incorporated into bounds of non-layout
+			$t_matrix->init_from_2d( 1, 0 , 0 , 1, 0, 0 );
+		}
 		my $matrix = $t_matrix x $g_matrix;
 		if( $g->isa('Renard::Curie::Model::View::Grid::PageActor') &&
 			( $matrix->transform_bounds($g->bounds)->intersection($vp_bounds) )[0]
