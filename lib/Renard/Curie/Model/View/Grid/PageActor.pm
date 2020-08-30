@@ -46,6 +46,7 @@ with qw(
 	Renard::Jacquard::Role::Render::QnD::Cairo
 	Renard::Jacquard::Role::Geometry::Position2D
 	Renard::Jacquard::Role::Render::QnD::Size::Direct
+	Renard::Jacquard::Role::Render::QnD::Bounds::Direct
 );
 
 1;
