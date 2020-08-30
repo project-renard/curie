@@ -22,6 +22,7 @@ use Glib qw(TRUE FALSE);
 use Devel::Timer;
 
 use constant BOX_LAYOUT => 1;
+use constant HIGHLIGHT_BOUNDS => $ENV{T_GRID_HIGHLIGHT_BOUNDS} // 0;
 
 my $t = Devel::Timer->new();
 
@@ -146,6 +147,19 @@ sub cb_on_draw {
 	$data->{sg}->render_cairo( $cr );
 
 	$cr->restore;
+
+	if( HIGHLIGHT_BOUNDS ) {
+		for my $bounds (@{ $data->{view}{bounds} }) {
+			$cr->rectangle(
+				$bounds->get_x,
+				$bounds->get_y,
+				$bounds->get_width,
+				$bounds->get_height,
+			);
+			$cr->set_source_rgba(1, 0, 0, 0.2);
+			$cr->fill;
+		}
+	}
 }
 
 sub cb_on_scroll {
@@ -172,6 +186,7 @@ sub cb_on_scroll {
 	);
 
 	my @pages;
+	my @bounds;
 	my $vp_is_visible = sub {
 		my ($g, $g_matrix) = @_;
 		my $t_matrix = Renard::Yarn::Graphene::Matrix->new;
@@ -183,9 +198,10 @@ sub cb_on_scroll {
 		}
 		my $matrix = $t_matrix x $g_matrix;
 		if( $g->isa('Renard::Curie::Model::View::Grid::PageActor') &&
-			( $matrix->transform_bounds($g->bounds)->intersection($vp_bounds) )[0]
+			( (my $t_bounds = $matrix->transform_bounds($g->bounds))->intersection($vp_bounds) )[0]
 		) {
 			push @pages, $g->page_number;
+			push @bounds, $t_bounds;
 		}
 		__SUB__->($_, $matrix) for @{ $g->children };
 	};
@@ -196,6 +212,10 @@ sub cb_on_scroll {
 
 	#say "Box: $vp_bounds ; Pages: @pages";
 	$data->{status_bar}->push($data->{status_bar_scroll_context}, "Pages: @pages");
+
+	$data->{view}{pages} = \@pages;
+	$data->{view}{bounds} = \@bounds;
+	$data->{drawing_area}->queue_draw;
 }
 
 sub do_gtk_things {
@@ -218,6 +238,7 @@ sub do_gtk_things {
 	$data->{scroll} = $scrolled;
 
 	my $drawing_area = Gtk3::DrawingArea->new;
+	$data->{drawing_area} = $drawing_area;
 	$drawing_area->set_size_request(
 		$data->{scale} * $bounds->size->width,
 		$data->{scale} * $bounds->size->height,
