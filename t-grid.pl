@@ -217,7 +217,34 @@ package JacquardCanvas {
 
 		$self->signal_connect( draw => \&cb_on_draw );
 
+		$self->signal_connect(
+			'motion-notify-event' => sub {
+				my ($widget, $event) = @_;
+				my $event_point = Point->coerce([ $event->x, $event->y ]);
+
+				my ($h, $v) = (
+					$self->get_hadjustment,
+					$self->get_vadjustment,
+				);
+				my $matrix = Renard::Yarn::Graphene::Matrix->new;
+				$matrix->init_from_2d( 1, 0 , 0 , 1, $h->get_value, $v->get_value );
+
+				my $point = $matrix * $event_point;
+				my @pages = map {
+					$self->{bounds}->[$_]->contains_point($point)
+					? $self->{pages}->[$_]
+					: ();
+				} 0..scalar @{ $self->{pages} } - 1;
+				if( @pages) {
+					$self->set_tooltip_text("@pages");
+				} else {
+					$self->set_has_tooltip(FALSE);
+				}
+			}
+		);
+
 		$self->add_events('scroll-mask');
+		$self->add_events('pointer-motion-mask');
 
 		$self;
 	}
