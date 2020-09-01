@@ -294,7 +294,7 @@ package JacquardCanvas {
 		};
 
 		my $matrix = Renard::Yarn::Graphene::Matrix->new;
-		$matrix->init_scale($self->{scale}, $self->{scale}, 0);
+		$matrix->init_scale($self->{scale}, $self->{scale}, 1);
 		$vp_is_visible->($self->{sg}, $matrix);
 
 		$self->{views} = \@views;
@@ -345,6 +345,7 @@ sub do_gtk_things {
 	my $data = {};
 
 	$data->{scale} = 0.3;
+	$data->{scale} //= 1.0;
 
 	$data->{sg} = create_scene_graph;
 	update_layout( $data->{sg} );
