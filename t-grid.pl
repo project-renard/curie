@@ -13,6 +13,7 @@ use Renard::Curie::Model::View::Grid::PageActor;
 use Renard::Jacquard::Layout::Grid;
 use Renard::Jacquard::Layout::Box;
 use Path::Tiny;
+use List::AllUtils qw(first);
 
 use Renard::API::Cairo;
 use Renard::API::Gtk3::Helper;
@@ -146,6 +147,11 @@ sub cb_on_view_changed {
 	$data->{status_bar}->push($data->{status_bar_scroll_context}, "Pages: @pages");
 }
 
+sub cb_on_text_found {
+	my ($widget, $data) = @_;
+	$data->{label}->set_text( $data->{drawing_area}->{text}{substr} );
+}
+
 package JacquardCanvas {
 	use Glib::Object::Subclass
 		'Gtk3::DrawingArea',
@@ -159,6 +165,7 @@ package JacquardCanvas {
 		],
 		signals => {
 			'view-changed' => {},
+			'text-found' => {},
 		},
 	;
 
@@ -244,6 +251,31 @@ package JacquardCanvas {
 				} else {
 					$self->set_has_tooltip(FALSE);
 				}
+
+				if( @intersects ) {
+					my $actor = $intersects[0]->{actor};
+					my $matrix = $intersects[0]->{matrix};
+					my $bounds = $intersects[0]->{bounds};
+
+					my $test_point = $matrix->untransform_point( $point, $bounds );
+
+					my $data = $actor->text_at_point( $test_point );
+					if( $data ) {
+						$self->{text}{substr} = $data->{extent}->substr;
+						$self->{text}{data} = $data;
+
+						$data->{t_bbox} = ($matrix->inverse)[1]
+							->untransform_bounds(
+								$data->{bbox},
+								$bounds
+						);
+
+						$self->signal_emit( 'text-found' );
+					} else {
+						delete $self->{text};
+					}
+					$self->queue_draw;
+				}
 			}
 		);
 
@@ -288,6 +320,8 @@ package JacquardCanvas {
 					actor => $g,
 					bounds => $t_bounds,
 					matrix => $matrix,
+					g_matrix => $g_matrix,
+					t_matrix => $t_matrix,
 				};
 			}
 			__SUB__->($_, $matrix) for @{ $g->children };
@@ -322,6 +356,22 @@ package JacquardCanvas {
 		$self->{sg}->render_cairo( $cr );
 
 		$cr->restore;
+
+
+		if( $self->{text}{data}{t_bbox} ) {
+			my $bounds = $self->{text}{data}{t_bbox};
+			$cr->rectangle(
+				$bounds->get_x - $h->get_value,
+				$bounds->get_y - $v->get_value,
+				$bounds->get_width,
+				$bounds->get_height,
+			);
+			$cr->set_source_rgba(0, 0, 0, 0.5);
+			$cr->set_line_width(1);
+			$cr->stroke_preserve;
+			$cr->set_source_rgba(1, 0.5, 0.5, 0.2);
+			$cr->fill;
+		}
 
 		if( HIGHLIGHT_BOUNDS ) {
 			#say "Drawing # of bounds: @{[ scalar @{ $self->{views} } ]}";
@@ -367,14 +417,22 @@ sub do_gtk_things {
 	$data->{drawing_area} = $drawing_area;
 	$scrolled->add($drawing_area);
 
+	my $label = Gtk3::Label->new;
+	$data->{label} = $label;
+	$label->set_line_wrap(TRUE);
+	$label->set_selectable(TRUE);
+
 	my $status_bar = Gtk3::Statusbar->new;
 	$data->{status_bar} = $status_bar;
 
 	$vbox->pack_start($scrolled, TRUE, TRUE, 0 );
+	$vbox->pack_end($label, FALSE, FALSE, 0);
 	$vbox->pack_end($status_bar, FALSE, FALSE, 0);
 
 	$data->{drawing_area}->signal_connect( 'view-changed',
 		\&cb_on_view_changed, $data );
+	$data->{drawing_area}->signal_connect( 'text-found',
+		\&cb_on_text_found, $data );
 
 	$window->show_all;
 	Gtk3::main;
