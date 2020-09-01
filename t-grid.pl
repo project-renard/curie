@@ -142,7 +142,7 @@ sub cb_on_view_changed {
 
 	$data->{status_bar}->remove_all($data->{status_bar_scroll_context});
 
-	my @pages = @{ $data->{drawing_area}->{pages} };
+	my @pages = map { $_->{page_number} } @{ $data->{drawing_area}->{views} };
 	$data->{status_bar}->push($data->{status_bar_scroll_context}, "Pages: @pages");
 }
 
@@ -230,11 +230,15 @@ package JacquardCanvas {
 				$matrix->init_from_2d( 1, 0 , 0 , 1, $h->get_value, $v->get_value );
 
 				my $point = $matrix * $event_point;
-				my @pages = map {
-					$self->{bounds}->[$_]->contains_point($point)
-					? $self->{pages}->[$_]
+
+				my @intersects = map {
+					$_->{bounds}->contains_point($point)
+					? $_
 					: ();
-				} 0..scalar @{ $self->{pages} } - 1;
+				} @{ $self->{views} };
+
+				my @pages = map { $_->{page_number} } @intersects;
+
 				if( @pages) {
 					$self->set_tooltip_text("@pages");
 				} else {
@@ -264,8 +268,7 @@ package JacquardCanvas {
 			size => $vp_size,
 		);
 
-		my @pages;
-		my @bounds;
+		my @views;
 		my $vp_is_visible = sub {
 			my ($g, $g_matrix) = @_;
 			my $t_matrix = Renard::Yarn::Graphene::Matrix->new;
@@ -280,8 +283,12 @@ package JacquardCanvas {
 				( (my $t_bounds = $matrix->transform_bounds($g->bounds))->intersection($vp_bounds) )[0]
 			) {
 				$g->{visible} = 1;
-				push @pages, $g->page_number;
-				push @bounds, $t_bounds;
+				push @views, {
+					page_number => $g->page_number,
+					actor => $g,
+					bounds => $t_bounds,
+					matrix => $matrix,
+				};
 			}
 			__SUB__->($_, $matrix) for @{ $g->children };
 		};
@@ -290,8 +297,7 @@ package JacquardCanvas {
 		$matrix->init_scale($self->{scale}, $self->{scale}, 0);
 		$vp_is_visible->($self->{sg}, $matrix);
 
-		$self->{pages} = \@pages;
-		$self->{bounds} = \@bounds;
+		$self->{views} = \@views;
 
 		$self->signal_emit( 'view-changed' );
 	}
@@ -318,8 +324,8 @@ package JacquardCanvas {
 		$cr->restore;
 
 		if( HIGHLIGHT_BOUNDS ) {
-			#say "Drawing # of bounds: @{[ scalar @{ $self->{bounds} } ]}";
-			for my $bounds (@{ $self->{bounds} }) {
+			#say "Drawing # of bounds: @{[ scalar @{ $self->{views} } ]}";
+			for my $bounds (map { $_->{bounds} } @{ $self->{views} }) {
 				$cr->rectangle(
 					$bounds->get_x - $h->get_value,
 					$bounds->get_y - $v->get_value,
