@@ -10,3 +10,9 @@ requires 'Renard::API::Gtk3',
 requires 'Renard::Block::NLP',
 	git => 'https://github.com/project-renard/p5-Renard-Block-NLP.git',
 	branch => 'master';
+requires 'Renard::Jacquard',
+	git => 'https://github.com/project-renard/p5-Renard-Jacquard.git',
+	branch => 'layout-punchcard';
+requires 'Renard::Taffeta',
+	git => 'https://github.com/project-renard/p5-Renard-Taffeta.git',
+	branch => 'cairo-transform-matrix';
