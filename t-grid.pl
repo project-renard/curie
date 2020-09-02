@@ -273,9 +273,17 @@ package JacquardCanvas {
 								$bounds
 						) for @$data;
 
+						if( $data->[-1]{tag} eq 'char' ) {
+							$self->_set_cursor_to_name('text');
+						} else {
+							$self->_set_cursor_to_name('default');
+						}
+
 						$self->signal_emit( 'text-found' );
 					} else {
 						delete $self->{text};
+
+						$self->_set_cursor_to_name('default');
 					}
 					$self->queue_draw;
 				}
@@ -286,6 +294,13 @@ package JacquardCanvas {
 		$self->add_events('pointer-motion-mask');
 
 		$self;
+	}
+
+	sub _set_cursor_to_name {
+		my ($self, $name) = @_;
+		$self->get_window->set_cursor(
+			Gtk3::Gdk::Cursor->new_from_name($self->get_display, $name)
+		);
 	}
 
 	sub cb_on_scroll {
