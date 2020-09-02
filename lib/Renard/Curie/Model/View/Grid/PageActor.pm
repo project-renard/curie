@@ -70,28 +70,49 @@ method text_at_point( (Point) $point) {
 			)
 		);
 	};
-	my $m_quad_to_g_quad = sub {
+	my $m_quad_to_rect = sub {
 		my ($quad) = @_;
 		my @points = pairmap { Point->coerce([$a, $b]) } split ' ', $quad;
-		$page_transform->transform_quad(
-			Renard::Yarn::Graphene::Quad->alloc->init_from_points( \@points )
+		$page_transform->transform_bounds(
+			Renard::Yarn::Graphene::Quad->alloc
+				->init_from_points( \@points )
+				->bounds
 		);
 	};
 
-	my @blocks;
-	$tp->iter_extents( sub {
-		my ($extent, $tag_name, $tag_value) = @_;
-		my $g_bbox = $bbox_to_rect->($tag_value->{bbox});
-		push @blocks, {
-			extent => $extent,
-			tag => $tag_name,
-			bbox => $g_bbox,
-		} if $g_bbox->contains_point( $point );
-	}, only => ['block'] );
+	my @all_levels;
 
-	if( @blocks ) {
-		return $blocks[0];
+	my @subpage_level_names = qw(block line char);
+	my @current_extents = ( 0, $tp->length );
+	for my $level_idx (0..@subpage_level_names-1) {
+		my $level = $subpage_level_names[$level_idx];
+		my @gather;
+		$tp->iter_extents( sub {
+				my ($extent, $tag_name, $tag_value) = @_;
+				my $g_bbox = exists $tag_value->{bbox}
+					? $bbox_to_rect->($tag_value->{bbox})
+					: $m_quad_to_rect->($tag_value->{quad});
+				push @gather, {
+					extent => $extent,
+					tag => $tag_name,
+					bbox => $g_bbox,
+				} if $g_bbox->contains_point( $point );
+			},
+			only => [$level],
+			start => $current_extents[0],
+			end => $current_extents[1],
+		);
+
+		if( @gather ) {
+			$all_levels[$level_idx] = $gather[0];
+			my $extent = $gather[0]->{extent};
+			@current_extents = ( $extent->start, $extent->end );
+		} else {
+			last;
+		}
 	}
+
+	return \@all_levels;
 }
 
 with qw(

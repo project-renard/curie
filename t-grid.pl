@@ -260,15 +260,18 @@ package JacquardCanvas {
 					my $test_point = $matrix->untransform_point( $point, $bounds );
 
 					my $data = $actor->text_at_point( $test_point );
-					if( $data ) {
-						$self->{text}{substr} = $data->{extent}->substr;
-						$self->{text}{data} = $data;
+					if( @$data ) {
+						my $block = $data->[0];
+						$self->{text}{substr} = $block->{extent}->substr;
+						$self->{text}{data} = $block;
 
-						$data->{t_bbox} = ($matrix->inverse)[1]
+						$self->{text}{layers} = $data;
+
+						$_->{t_bbox} = ($matrix->inverse)[1]
 							->untransform_bounds(
-								$data->{bbox},
+								$_->{bbox},
 								$bounds
-						);
+						) for @$data;
 
 						$self->signal_emit( 'text-found' );
 					} else {
@@ -358,19 +361,21 @@ package JacquardCanvas {
 		$cr->restore;
 
 
-		if( $self->{text}{data}{t_bbox} ) {
-			my $bounds = $self->{text}{data}{t_bbox};
-			$cr->rectangle(
-				$bounds->get_x - $h->get_value,
-				$bounds->get_y - $v->get_value,
-				$bounds->get_width,
-				$bounds->get_height,
-			);
-			$cr->set_source_rgba(0, 0, 0, 0.5);
-			$cr->set_line_width(1);
-			$cr->stroke_preserve;
-			$cr->set_source_rgba(1, 0.5, 0.5, 0.2);
-			$cr->fill;
+		if( exists $self->{text} ) {
+			for my $layer (@{ $self->{text}{layers} }) {
+				my $bounds = $layer->{t_bbox};
+				$cr->rectangle(
+					$bounds->get_x - $h->get_value,
+					$bounds->get_y - $v->get_value,
+					$bounds->get_width,
+					$bounds->get_height,
+				);
+				$cr->set_source_rgba(0, 0, 0, 0.5);
+				$cr->set_line_width(1);
+				$cr->stroke_preserve;
+				$cr->set_source_rgba(1, 0.5, 0.5, 0.2);
+				$cr->fill;
+			}
 		}
 
 		if( HIGHLIGHT_BOUNDS ) {
