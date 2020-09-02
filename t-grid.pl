@@ -175,6 +175,7 @@ package JacquardCanvas {
 	use Renard::Yarn::Types qw(Point Size);
 
 	use constant HIGHLIGHT_BOUNDS => $ENV{T_GRID_HIGHLIGHT_BOUNDS} // 0;
+	use constant HIGHLIGHT_LAYERS => $ENV{T_GRID_HIGHLIGHT_LAYERS} // 0;
 
 	sub new {
 		my ($class, %args) = @_;
@@ -376,7 +377,7 @@ package JacquardCanvas {
 		$cr->restore;
 
 
-		if( exists $self->{text} ) {
+		if( HIGHLIGHT_LAYERS && exists $self->{text} ) {
 			for my $layer (@{ $self->{text}{layers} }) {
 				my $bounds = $layer->{t_bbox};
 				$cr->rectangle(
