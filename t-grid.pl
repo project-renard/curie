@@ -241,6 +241,44 @@ package JacquardCanvas {
 		$self;
 	}
 
+	sub _get_data_for_pointer {
+		my ($self, $event_point) = @_;
+
+		state $last_point;
+		state $data;
+
+		my ($h, $v) = (
+			$self->get_hadjustment,
+			$self->get_vadjustment,
+		);
+		my $matrix = Renard::Yarn::Graphene::Matrix->new;
+		$matrix->init_from_2d( 1, 0 , 0 , 1, $h->get_value, $v->get_value );
+
+		my $point = $matrix * $event_point;
+
+		if( defined $last_point && $last_point == $point ) {
+			return $data;
+		}
+
+		my @intersects = map {
+			$_->{bounds}->contains_point($point)
+			? $_
+			: ();
+		} @{ $self->{views} };
+
+		my @pages = map { $_->{page_number} } @intersects;
+
+		$last_point = $point;
+
+		$data = {
+			intersects => \@intersects,
+			pages => \@pages,
+			point => $point,
+		};
+
+		return $data;
+	}
+
 	sub _set_cursor_to_name {
 		my ($self, $name) = @_;
 		$self->get_window->set_cursor(
@@ -407,22 +445,11 @@ package JacquardCanvas {
 		my ($widget, $event, $self) = @_;
 		my $event_point = Point->coerce([ $event->x, $event->y ]);
 
-		my ($h, $v) = (
-			$self->get_hadjustment,
-			$self->get_vadjustment,
-		);
-		my $matrix = Renard::Yarn::Graphene::Matrix->new;
-		$matrix->init_from_2d( 1, 0 , 0 , 1, $h->get_value, $v->get_value );
+		my $data = $self->_get_data_for_pointer($event_point);
 
-		my $point = $matrix * $event_point;
-
-		my @intersects = map {
-			$_->{bounds}->contains_point($point)
-			? $_
-			: ();
-		} @{ $self->{views} };
-
-		my @pages = map { $_->{page_number} } @intersects;
+		my @intersects = @{ $data->{intersects} };
+		my @pages = @{ $data->{pages} };
+		my $point = $data->{point};
 
 		if( @pages) {
 			$self->set_tooltip_text("@pages");
