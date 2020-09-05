@@ -228,9 +228,15 @@ package JacquardCanvas {
 			'motion-notify-event' => \&cb_on_motion_notify,
 			$self
 		);
+		$self->signal_connect( 'button-press-event' => \&cb_on_button_press_event, $self );
+		$self->signal_connect( 'button-release-event' => \&cb_on_button_release_event, $self );
 
 		$self->add_events('scroll-mask');
-		$self->add_events('pointer-motion-mask');
+		$self->add_events([qw/
+			pointer-motion-mask
+			button-press-mask
+			button-release-mask
+		/]);
 
 		$self;
 	}
@@ -348,6 +354,28 @@ package JacquardCanvas {
 	}
 
 
+	sub cb_on_button_press_event {
+		my ($widget, $event, $self) = @_;
+
+		if( $event->state & 'button1-mask' ) {
+			say "Start selection";
+			...;
+		}
+
+		return TRUE;
+	}
+
+	sub cb_on_button_release_event {
+		my ($widget, $event, $self) = @_;
+
+		if( $event->state & 'button1-mask' ) {
+			say "End selection";
+			...;
+		}
+
+		return TRUE;
+	}
+
 	sub cb_on_motion_notify {
 		my ($widget, $event, $self) = @_;
 
@@ -360,6 +388,12 @@ package JacquardCanvas {
 
 	sub cb_on_motion_notify_button1 {
 		my ($widget, $event, $self) = @_;
+
+		if( $event->state & 'button1-mask' ) {
+			say "Continuing selection";
+			...;
+		}
+
 		return TRUE;
 	}
 
