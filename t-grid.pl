@@ -224,71 +224,9 @@ package JacquardCanvas {
 		);
 
 		$self->signal_connect( draw => \&cb_on_draw );
-
 		$self->signal_connect(
-			'motion-notify-event' => sub {
-				my ($widget, $event) = @_;
-				my $event_point = Point->coerce([ $event->x, $event->y ]);
-
-				my ($h, $v) = (
-					$self->get_hadjustment,
-					$self->get_vadjustment,
-				);
-				my $matrix = Renard::Yarn::Graphene::Matrix->new;
-				$matrix->init_from_2d( 1, 0 , 0 , 1, $h->get_value, $v->get_value );
-
-				my $point = $matrix * $event_point;
-
-				my @intersects = map {
-					$_->{bounds}->contains_point($point)
-					? $_
-					: ();
-				} @{ $self->{views} };
-
-				my @pages = map { $_->{page_number} } @intersects;
-
-				if( @pages) {
-					$self->set_tooltip_text("@pages");
-				} else {
-					$self->set_has_tooltip(FALSE);
-				}
-
-				if( @intersects ) {
-					my $actor = $intersects[0]->{actor};
-					my $matrix = $intersects[0]->{matrix};
-					my $bounds = $intersects[0]->{bounds};
-
-					my $test_point = $matrix->untransform_point( $point, $bounds );
-
-					my $data = $actor->text_at_point( $test_point );
-					if( @$data ) {
-						my $block = $data->[0];
-						$self->{text}{substr} = $block->{extent}->substr;
-						$self->{text}{data} = $block;
-
-						$self->{text}{layers} = $data;
-
-						$_->{t_bbox} = ($matrix->inverse)[1]
-							->untransform_bounds(
-								$_->{bbox},
-								$bounds
-						) for @$data;
-
-						if( $data->[-1]{tag} eq 'char' ) {
-							$self->_set_cursor_to_name('text');
-						} else {
-							$self->_set_cursor_to_name('default');
-						}
-
-						$self->signal_emit( 'text-found' );
-					} else {
-						delete $self->{text};
-
-						$self->_set_cursor_to_name('default');
-					}
-					$self->queue_draw;
-				}
-			}
+			'motion-notify-event' => \&cb_on_motion_notify,
+			$self
 		);
 
 		$self->add_events('scroll-mask');
@@ -408,6 +346,89 @@ package JacquardCanvas {
 			}
 		}
 	}
+
+
+	sub cb_on_motion_notify {
+		my ($widget, $event, $self) = @_;
+
+		if( $event->state & 'button1-mask' ) {
+			cb_on_motion_notify_button1($widget, $event, $self);
+		} else {
+			cb_on_motion_notify_hover($widget, $event, $self);
+		}
+	}
+
+	sub cb_on_motion_notify_button1 {
+		my ($widget, $event, $self) = @_;
+		return TRUE;
+	}
+
+	sub cb_on_motion_notify_hover {
+		my ($widget, $event, $self) = @_;
+		my $event_point = Point->coerce([ $event->x, $event->y ]);
+
+		my ($h, $v) = (
+			$self->get_hadjustment,
+			$self->get_vadjustment,
+		);
+		my $matrix = Renard::Yarn::Graphene::Matrix->new;
+		$matrix->init_from_2d( 1, 0 , 0 , 1, $h->get_value, $v->get_value );
+
+		my $point = $matrix * $event_point;
+
+		my @intersects = map {
+			$_->{bounds}->contains_point($point)
+			? $_
+			: ();
+		} @{ $self->{views} };
+
+		my @pages = map { $_->{page_number} } @intersects;
+
+		if( @pages) {
+			$self->set_tooltip_text("@pages");
+		} else {
+			$self->set_has_tooltip(FALSE);
+		}
+
+		if( @intersects ) {
+			my $actor = $intersects[0]->{actor};
+			my $matrix = $intersects[0]->{matrix};
+			my $bounds = $intersects[0]->{bounds};
+
+			my $test_point = $matrix->untransform_point( $point, $bounds );
+
+			my $data = $actor->text_at_point( $test_point );
+			if( @$data ) {
+				my $block = $data->[0];
+				$self->{text}{substr} = $block->{extent}->substr;
+				$self->{text}{data} = $block;
+
+				$self->{text}{layers} = $data;
+
+				$_->{t_bbox} = ($matrix->inverse)[1]
+					->untransform_bounds(
+						$_->{bbox},
+						$bounds
+				) for @$data;
+
+				if( $data->[-1]{tag} eq 'char' ) {
+					$self->_set_cursor_to_name('text');
+				} else {
+					$self->_set_cursor_to_name('default');
+				}
+
+				$self->signal_emit( 'text-found' );
+			} else {
+				delete $self->{text};
+
+				$self->_set_cursor_to_name('default');
+			}
+			$self->queue_draw;
+		}
+
+		return TRUE;
+	}
+
 
 	sub GET_BORDER { (FALSE, undef); }
 };
