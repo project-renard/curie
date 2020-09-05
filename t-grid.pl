@@ -359,7 +359,7 @@ package JacquardCanvas {
 		$cr->restore;
 
 
-		if( HIGHLIGHT_LAYERS && exists $self->{text} ) {
+		if( HIGHLIGHT_LAYERS() && exists $self->{text} ) {
 			for my $layer (@{ $self->{text}{layers} }) {
 				my $bounds = $layer->{t_bbox};
 				$self->_draw_bounds_as_rectangle($cr, $bounds);
@@ -371,7 +371,7 @@ package JacquardCanvas {
 			}
 		}
 
-		if( HIGHLIGHT_BOUNDS ) {
+		if( HIGHLIGHT_BOUNDS() ) {
 			#say "Drawing # of bounds: @{[ scalar @{ $self->{views} } ]}";
 			for my $bounds (map { $_->{bounds} } @{ $self->{views} }) {
 				$self->_draw_bounds_as_rectangle($cr, $bounds);
