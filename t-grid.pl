@@ -324,12 +324,7 @@ package JacquardCanvas {
 		if( HIGHLIGHT_LAYERS && exists $self->{text} ) {
 			for my $layer (@{ $self->{text}{layers} }) {
 				my $bounds = $layer->{t_bbox};
-				$cr->rectangle(
-					$bounds->get_x - $h->get_value,
-					$bounds->get_y - $v->get_value,
-					$bounds->get_width,
-					$bounds->get_height,
-				);
+				$self->_draw_bounds_as_rectangle($cr, $bounds);
 				$cr->set_source_rgba(0, 0, 0, 0.5);
 				$cr->set_line_width(1);
 				$cr->stroke_preserve;
@@ -341,16 +336,27 @@ package JacquardCanvas {
 		if( HIGHLIGHT_BOUNDS ) {
 			#say "Drawing # of bounds: @{[ scalar @{ $self->{views} } ]}";
 			for my $bounds (map { $_->{bounds} } @{ $self->{views} }) {
-				$cr->rectangle(
-					$bounds->get_x - $h->get_value,
-					$bounds->get_y - $v->get_value,
-					$bounds->get_width,
-					$bounds->get_height,
-				);
+				$self->_draw_bounds_as_rectangle($cr, $bounds);
 				$cr->set_source_rgba(1, 0, 0, 0.2);
 				$cr->fill;
 			}
 		}
+	}
+
+	sub _draw_bounds_as_rectangle {
+		my ($self, $cr, $bounds) = @_;
+
+		my ($h, $v) = (
+			$self->get_hadjustment,
+			$self->get_vadjustment,
+		);
+
+		$cr->rectangle(
+			$bounds->get_x - $h->get_value,
+			$bounds->get_y - $v->get_value,
+			$bounds->get_width,
+			$bounds->get_height,
+		);
 	}
 
 
