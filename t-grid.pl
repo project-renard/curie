@@ -171,6 +171,7 @@ package JacquardCanvas {
 
 	use Object::Util magic => 0;
 	use Glib qw(TRUE FALSE);
+	use Scalar::Util qw(refaddr);
 
 	use Renard::Yarn::Types qw(Point Size);
 
@@ -277,6 +278,41 @@ package JacquardCanvas {
 		};
 
 		return $data;
+	}
+
+	sub _get_text_data_for_pointer {
+		my ($self, $pointer_data) = @_;
+
+		state $last_pointer_data;
+		state $text_data;
+
+		if( defined $last_pointer_data && refaddr($last_pointer_data) == refaddr($pointer_data) ) {
+			return $text_data;
+		} else {
+			$text_data = undef;
+		}
+
+		my @intersects = @{ $pointer_data->{intersects} };
+		my $point = $pointer_data->{point};
+
+		if( @intersects ) {
+			my $actor = $intersects[0]->{actor};
+			my $matrix = $intersects[0]->{matrix};
+			my $bounds = $intersects[0]->{bounds};
+
+			my $test_point = $matrix->untransform_point( $point, $bounds );
+
+			$text_data = $actor->text_at_point( $test_point );
+			if( @$text_data ) {
+				$_->{t_bbox} = ($matrix->inverse)[1]
+					->untransform_bounds(
+						$_->{bbox},
+						$bounds
+				) for @$text_data;
+			}
+		}
+
+		return $text_data;
 	}
 
 	sub _set_cursor_to_name {
@@ -445,11 +481,11 @@ package JacquardCanvas {
 		my ($widget, $event, $self) = @_;
 		my $event_point = Point->coerce([ $event->x, $event->y ]);
 
-		my $data = $self->_get_data_for_pointer($event_point);
+		my $pointer_data = $self->_get_data_for_pointer($event_point);
 
-		my @intersects = @{ $data->{intersects} };
-		my @pages = @{ $data->{pages} };
-		my $point = $data->{point};
+		my @intersects = @{ $pointer_data->{intersects} };
+		my @pages = @{ $pointer_data->{pages} };
+		my $point = $pointer_data->{point};
 
 		if( @pages) {
 			$self->set_tooltip_text("@pages");
@@ -457,39 +493,25 @@ package JacquardCanvas {
 			$self->set_has_tooltip(FALSE);
 		}
 
-		if( @intersects ) {
-			my $actor = $intersects[0]->{actor};
-			my $matrix = $intersects[0]->{matrix};
-			my $bounds = $intersects[0]->{bounds};
+		my $text_data = $self->_get_text_data_for_pointer($pointer_data);
+		if( defined $text_data && @$text_data ) {
+			my $block = $text_data->[0];
+			$self->{text}{substr} = $block->{extent}->substr;
+			$self->{text}{data} = $block;
 
-			my $test_point = $matrix->untransform_point( $point, $bounds );
+			$self->{text}{layers} = $text_data;
 
-			my $data = $actor->text_at_point( $test_point );
-			if( @$data ) {
-				my $block = $data->[0];
-				$self->{text}{substr} = $block->{extent}->substr;
-				$self->{text}{data} = $block;
-
-				$self->{text}{layers} = $data;
-
-				$_->{t_bbox} = ($matrix->inverse)[1]
-					->untransform_bounds(
-						$_->{bbox},
-						$bounds
-				) for @$data;
-
-				if( $data->[-1]{tag} eq 'char' ) {
-					$self->_set_cursor_to_name('text');
-				} else {
-					$self->_set_cursor_to_name('default');
-				}
-
-				$self->signal_emit( 'text-found' );
+			if( $text_data->[-1]{tag} eq 'char' ) {
+				$self->_set_cursor_to_name('text');
 			} else {
-				delete $self->{text};
-
 				$self->_set_cursor_to_name('default');
 			}
+
+			$self->signal_emit( 'text-found' );
+			$self->queue_draw;
+		} else {
+			delete $self->{text};
+			$self->_set_cursor_to_name('default');
 			$self->queue_draw;
 		}
 
