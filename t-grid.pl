@@ -494,24 +494,25 @@ package JacquardCanvas {
 		}
 
 		my $text_data = $self->_get_text_data_for_pointer($pointer_data);
-		if( defined $text_data && @$text_data ) {
-			my $block = $text_data->[0];
-			$self->{text}{substr} = $block->{extent}->substr;
-			$self->{text}{data} = $block;
+		if( defined $text_data ) {
+			if( @$text_data ) {
+				my $block = $text_data->[0];
+				$self->{text}{substr} = $block->{extent}->substr;
+				$self->{text}{data} = $block;
 
-			$self->{text}{layers} = $text_data;
+				$self->{text}{layers} = $text_data;
 
-			if( $text_data->[-1]{tag} eq 'char' ) {
-				$self->_set_cursor_to_name('text');
+				if( $text_data->[-1]{tag} eq 'char' ) {
+					$self->_set_cursor_to_name('text');
+				} else {
+					$self->_set_cursor_to_name('default');
+				}
+
+				$self->signal_emit( 'text-found' );
 			} else {
+				delete $self->{text};
 				$self->_set_cursor_to_name('default');
 			}
-
-			$self->signal_emit( 'text-found' );
-			$self->queue_draw;
-		} else {
-			delete $self->{text};
-			$self->_set_cursor_to_name('default');
 			$self->queue_draw;
 		}
 
