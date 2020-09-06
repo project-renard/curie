@@ -535,6 +535,7 @@ sub do_gtk_things {
 	my $window = Gtk3::Window->new('toplevel');
 	$window->signal_connect( destroy => sub { Gtk3::main_quit } );
 	$window->set_default_size(800, 600);
+	$window->set_position('center');
 
 	my $vbox = Gtk3::Box->new( 'vertical', 0 );
 	$window->add( $vbox );
