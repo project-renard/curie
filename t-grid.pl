@@ -437,7 +437,7 @@ package JacquardCanvas {
 	sub cb_on_button_press_event {
 		my ($widget, $event, $self) = @_;
 
-		if( $event->state & 'button1-mask' ) {
+		if( $event->button == Gtk3::Gdk::BUTTON_PRIMARY ) {
 			say "Start selection";
 			...;
 		}
