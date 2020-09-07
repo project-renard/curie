@@ -60,8 +60,7 @@ lazy _page_transform => method() {
 	$page_transform;
 };
 
-sub _bbox_to_rect {
-	my ($self, $bbox) = @_;
+method _bbox_to_rect($bbox) {
 	my ($x0, $y0, $x1, $y1) = split ' ', $bbox;
 	$self->_page_transform->transform_bounds(
 		Renard::Yarn::Graphene::Rect->new(
@@ -71,8 +70,7 @@ sub _bbox_to_rect {
 	);
 }
 
-sub _m_quad_to_rect {
-	my ($self, $quad) = @_;
+method _m_quad_to_rect($quad) {
 	my @points = pairmap { Point->coerce([$a, $b]) } split ' ', $quad;
 	$self->_page_transform->transform_bounds(
 		Renard::Yarn::Graphene::Quad->alloc
