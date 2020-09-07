@@ -79,6 +79,15 @@ method _m_quad_to_rect($quad) {
 	);
 }
 
+method _compute_bbox_for_tag_value($tag_value) {
+	if( exists $tag_value->{g_bbox} ) {
+		return $tag_value->{g_bbox};
+	}
+	return $tag_value->{g_bbox} = exists $tag_value->{bbox}
+		? $self->_bbox_to_rect($tag_value->{bbox})
+		: $self->_m_quad_to_rect($tag_value->{quad});
+}
+
 method text_at_point( (Point) $point) {
 	my $tp = $self->_textual_page;
 
@@ -91,9 +100,7 @@ method text_at_point( (Point) $point) {
 		my @gather;
 		$tp->iter_extents( sub {
 				my ($extent, $tag_name, $tag_value) = @_;
-				my $g_bbox = exists $tag_value->{bbox}
-					? $self->_bbox_to_rect($tag_value->{bbox})
-					: $self->_m_quad_to_rect($tag_value->{quad});
+				my $g_bbox = $self->_compute_bbox_for_tag_value($tag_value);
 				push @gather, {
 					extent => $extent,
 					tag => $tag_name,
