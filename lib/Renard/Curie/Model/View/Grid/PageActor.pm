@@ -52,10 +52,18 @@ lazy _textual_page => method() {
 	$tp;
 };
 
+lazy _page_transform => method() {
+	my $page_transform = Renard::Yarn::Graphene::Matrix->new;
+	$page_transform->init_from_2d( 1, 0 , 0 , 1,
+		$self->x->value,
+		$self->y->value );
+	$page_transform;
+};
+
 sub _bbox_to_rect {
-	my ($self, $page_transform, $bbox) = @_;
+	my ($self, $bbox) = @_;
 	my ($x0, $y0, $x1, $y1) = split ' ', $bbox;
-	$page_transform->transform_bounds(
+	$self->_page_transform->transform_bounds(
 		Renard::Yarn::Graphene::Rect->new(
 			origin => Point->coerce([$x0, $y0]),
 			size => Size->coerce([$x1-$x0, $y1-$y0]),
@@ -64,9 +72,9 @@ sub _bbox_to_rect {
 }
 
 sub _m_quad_to_rect {
-	my ($self, $page_transform, $quad) = @_;
+	my ($self, $quad) = @_;
 	my @points = pairmap { Point->coerce([$a, $b]) } split ' ', $quad;
-	$page_transform->transform_bounds(
+	$self->_page_transform->transform_bounds(
 		Renard::Yarn::Graphene::Quad->alloc
 			->init_from_points( \@points )
 			->bounds
@@ -75,12 +83,6 @@ sub _m_quad_to_rect {
 
 method text_at_point( (Point) $point) {
 	my $tp = $self->_textual_page;
-
-	my $page_transform = Renard::Yarn::Graphene::Matrix->new;
-	$page_transform->init_from_2d( 1, 0 , 0 , 1,
-		$self->x->value,
-		$self->y->value );
-
 
 	my @all_levels;
 
@@ -92,8 +94,8 @@ method text_at_point( (Point) $point) {
 		$tp->iter_extents( sub {
 				my ($extent, $tag_name, $tag_value) = @_;
 				my $g_bbox = exists $tag_value->{bbox}
-					? $self->_bbox_to_rect($page_transform, $tag_value->{bbox})
-					: $self->_m_quad_to_rect($page_transform, $tag_value->{quad});
+					? $self->_bbox_to_rect($tag_value->{bbox})
+					: $self->_m_quad_to_rect($tag_value->{quad});
 				push @gather, {
 					extent => $extent,
 					tag => $tag_name,
