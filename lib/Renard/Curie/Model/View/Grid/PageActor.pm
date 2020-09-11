@@ -88,6 +88,99 @@ method _compute_bbox_for_tag_value($tag_value) {
 		: $self->_m_quad_to_rect($tag_value->{quad});
 }
 
+method get_bboxes_from_extents( $start_extent, $end_extent ) {
+	my @gather_bboxes;
+	my @gather_line_extents;
+	my $tp = $self->_textual_page;
+
+	return $self->get_bboxes_from_extents($end_extent, $start_extent)
+		if $start_extent > $end_extent;
+
+	my $inside_extent = sub {
+		my ($extent) = @_;
+		$start_extent <= $extent->start && $extent->end <= $end_extent
+	};
+
+	$tp->iter_extents( sub {
+			my ($extent, $tag_name, $tag_value) = @_;
+			if( $tag_name eq 'line' && $inside_extent->($extent)
+				|| (
+					$tag_name eq 'char'
+					&& ! $inside_extent->($tp->get_tag_extent( $extent->start, 'line'))
+				)
+			) {
+				my $g_bbox = $self->_compute_bbox_for_tag_value($tag_value);
+				push @gather_bboxes, $g_bbox;
+			}
+		},
+		only => ['line', 'char'],
+		start => $start_extent,
+		end => $end_extent,
+	);
+
+	return @gather_bboxes;
+}
+
+method get_extents_from_selection( $start, $end ) {
+	my $pg = $self->page_number;
+	my $start_page = $start->{pointer}{pages}[0];
+	my $end_page = $end->{pointer}{pages}[0];
+
+	return $self->get_extents_from_selection($end, $start)
+		if $start_page > $end_page;
+
+	my $tp = $self->_textual_page;
+
+	my $get_test_point = sub {
+		my ($selection) = @_;
+
+		my $pointer_data = $selection->{pointer};
+
+		my @intersects = @{ $pointer_data->{intersects} };
+		my $point = $pointer_data->{point};
+
+		my $matrix = $intersects[0]->{matrix};
+		my $bounds = $intersects[0]->{bounds};
+
+		my $test_point = $matrix->untransform_point( $point, $bounds );
+
+		return $test_point;
+	};
+
+	if( $start_page == $pg
+		&&  $end_page == $pg ) {
+		my $start_data = $self->text_at_point( $get_test_point->( $start ) );
+		return unless
+			defined $start_data
+			&& @$start_data
+			&& $start_data->[-1]{tag} eq 'char';
+		my $end_data = $self->text_at_point( $get_test_point->( $end ) );
+		return unless
+			defined $end_data
+			&& @$end_data
+			&& $end_data->[-1]{tag} eq 'char';
+		return ( $start_data->[-1]{extent}->start,
+			$end_data->[-1]{extent}->end );
+	} elsif( $start_page == $pg ) {
+		my $start_data = $self->text_at_point( $get_test_point->( $start ) );
+		return unless
+			defined $start_data
+			&& @$start_data
+			&& $start_data->[-1]{tag} eq 'char';
+		return ($start_data->[-1]{extent}->start, $tp->length);
+	} elsif( $end_page == $pg ) {
+		my $end_data = $self->text_at_point( $get_test_point->( $end ) );
+		return unless
+			defined $end_data
+			&& @$end_data
+			&& $end_data->[-1]{tag} eq 'char';
+		return (0, $end_data->[-1]{extent}->end )
+	} elsif( $start_page < $pg && $pg < $end_page ) {
+		# get all the lines for the page
+		return (0, $tp->length);
+	}
+}
+
 method text_at_point( (Point) $point) {
 	my $tp = $self->_textual_page;
 

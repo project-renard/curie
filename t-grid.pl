@@ -13,7 +13,6 @@ use Renard::Curie::Model::View::Grid::PageActor;
 use Renard::Jacquard::Layout::Grid;
 use Renard::Jacquard::Layout::Box;
 use Path::Tiny;
-use List::AllUtils qw(first);
 
 use Renard::API::Cairo;
 use Renard::API::Gtk3::Helper;
@@ -172,6 +171,7 @@ package JacquardCanvas {
 	use Object::Util magic => 0;
 	use Glib qw(TRUE FALSE);
 	use Scalar::Util qw(refaddr);
+	use List::AllUtils qw(first);
 
 	use Renard::Yarn::Types qw(Point Size);
 
@@ -190,6 +190,19 @@ package JacquardCanvas {
 
 		$self->{sg} = $data->{sg};
 		$self->{scale} = $data->{scale};
+
+		my %page_map;
+		my $map_pages = sub {
+			my ($g) = @_;
+			if( $g->isa('Renard::Curie::Model::View::Grid::PageActor' ) ) {
+				$page_map{ $g->page_number} = $g;
+			}
+			__SUB__->($_) for @{ $g->children };
+		};
+		$map_pages->($self->{sg});
+		$self->{pages} = \%page_map;
+
+		$self->{selection}{state} = 0;
 
 		$self->signal_connect(
 			realize => sub {
@@ -394,6 +407,42 @@ package JacquardCanvas {
 
 		$cr->restore;
 
+		if( $self->{selection}{state} ) {
+			my $start_pages = $self->{selection}{start}{pointer}{pages};
+			my $end_pages = $self->{selection}{end}{pointer}{pages};
+			if( @$start_pages && @$end_pages ) {
+				my @sorted = sort ( $start_pages->[0] , $end_pages->[0] );
+				my @pgs = ( $sorted[0] .. $sorted[1] );
+				my @bboxes;
+				for my $page_number (@pgs) {
+					my $page = $self->{pages}{$page_number};
+					my $view = first { $_->{page_number} == $page_number } @{ $self->{views} };
+					next unless $view;
+
+					my $matrix = $view->{matrix};
+					my $bounds = $view->{bounds};
+
+					my @extents = $page->get_extents_from_selection(
+						$self->{selection}{start},
+						$self->{selection}{end}
+					);
+					if( @extents ) {
+						my @page_bboxes = $page->get_bboxes_from_extents(@extents);
+						push @bboxes, ($matrix->inverse)[1]
+							->untransform_bounds(
+								$_,
+								$bounds
+						) for @page_bboxes;
+					}
+				}
+				for my $bounds (@bboxes) {
+					$self->_draw_bounds_as_rectangle($cr, $bounds);
+					$cr->set_source_rgba(0, 0, 1, 0.2);
+					$cr->fill;
+				}
+			}
+		}
+
 
 		if( HIGHLIGHT_LAYERS() && exists $self->{text} ) {
 			for my $layer (@{ $self->{text}{layers} }) {
@@ -433,13 +482,37 @@ package JacquardCanvas {
 		);
 	}
 
+	sub mark_selection_start {
+		my ($self, $event_point) = @_;
+
+		my $pointer_data = $self->_get_data_for_pointer($event_point);
+		my $text_data = $self->_get_text_data_for_pointer( $pointer_data );
+		$self->{selection}{start} = { pointer => $pointer_data, text => $text_data };
+		$self->{selection}{end} = $self->{selection}{start};
+	}
+
+	sub mark_selection_end {
+		my ($self, $event_point) = @_;
+
+		my $pointer_data = $self->_get_data_for_pointer($event_point);
+		my $text_data = $self->_get_text_data_for_pointer( $pointer_data );
+		$self->{selection}{end} = { pointer => $pointer_data, text => $text_data };
+		$self->queue_draw;
+	}
+
+	sub clear_selection {
+		my ($self) = @_;
+		$self->{selection}{state} = 0;
+	}
 
 	sub cb_on_button_press_event {
 		my ($widget, $event, $self) = @_;
 
 		if( $event->button == Gtk3::Gdk::BUTTON_PRIMARY ) {
-			say "Start selection";
-			...;
+			#say "Start selection";
+			my $event_point = Point->coerce([ $event->x, $event->y ]);
+			$self->mark_selection_start($event_point);
+			$self->{selection}{state} = 1;
 		}
 
 		return TRUE;
@@ -449,8 +522,14 @@ package JacquardCanvas {
 		my ($widget, $event, $self) = @_;
 
 		if( $event->state & 'button1-mask' ) {
-			say "End selection";
-			...;
+			#say "End selection";
+			my $event_point = Point->coerce([ $event->x, $event->y ]);
+			if( $self->{selection}{state} == 2 ) {
+				$self->clear_selection;
+			} else {
+				$self->mark_selection_end($event_point);
+				$self->{selection}{state} = 2;
+			}
 		}
 
 		return TRUE;
@@ -470,8 +549,10 @@ package JacquardCanvas {
 		my ($widget, $event, $self) = @_;
 
 		if( $event->state & 'button1-mask' ) {
-			say "Continuing selection";
-			...;
+			#say "Continuing selection";
+			my $event_point = Point->coerce([ $event->x, $event->y ]);
+			$self->mark_selection_end($event_point);
+			$self->{selection}{state} = 1;
 		}
 
 		return TRUE;
