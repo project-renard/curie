@@ -7,13 +7,10 @@ use Renard::API::Gtk3::Helper;
 use Glib qw(TRUE FALSE);
 use Renard::Yarn::Types qw(Point Size);
 
-	around new => sub {
-		my $orig = shift;
-		my $self = $orig->(@_);
+	after set_data => sub {
+		my ($self, %data) = @_;
 
 		$self->{selection}{state} = 0;
-
-		$self;
 	};
 
 	sub mark_selection_start {

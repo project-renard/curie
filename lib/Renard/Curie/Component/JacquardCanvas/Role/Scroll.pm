@@ -14,16 +14,7 @@ use feature qw(current_sub);
 
 		$self->signal_connect(
 			realize => sub {
-				my $bounds = $self->{sg}->bounds;
-
-				$self->get_hadjustment
-					->$_tap( set_lower => 0 )
-					->$_tap( set_upper =>  $self->{scale} * $bounds->size->width)
-					;
-				$self->get_vadjustment
-					->$_tap( set_lower => 0 )
-					->$_tap( set_upper => $self->{scale} * $bounds->size->height )
-					;
+				$self->update_bounds;
 
 				for my $adj (qw(get_hadjustment get_vadjustment)) {
 					for my $sig (qw(changed value-changed)) {
@@ -31,7 +22,6 @@ use feature qw(current_sub);
 							$sig => \&cb_on_scroll, $self );
 					}
 				}
-				cb_on_scroll(undef, $self);
 			}
 		);
 
@@ -49,6 +39,30 @@ use feature qw(current_sub);
 
 		$self;
 	};
+
+	after set_data => sub {
+		my ($self, %data) = @_;
+
+		$self->update_bounds;
+	};
+
+	sub update_bounds {
+		my ($self) = @_;
+		my $bounds = $self->{sg}->bounds;
+
+		return unless $self->get_realized;
+
+		$self->get_hadjustment
+			->$_tap( set_lower => 0 )
+			->$_tap( set_upper =>  $self->{scale} * $bounds->size->width)
+			;
+		$self->get_vadjustment
+			->$_tap( set_lower => 0 )
+			->$_tap( set_upper => $self->{scale} * $bounds->size->height )
+			;
+
+		cb_on_scroll(undef, $self);
+	}
 
 	sub cb_on_scroll {
 		my ($adjustment, $self) = @_;

@@ -36,15 +36,20 @@ use feature qw(current_sub);
 	sub new {
 		my ($class, %args) = @_;
 
-		my $data = {
-			sg => delete $args{sg},
-			scale => delete $args{scale}
-		};
+		my $self = $class->SUPER::new();
 
-		my $self = $class->SUPER::new(%args);
+		$self->set_data(%args);
 
-		$self->{sg} = $data->{sg};
-		$self->{scale} = $data->{scale};
+		$self->signal_connect( draw => \&cb_on_draw );
+
+		$self;
+	}
+
+	sub set_data {
+		my ($self, %data) = @_;
+
+		$self->{sg} = $data{sg};
+		$self->{scale} = $data{scale};
 
 		my %page_map;
 		my $map_pages = sub {
@@ -56,10 +61,6 @@ use feature qw(current_sub);
 		};
 		$map_pages->($self->{sg});
 		$self->{pages} = \%page_map;
-
-		$self->signal_connect( draw => \&cb_on_draw );
-
-		$self;
 	}
 
 	sub cb_on_draw {
