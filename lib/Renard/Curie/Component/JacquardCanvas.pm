@@ -162,6 +162,9 @@ use feature qw(current_sub);
 
 with qw(
 	Renard::Curie::Component::JacquardCanvas::Role::Mouse
+	Renard::Curie::Component::JacquardCanvas::Role::MouseCursor
+	Renard::Curie::Component::JacquardCanvas::Role::MouseSelection
+	Renard::Curie::Component::JacquardCanvas::Role::MousePageTooltip
 	Renard::Curie::Component::JacquardCanvas::Role::Scroll
 );
 

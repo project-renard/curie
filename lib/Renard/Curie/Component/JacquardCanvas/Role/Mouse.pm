@@ -12,14 +12,12 @@ use Renard::Yarn::Types qw(Point Size);
 		my $orig = shift;
 		my $self = $orig->(@_);
 
-		$self->{selection}{state} = 0;
-
 		$self->signal_connect(
-			'motion-notify-event' => \&cb_on_motion_notify,
+			'motion-notify-event' => sub { my $widget = shift; $widget->cb_on_motion_notify(@_) },
 			$self
 		);
-		$self->signal_connect( 'button-press-event' => \&cb_on_button_press_event, $self );
-		$self->signal_connect( 'button-release-event' => \&cb_on_button_release_event, $self );
+		$self->signal_connect( 'button-press-event' => sub { my $widget = shift; $widget->cb_on_button_press_event(@_) }, $self );
+		$self->signal_connect( 'button-release-event' => sub { my $widget = shift; $widget->cb_on_button_release_event(@_) }, $self );
 
 		$self->add_events([qw/
 			pointer-motion-mask
@@ -103,63 +101,15 @@ use Renard::Yarn::Types qw(Point Size);
 		return $text_data;
 	}
 
-	sub _set_cursor_to_name {
-		my ($self, $name) = @_;
-		$self->get_window->set_cursor(
-			Gtk3::Gdk::Cursor->new_from_name($self->get_display, $name)
-		);
-	}
-
-	sub mark_selection_start {
-		my ($self, $event_point) = @_;
-
-		my $pointer_data = $self->_get_data_for_pointer($event_point);
-		my $text_data = $self->_get_text_data_for_pointer( $pointer_data );
-		$self->{selection}{start} = { pointer => $pointer_data, text => $text_data };
-		$self->{selection}{end} = $self->{selection}{start};
-	}
-
-	sub mark_selection_end {
-		my ($self, $event_point) = @_;
-
-		my $pointer_data = $self->_get_data_for_pointer($event_point);
-		my $text_data = $self->_get_text_data_for_pointer( $pointer_data );
-		$self->{selection}{end} = { pointer => $pointer_data, text => $text_data };
-		$self->queue_draw;
-	}
-
-	sub clear_selection {
-		my ($self) = @_;
-		$self->{selection}{state} = 0;
-	}
-
 	sub cb_on_button_press_event {
 		my ($widget, $event, $self) = @_;
-
-		if( $event->button == Gtk3::Gdk::BUTTON_PRIMARY ) {
-			#say "Start selection";
-			my $event_point = Point->coerce([ $event->x, $event->y ]);
-			$self->mark_selection_start($event_point);
-			$self->{selection}{state} = 1;
-		}
-
+		# nop
 		return TRUE;
 	}
 
 	sub cb_on_button_release_event {
 		my ($widget, $event, $self) = @_;
-
-		if( $event->state & 'button1-mask' ) {
-			#say "End selection";
-			my $event_point = Point->coerce([ $event->x, $event->y ]);
-			if( $self->{selection}{state} == 2 ) {
-				$self->clear_selection;
-			} else {
-				$self->mark_selection_end($event_point);
-				$self->{selection}{state} = 2;
-			}
-		}
-
+		# nop
 		return TRUE;
 	}
 
@@ -167,67 +117,33 @@ use Renard::Yarn::Types qw(Point Size);
 		my ($widget, $event, $self) = @_;
 
 		if( $event->state & 'button1-mask' ) {
-			cb_on_motion_notify_button1($widget, $event, $self);
-		} else {
-			cb_on_motion_notify_hover($widget, $event, $self);
+			$widget->cb_on_motion_notify_button1($event, $self);
 		}
-	}
-
-	sub cb_on_motion_notify_button1 {
-		my ($widget, $event, $self) = @_;
-
-		if( $event->state & 'button1-mask' ) {
-			#say "Continuing selection";
-			my $event_point = Point->coerce([ $event->x, $event->y ]);
-			$self->mark_selection_end($event_point);
-			$self->{selection}{state} = 1;
+		if( ! $event->state ) {
+			$widget->cb_on_motion_notify_hover($event, $self);
 		}
-
-		return TRUE;
 	}
 
 	sub cb_on_motion_notify_hover {
 		my ($widget, $event, $self) = @_;
 		my $event_point = Point->coerce([ $event->x, $event->y ]);
-
 		my $pointer_data = $self->_get_data_for_pointer($event_point);
-
-		my @intersects = @{ $pointer_data->{intersects} };
-		my @pages = @{ $pointer_data->{pages} };
-		my $point = $pointer_data->{point};
-
-		if( @pages) {
-			$self->set_tooltip_text("@pages");
-		} else {
-			$self->set_has_tooltip(FALSE);
-		}
-
 		my $text_data = $self->_get_text_data_for_pointer($pointer_data);
-		if( defined $text_data ) {
-			if( @$text_data ) {
-				my $block = $text_data->[0];
-				$self->{text}{substr} = $block->{extent}->substr;
-				$self->{text}{data} = $block;
 
-				$self->{text}{layers} = $text_data;
-
-				if( $text_data->[-1]{tag} eq 'char' ) {
-					$self->_set_cursor_to_name('text');
-				} else {
-					$self->_set_cursor_to_name('default');
-				}
-
-				$self->signal_emit( 'text-found' );
-			} else {
-				delete $self->{text};
-				$self->_set_cursor_to_name('default');
-			}
-			$self->queue_draw;
-		}
+		$self->do_pointer_data( $event_point, $pointer_data, $text_data );
 
 		return TRUE;
 	}
 
+	sub cb_on_motion_notify_button1 {
+		my ($widget, $event, $self) = @_;
+		# nop
+		return TRUE;
+	}
 
+	sub do_pointer_data {
+		my ($self, $event_point, $pointer_data, $text_data ) = @_;
+		# nop
+	}
 
 1;
