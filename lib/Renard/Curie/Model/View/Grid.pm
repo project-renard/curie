@@ -113,12 +113,8 @@ method _trigger__subview_idx() {
 	$self->signal_emit( 'view-changed' );
 }
 
-method _scroll_to_page_number($page_number) {
-	unless($self->has_view_options) {
-		$self->_need_to_scroll(1);
-		return;
-	}
-
+method _update_subview_idx() {
+	my $page_number = $self->page_number;
 	my $subview_has_page = !! grep {
 		$_ == $page_number
 	} @{ $self->_grid_schemes->[$self->_subview_idx]->pages };
@@ -130,26 +126,10 @@ method _scroll_to_page_number($page_number) {
 		} 0 .. @{ $self->_grid_schemes } - 1;
 		$self->_subview_idx( $idx );
 	}
-
-	$self->_current_subview;
-	my $page_xy = $self->_current_subview->_page_info->{page_xy};
-	my $page = first {  $_->{pageno} == $page_number } @$page_xy;
-
-	if( $self->_has_adjustments ) {
-		$self->_adjustments->[0]->set_value( $page->{bbox}[0] );
-		$self->_adjustments->[1]->set_value( $page->{bbox}[1] );
-		$self->_need_to_scroll(0);
-	} else {
-		$self->_need_to_scroll(1);
-	}
 }
 
 method _trigger_page_number($page_number) {
-	$self->signal_emit( 'view-changed' );
-}
-
-method _trigger_zoom_level($new_zoom_level) {
-	$self->_clear_subviews;
+	$self->_update_subview_idx;
 	$self->signal_emit( 'view-changed' );
 }
 
