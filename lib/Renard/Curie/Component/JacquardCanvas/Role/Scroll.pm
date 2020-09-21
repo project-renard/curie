@@ -115,4 +115,9 @@ sub cb_on_scroll {
 	$self->signal_emit( 'view-changed' );
 }
 
+sub _first_page_in_viewport {
+	my ($self) = @_;
+	$self->{views}[0]{page_number};
+}
+
 1;

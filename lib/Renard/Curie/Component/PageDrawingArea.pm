@@ -134,6 +134,13 @@ This forces the drawing area to redraw.
 method refresh_drawing_area() {
 	return unless $self->drawing_area;
 
+	$self->drawing_area->set_data(
+		sg => Renard::Curie::Model::View::Scenegraph->new(
+			view_manager => $self->view_manager
+		)->graph,
+		scale => $self->view_manager->view_options->zoom_options->zoom_level,
+	);
+
 	$self->drawing_area->queue_draw;
 }
 
@@ -150,8 +157,8 @@ method on_draw_page_cb( (InstanceOf['Cairo::Context']) $cr ) {
 	$self->set_navigation_buttons_sensitivity;
 
 	my $page_number = $self->view->page_number;
-	if( $self->view->can('_first_page_in_viewport') ) {
-		$page_number = $self->view->_first_page_in_viewport;
+	if( $self->drawing_area->can('_first_page_in_viewport') ) {
+		$page_number = $self->drawing_area->_first_page_in_viewport;
 	}
 
 	$self->builder->get_object('page-number-entry')
