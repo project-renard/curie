@@ -16,6 +16,9 @@ use Renard::Incunabula::Common::Types qw(Bool InstanceOf);
 use Renard::Incunabula::Document::Types qw(PageNumber ZoomLevel);
 use Renard::Block::Format::Cairo::Types qw(RenderableDocumentModel RenderablePageModel);
 
+use Renard::Curie::Component::JacquardCanvas;
+use Renard::Curie::Model::View::Scenegraph;
+
 =attr view_manager
 
 The view manager model for this application.
@@ -110,7 +113,12 @@ Sets up the L</drawing_area> so that it draws the current page.
 
 =cut
 method setup_drawing_area() {
-	my $drawing_area = Gtk3::DrawingArea->new();
+	my $drawing_area = Renard::Curie::Component::JacquardCanvas->new(
+		sg => Renard::Curie::Model::View::Scenegraph->new(
+			view_manager => $self->view_manager
+		)->graph,
+		scale => $self->view_manager->view_options->zoom_options->zoom_level,
+	);
 	$self->drawing_area( $drawing_area );
 	$drawing_area->signal_connect( draw => callback(
 			(InstanceOf['Gtk3::DrawingArea']) $widget,

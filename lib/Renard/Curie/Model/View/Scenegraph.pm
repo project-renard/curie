@@ -26,7 +26,7 @@ has box_layout => (
 	default => sub { 1 },
 );
 
-has document => (
+has view_manager => (
 	is => 'ro',
 );
 
@@ -44,7 +44,7 @@ method create_group( :$start, :$end, :$margin = 10 ) {
 
 	for my $page_no ($start..$end) {
 		my $actor = Renard::Curie::Model::View::Grid::PageActor->new(
-			document => $self->document,
+			document => $self->view_manager->current_document,
 			page_number => $page_no,
 		);
 		if( $self->box_layout ) {
@@ -62,14 +62,17 @@ method create_group( :$start, :$end, :$margin = 10 ) {
 }
 
 method create_scene_graph() {
+	my $grid_scheme = $self->view_manager->current_view
+		->_current_subview->_grid_scheme;
+	my @pages = @{ $grid_scheme->pages };
+
 	my $group = $_LayoutGroup->new(
-		layout => Renard::Jacquard::Layout::Grid->new( rows => 2, columns => 2 ),
+		layout => Renard::Jacquard::Layout::Grid->new(
+			rows => $grid_scheme->rows,
+			columns => $grid_scheme->columns ),
 	);
 
-	$group->add_child( $self->create_group(start => 1, end => 6,   margin => 10) );
-	$group->add_child( $self->create_group(start => 7, end => 12,  margin => 50) );
-	$group->add_child( $self->create_group(start => 13, end => 18, margin => 100) );
-	$group->add_child( $self->create_group(start => 19, end => 24, margin => 150) );
+	$group->add_child( $self->create_group(start => $pages[0], end => $pages[-1],   margin => 10) );
 
 	$group->x->value( 0 );
 	$group->y->value( 0 );
