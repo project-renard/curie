@@ -83,8 +83,13 @@ method BUILD(@) {
 			$self->update_view( $view );
 		}
 	);
+
+	$self->view->signal_connect( 'view-changed', sub {
+		my ($view) = @_;
+		$self->refresh_drawing_area( $view );
+	} );
+
 	$self->update_view( $self->view_manager->current_view );
-	$self->view->signal_emit('view-changed');
 }
 
 =method setup_drawing_area
@@ -131,7 +136,7 @@ method setup_drawing_area() {
 This forces the drawing area to redraw.
 
 =cut
-method refresh_drawing_area() {
+method refresh_drawing_area($view) {
 	return unless $self->drawing_area;
 
 	$self->drawing_area->set_data(
@@ -174,11 +179,6 @@ Sets up the signals for a new view.
 
 =cut
 method update_view($new_view) {
-	# so that the widget can take input
-	$self->view->signal_connect( 'view-changed', sub {
-		$self->refresh_drawing_area;
-	} );
-
 	$self->view->signal_emit('view-changed');
 }
 
