@@ -30,6 +30,15 @@ use List::AllUtils qw(first);
 
 use Renard::Yarn::Types qw(Point Size);
 
+my $_EmptyGraph = Moo::Role->create_class_with_roles(
+	'Renard::Jacquard::Actor' => qw(
+	Renard::Jacquard::Role::Geometry::Position2D
+	Renard::Jacquard::Role::Geometry::Size2D
+	Renard::Jacquard::Role::Render::QnD::Cairo::Group
+	Renard::Jacquard::Role::Render::QnD::Size::Direct
+	Renard::Jacquard::Role::Render::QnD::Bounds::Direct
+));
+
 use constant HIGHLIGHT_BOUNDS => $ENV{T_GRID_HIGHLIGHT_BOUNDS} // 0;
 use constant HIGHLIGHT_LAYERS => $ENV{T_GRID_HIGHLIGHT_LAYERS} // 0;
 
@@ -48,8 +57,8 @@ sub new {
 sub set_data {
 	my ($self, %data) = @_;
 
-	$self->{sg} = $data{sg};
-	$self->{scale} = $data{scale};
+	$self->{sg} = $data{sg} // $_EmptyGraph->new;
+	$self->{scale} = $data{scale} // 1.0;
 
 	my %page_map;
 	my $map_pages = sub {
