@@ -11,9 +11,6 @@ use List::AllUtils qw(part first);
 use Glib qw(TRUE FALSE);
 use Test::Deep::NoTest;
 
-use vars qw($DO_NOT_SCROLL);
-$DO_NOT_SCROLL = 0;
-
 use MooX::Struct
 	GridScheme => [ qw( rows columns pages) ]
 ;
@@ -108,15 +105,6 @@ method draw_page(
 	}
 }
 
-=method get_size_request
-
-See L<Renard::Curie::Model::View::Role::Renderable/get_size_request>.
-
-=cut
-method get_size_request() :ReturnType( list => SizeRequest) {
-	return $self->_current_subview->get_size_request;
-}
-
 method _current_subview() {
 	$self->_subviews->[ $self->_subview_idx ];
 }
@@ -173,69 +161,6 @@ method _build__subviews() {
 	];
 }
 
-has _adjustments => (
-	is => 'rw',
-	predicate => 1, # _has_adjustments
-);
-
-has _last_adjustment_values => (
-	is => 'rw',
-	default => sub { +{} },
-);
-
-has _need_to_scroll => (
-	is => 'rw',
-	default => sub { 1 },
-);
-
-=method update_scroll_adjustment
-
-  method update_scroll_adjustment($hadjustment, $vadjustment)
-
-A callback used to set the C<GtkAdjustment> objects for the associated view.
-
-=cut
-# TODO This is a hack that needs to be refactored.
-method update_scroll_adjustment($hadjustment, $vadjustment) {
-	$self->_adjustments( [$hadjustment, $vadjustment] );
-
-	my $values = [ map {
-		[ $_->get_lower, $_->get_upper, ],
-	} ($hadjustment, $vadjustment) ];
-
-	if( ! eq_deeply( $values, $self->_last_adjustment_values ) ) {
-		$self->_need_to_scroll(1);
-	}
-
-	if( $self->_need_to_scroll ) {
-		$self->_scroll_to_page_number( $self->page_number );
-	}
-
-	$self->_last_adjustment_values( $values );
-
-	# TODO need to update how page number updates
-	#if( ! $DO_NOT_SCROLL ) {
-		#local $DO_NOT_SCROLL = 1;
-		#my $viewport_page = $self->_first_page_in_viewport;
-		#$self->{page_number} = $viewport_page if defined $viewport_page;
-	#}
-}
-
-method _first_page_in_viewport() {
-	my $first_page = $self->_current_subview->_grid_scheme->pages->[0];
-	my $top_left = [
-		$self->_adjustments->[0]->get_value,
-		$self->_adjustments->[1]->get_value ];
-	my $page_xy = $self->_current_subview->_page_info->{page_xy};
-	my $topleft_page = first {
-		my $page = $_;
-		$top_left->[0] <= $page->{bbox}[2]
-			&& $top_left->[1] <= $page->{bbox}[3];
-	} @$page_xy;
-
-	$topleft_page->{pageno};
-}
-
 method _trigger__subview_idx() {
 	$self->signal_emit( 'view-changed' );
 }
@@ -272,9 +197,6 @@ method _scroll_to_page_number($page_number) {
 }
 
 method _trigger_page_number($page_number) {
-	if( ! $DO_NOT_SCROLL ) { # checking local variable
-		$self->_scroll_to_page_number($page_number);
-	}
 	$self->signal_emit( 'view-changed' );
 }
 

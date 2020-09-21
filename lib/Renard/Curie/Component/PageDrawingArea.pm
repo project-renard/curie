@@ -8,9 +8,6 @@ use Renard::API::Gtk3::Helper;
 use Glib 'TRUE', 'FALSE';
 use Glib::Object::Subclass
 	'Gtk3::Bin',
-	signals => {
-		'update-scroll-adjustment' => {},
-	},
 	;
 use Renard::Incunabula::Common::Types qw(Bool InstanceOf);
 use Renard::Incunabula::Document::Types qw(PageNumber ZoomLevel);
@@ -53,13 +50,6 @@ has scrolled_window => (
 	isa => InstanceOf['Gtk3::ScrolledWindow'],
 );
 
-=head1 SIGNALS
-
-=for :list
-* C<update-scroll-adjustment>: called when the widget has been horizontally or vertically scrolled
-
-=cut
-
 =classmethod FOREIGNBUILDARGS
 
   classmethod FOREIGNBUILDARGS(@)
@@ -79,14 +69,6 @@ Initialises the component's contained widgets and signals.
 
 =cut
 method BUILD(@) {
-	$self->signal_connect( 'update-scroll-adjustment', sub {
-		if( $self->view->can('update_scroll_adjustment') ) {
-			$self->view->update_scroll_adjustment(
-				$self->scrolled_window->get_hadjustment,
-				$self->scrolled_window->get_vadjustment,
-			);
-		}
-	});
 	$self->set_can_focus( TRUE );
 
 	$self->setup_drawing_area;
@@ -136,18 +118,6 @@ method setup_drawing_area() {
 	$scrolled_window->set_policy( 'automatic', 'automatic');
 	$self->scrolled_window($scrolled_window);
 
-	my @adjustments = (
-		$self->scrolled_window->get_hadjustment,
-		$self->scrolled_window->get_vadjustment,
-	);
-	my $callback = fun($adjustment) {
-		$self->signal_emit('update-scroll-adjustment');
-	};
-	for my $adjustment (@adjustments) {
-		$adjustment->signal_connect( 'value-changed' => $callback );
-		$adjustment->signal_connect( 'changed' => $callback );
-	}
-
 	$drawing_area->add_events('scroll-mask');
 
 	my $vbox = $self->builder->get_object('page-drawing-component');
@@ -179,8 +149,6 @@ method on_draw_page_cb( (InstanceOf['Cairo::Context']) $cr ) {
 	# callbacks with $self as the last argument.
 	$self->set_navigation_buttons_sensitivity;
 
-	$self->view->draw_page( $self->drawing_area, $cr );
-
 	my $page_number = $self->view->page_number;
 	if( $self->view->can('_first_page_in_viewport') ) {
 		$page_number = $self->view->_first_page_in_viewport;
@@ -201,17 +169,7 @@ Sets up the signals for a new view.
 method update_view($new_view) {
 	# so that the widget can take input
 	$self->view->signal_connect( 'view-changed', sub {
-		$self->signal_emit('update-scroll-adjustment');
-		if( $self->view->can('get_size_request') ) {
-			if( $self->drawing_area ) {
-				$self->drawing_area->set_size_request(
-					$self->view->get_size_request
-				);
-				$self->refresh_drawing_area;
-			}
-		} else {
-			$self->refresh_drawing_area;
-		}
+		$self->refresh_drawing_area;
 	} );
 
 	$self->view->signal_emit('view-changed');
