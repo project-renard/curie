@@ -59,61 +59,9 @@ has _grid_schemes => (
 	isa => ArrayRef, # ArrayRef[GridScheme]
 );
 
-=method draw_page
-
-See L<Renard::Curie::Model::View::Role::Renderable/draw_page>.
-
-=cut
-method draw_page(
-	(InstanceOf['Gtk3::DrawingArea']) $widget,
-	(InstanceOf['Cairo::Context']) $cr
-) {
-	# uncoverable subroutine
-	my $p =  $widget->get_parent;
-	my $v = $p->get_vadjustment;
-
-	my $view_y_min = $v->get_value;
-	my $view_y_max = $v->get_value + $v->get_page_size;
-
-	my $subview = $self->_current_subview;
-
-	$self->_widget_dims([
-		$widget->get_allocated_width,
-		$widget->get_allocated_height,
-	]);
-	$subview->_clear_page_info;
-	my $page_xy = $subview->_page_info->{page_xy};
-	my $zoom_level = $self->zoom_level;
-	my @pages_to_render = grep {
-		my $page = $_;
-		! ( $page->{bbox}[3] < $view_y_min
-			|| $page->{bbox}[1] > $view_y_max);
-	} @$page_xy;
-	for my $page (@pages_to_render) {
-		my $rp = $self->document->get_rendered_page(
-			page_number => $page->{pageno},
-			zoom_level => $zoom_level,
-		);
-
-		my $img = $rp->cairo_image_surface;
-
-		$cr->set_source_surface($img,
-			$page->{bbox}[0],
-			$page->{bbox}[1]);
-
-		$cr->paint;
-	}
-}
-
 method _current_subview() {
 	$self->_subviews->[ $self->_subview_idx ];
 }
-
-has _widget_dims => (
-	is => 'rw',
-	default => sub { [0, 0] },
-);
-
 
 method _build__grid_schemes() {
 	my $go_r = $self->view_options->grid_options->rows;
@@ -207,8 +155,6 @@ method _trigger_zoom_level($new_zoom_level) {
 
 with qw(
 	Renard::Curie::Model::View::Role::ForDocument
-	Renard::Curie::Model::View::Role::Renderable
-	Renard::Curie::Model::View::Role::Zoomable
 	Renard::Curie::Model::View::Role::Pageable
 	Renard::Curie::Model::View::Role::SubviewPageable
 );

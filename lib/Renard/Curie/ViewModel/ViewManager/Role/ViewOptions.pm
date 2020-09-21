@@ -38,10 +38,6 @@ method _trigger_view_options( $new_view_options ) {
 		( page_number => $page_number ) x !!( defined $page_number ),
 	);
 	$self->current_view( $view );
-
-	# TODO remove this part and have everything come from the zoom options
-	my $zoom_level = $new_view_options->zoom_options->zoom_level;
-	$self->current_view->zoom_level( $zoom_level );
 }
 
 1;
