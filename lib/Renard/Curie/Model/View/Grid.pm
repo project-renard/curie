@@ -61,6 +61,10 @@ has view_options => (
 	isa => InstanceOf['Renard::Curie::Model::ViewOptions'],
 );
 
+method zoom_level() {
+	$self->view_options->zoom_options->zoom_level;
+}
+
 has _grid_schemes => (
 	is => 'lazy', # _build__grid_schemes
 	isa => ArrayRef, # ArrayRef[GridScheme]
