@@ -120,6 +120,11 @@ sub _first_page_in_viewport {
 	$self->{views}[0]{page_number};
 }
 
+sub _last_page_in_viewport {
+	my ($self) = @_;
+	$self->{views}[-1]{page_number};
+}
+
 sub scroll_to_page {
 	my ($self, $page_number) = @_;
 
