@@ -164,7 +164,7 @@ method on_draw_page_cb( (InstanceOf['Cairo::Context']) $cr ) {
 	}
 
 	$self->builder->get_object('page-number-entry')
-		->set_text($page_number);
+		->set_placeholder_text($page_number);
 }
 
 

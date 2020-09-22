@@ -30,6 +30,7 @@ Callback that is called when text has been entered into the page number entry.
 =cut
 callback on_activate_page_number_entry_cb( $entry, $self ) {
 	my $text = $entry->get_text;
+	$entry->set_text("");
 	if( $self->view->document->is_valid_page_number($text) ) {
 		$self->view->page_number( $text );
 	} else {
