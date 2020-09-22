@@ -130,7 +130,7 @@ callback on_tree_view_row_activate_cb( $tree_view, $path, $column, $self ) {
 	my $iter = $self->model->get_iter( $path );
 	my $page_num = $self->model->get_value($iter, 1);
 
-	PageNumber->check($page_num) and $self->view_manager->current_view->page_number( $page_num );
+	PageNumber->check($page_num) and $self->view_manager->current_view->set_page_number_with_scroll( $page_num );
 }
 
 =method reveal
