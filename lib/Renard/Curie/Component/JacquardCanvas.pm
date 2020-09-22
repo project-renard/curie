@@ -70,6 +70,11 @@ sub set_data {
 	};
 	$map_pages->($self->{sg});
 	$self->{pages} = \%page_map;
+
+	if( exists $data{page_number} ) {
+		$self->scroll_to_page( $data{page_number} );
+	}
+
 }
 
 sub cb_on_draw {

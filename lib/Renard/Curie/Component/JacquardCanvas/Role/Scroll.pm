@@ -120,4 +120,46 @@ sub _first_page_in_viewport {
 	$self->{views}[0]{page_number};
 }
 
+sub scroll_to_page {
+	my ($self, $page_number) = @_;
+
+	my $page_actor = $self->{pages}{$page_number};
+	my $origin = $page_actor->origin_point;
+
+	my $actor = $page_actor;
+	my $matrix = Renard::Yarn::Graphene::Matrix->new;
+	$matrix->init_identity;
+	do {
+		my $g = $actor;
+		my $t_matrix = Renard::Yarn::Graphene::Matrix->new;
+		if( $g->does('Renard::Jacquard::Role::Render::QnD::Layout') ) {
+			$t_matrix->init_from_2d( 1, 0 , 0 , 1, $g->x->value, $g->y->value );
+		} else {
+			# position translation is already incorporated into bounds of non-layout
+			$t_matrix->init_from_2d( 1, 0 , 0 , 1, 0, 0 );
+		}
+		my $info = { g => $g, m => $t_matrix };
+		$matrix = $matrix x $t_matrix;
+
+		$actor = $actor->parent;
+	} while( $actor );
+
+	my $scale_matrix = Renard::Yarn::Graphene::Matrix->new;
+	$scale_matrix->init_scale($self->{scale}, $self->{scale}, 1);
+
+	$matrix = $matrix x $scale_matrix;
+
+	my $point = $matrix * $origin;
+
+	my ($h, $v) = (
+		$self->get_hadjustment,
+		$self->get_vadjustment,
+	);
+
+	$_->freeze_notify for( $h, $v );
+	$h->set_value( $point->x );
+	$v->set_value( $point->y );
+	$_->thaw_notify for( $h, $v );
+}
+
 1;
