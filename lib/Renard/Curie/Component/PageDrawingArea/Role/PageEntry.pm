@@ -32,7 +32,7 @@ callback on_activate_page_number_entry_cb( $entry, $self ) {
 	my $text = $entry->get_text;
 	$entry->set_text("");
 	if( $self->view->document->is_valid_page_number($text) ) {
-		$self->view->page_number( $text );
+		$self->view->set_page_number_with_scroll( $text );
 	} else {
 		Renard::Curie::Error::User::InvalidPageNumber->throw({
 			payload => {

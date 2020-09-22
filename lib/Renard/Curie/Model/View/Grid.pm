@@ -18,7 +18,14 @@ use MooX::Struct
 use Renard::Curie::Model::View;
 use Glib::Object::Subclass
 	'Glib::Object',
-	signals => { 'view-changed' => {} },
+	signals => {
+		'view-changed' => {},
+		'scroll-to-page' => {
+			param_types => [
+				'Glib::Scalar', # PageNumber
+			]
+		}
+	},
 	;
 extends 'Renard::Curie::Model::View';
 
@@ -130,7 +137,15 @@ method _update_subview_idx() {
 
 method _trigger_page_number($page_number) {
 	$self->_update_subview_idx;
-	$self->signal_emit( 'view-changed' );
+}
+
+method set_page_number_with_scroll( $page_number ) {
+	$self->page_number( $page_number );
+	$self->signal_emit( 'scroll-to-page', $page_number );
+}
+
+method scroll_emit() {
+	$self->signal_emit( 'scroll-to-page', $self->page_number );
 }
 
 with qw(

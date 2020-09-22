@@ -16,6 +16,9 @@ has current_view => (
 );
 
 method _trigger_current_view($view) {
+	$view->signal_connect( 'view-changed', sub {
+		$self->signal_emit( 'update-view' => $self->current_view );
+	});
 	$self->signal_emit( 'update-view' => $view );
 }
 
@@ -35,9 +38,12 @@ method _trigger_view_options( $new_view_options ) {
 	my $view = Renard::Curie::Model::View::Grid->new(
 		document => $self->current_document,
 		view_options => $new_view_options,
-		( page_number => $page_number ) x !!( defined $page_number ),
 	);
 	$self->current_view( $view );
+
+	if( defined $page_number ) {
+		$view->set_page_number_with_scroll( $page_number );
+	}
 }
 
 1;

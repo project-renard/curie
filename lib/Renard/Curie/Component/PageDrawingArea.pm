@@ -182,7 +182,12 @@ Sets up the signals for a new view.
 
 =cut
 method update_view($new_view) {
-	$self->view->signal_emit('view-changed');
+	$new_view->signal_connect(
+		'scroll-to-page', fun( $view, $page_number ) {
+			$self->drawing_area->scroll_to_page( $page_number );
+		}
+	);
+	$self->refresh_drawing_area( $new_view );
 }
 
 with qw(
