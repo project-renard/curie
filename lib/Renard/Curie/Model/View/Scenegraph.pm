@@ -28,6 +28,12 @@ has box_layout => (
 
 has view_manager => (
 	is => 'ro',
+	required => 1,
+);
+
+has view => (
+	is => 'ro',
+	required => 1,
 );
 
 lazy graph => method() {
@@ -69,7 +75,7 @@ method create_group( :$grid_scheme, :$margin = 10 ) {
 }
 
 method create_scene_graph() {
-	my $grid_scheme = $self->view_manager->current_view
+	my $grid_scheme = $self->view
 		->_current_subview->_grid_scheme;
 
 	my $group = $self->create_group( grid_scheme => $grid_scheme, margin => 10);

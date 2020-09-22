@@ -84,11 +84,6 @@ method BUILD(@) {
 		}
 	);
 
-	$self->view->signal_connect( 'view-changed', sub {
-		my ($view) = @_;
-		$self->refresh_drawing_area( $view );
-	} );
-
 	$self->update_view( $self->view_manager->current_view );
 }
 
@@ -102,7 +97,8 @@ Sets up the L</drawing_area> so that it draws the current page.
 method setup_drawing_area() {
 	my $drawing_area = Renard::Curie::Component::JacquardCanvas->new(
 		sg => Renard::Curie::Model::View::Scenegraph->new(
-			view_manager => $self->view_manager
+			view_manager => $self->view_manager,
+			view => $self->view,
 		)->graph,
 		scale => $self->view_manager->view_options->zoom_options->zoom_level,
 	);
@@ -141,7 +137,8 @@ method refresh_drawing_area($view) {
 
 	$self->drawing_area->set_data(
 		sg => Renard::Curie::Model::View::Scenegraph->new(
-			view_manager => $self->view_manager
+			view_manager => $self->view_manager,
+			view => $view,
 		)->graph,
 		scale => $self->view_manager->view_options->zoom_options->zoom_level,
 	);
