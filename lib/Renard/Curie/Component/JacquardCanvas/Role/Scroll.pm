@@ -8,6 +8,8 @@ use feature qw(current_sub);
 use Object::Util magic => 0;
 use Renard::Yarn::Types qw(Point Size);
 
+use constant STEP_SIZE_RATIO => (1 / 20.0);
+
 around new => sub {
 	my $orig = shift;
 	my $self = $orig->(@_);
@@ -52,14 +54,21 @@ sub update_bounds {
 
 	return unless $self->get_realized;
 
+
+	$_->freeze_notify for( $self->get_hadjustment, $self->get_vadjustment );
+
 	$self->get_hadjustment
 		->$_tap( set_lower => 0 )
 		->$_tap( set_upper =>  $self->{scale} * $bounds->size->width)
+		->$_tap( set_step_increment => ($self->get_hadjustment->get_page_size * STEP_SIZE_RATIO ) )
 		;
 	$self->get_vadjustment
 		->$_tap( set_lower => 0 )
 		->$_tap( set_upper => $self->{scale} * $bounds->size->height )
+		->$_tap( set_step_increment => ($self->get_vadjustment->get_page_size * STEP_SIZE_RATIO ) )
 		;
+
+	$_->thaw_notify for( $self->get_hadjustment, $self->get_vadjustment );
 
 	cb_on_scroll(undef, $self);
 }
