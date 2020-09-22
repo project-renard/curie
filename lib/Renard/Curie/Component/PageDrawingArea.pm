@@ -159,8 +159,14 @@ method on_draw_page_cb( (InstanceOf['Cairo::Context']) $cr ) {
 	$self->set_navigation_buttons_sensitivity;
 
 	my $page_number = $self->view->page_number;
+	state $first_page_number_in_view_port;
 	if( $self->drawing_area->can('_first_page_in_viewport') ) {
-		$page_number = $self->drawing_area->_first_page_in_viewport;
+		my $check = $self->drawing_area->_first_page_in_viewport;
+		if( $first_page_number_in_view_port != $check ) {
+			$first_page_number_in_view_port = $check;
+			$self->view->page_number( $check );
+			$page_number = $check;
+		}
 	}
 
 	$self->builder->get_object('page-number-entry')
