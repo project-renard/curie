@@ -106,25 +106,18 @@ sub cb_on_draw {
 			my @pgs = ( $sorted[0] .. $sorted[1] );
 			my @bboxes;
 			for my $page_number (@pgs) {
-				my $page = $self->{pages}{$page_number};
-				my $view = first { $_->{page_number} == $page_number } @{ $self->{views} };
+				my ($page, $view) = $self->_get_page_view_for_page_number($page_number);
 				next unless $view;
-
-				my $matrix = $view->{matrix};
-				my $bounds = $view->{bounds};
 
 				my @extents = $page->get_extents_from_selection(
 					$self->{selection}{start},
 					$self->{selection}{end}
 				);
-				if( @extents ) {
-					my @page_bboxes = $page->get_bboxes_from_extents(@extents);
-					push @bboxes, ($matrix->inverse)[1]
-						->untransform_bounds(
-							$_,
-							$bounds
-					) for @page_bboxes;
-				}
+
+				push @bboxes, @{
+					$self->_get_bboxes_for_page_extents(
+						$page, $view, \@extents )
+				};
 			}
 			for my $bounds (@bboxes) {
 				$self->_draw_bounds_as_rectangle($cr, $bounds);
@@ -155,6 +148,32 @@ sub cb_on_draw {
 			$cr->fill;
 		}
 	}
+}
+
+sub _get_page_view_for_page_number {
+	my ($self, $page_number) = @_;
+	my $page = $self->{pages}{$page_number};
+	my $view = first { $_->{page_number} == $page_number } @{ $self->{views} };
+	( $page, $view );
+}
+
+sub _get_bboxes_for_page_extents {
+	my ($self, $page, $view, $extents) = @_;
+
+	my @bboxes;
+
+	my $matrix = $view->{matrix};
+	my $bounds = $view->{bounds};
+	if( @$extents ) {
+		my @page_bboxes = $page->get_bboxes_from_extents(@$extents);
+		push @bboxes, ($matrix->inverse)[1]
+			->untransform_bounds(
+				$_,
+				$bounds
+		) for @page_bboxes;
+	}
+
+	\@bboxes;
 }
 
 sub _draw_bounds_as_rectangle {
