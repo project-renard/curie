@@ -5,6 +5,7 @@ package Renard::Curie::Model::View::Grid::PageActor;
 use Mu;
 use Renard::Block::Format::Cairo::Types qw(RenderableDocumentModel);
 use Renard::Taffeta::Graphics::Image::PNG;
+use Renard::Taffeta::Graphics::Image::CairoImageSurface;
 use Renard::Yarn::Graphene;
 use Renard::Yarn::Types qw(Point Size);
 use List::AllUtils qw(pairmap);
@@ -29,10 +30,20 @@ lazy width => method() { $self->_rendered_page->width };
 
 lazy _taffeta => method() {
 	my $rp = $self->_rendered_page;
-	my $taffeta = Renard::Taffeta::Graphics::Image::PNG->new(
-		data => $rp->png_data,
-		origin => $self->origin_point,
-	);
+	my $taffeta;
+	if( $rp->can('png_data') ) {
+		$taffeta = Renard::Taffeta::Graphics::Image::PNG->new(
+			data => $rp->png_data,
+			origin => $self->origin_point,
+		);
+	} else {
+		$taffeta = Renard::Taffeta::Graphics::Image::CairoImageSurface->new(
+			cairo_image_surface => $rp->cairo_image_surface,
+			origin => $self->origin_point,
+		);
+	}
+
+	$taffeta;
 };
 
 method render($svg) {

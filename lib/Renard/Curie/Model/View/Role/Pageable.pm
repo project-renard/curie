@@ -41,7 +41,7 @@ Sets the page number to the first page of the document.
 
 =cut
 method set_current_page_to_first() {
-	$self->page_number( $self->document->first_page_number );
+	$self->set_page_number_with_scroll( $self->document->first_page_number );
 }
 
 =method set_current_page_to_last
@@ -52,7 +52,7 @@ Sets the current page to the last page of the document.
 
 =cut
 method set_current_page_to_last() {
-	$self->page_number( $self->document->last_page_number );
+	$self->set_page_number_with_scroll( $self->document->last_page_number );
 }
 
 =method can_move_to_previous_page
@@ -86,7 +86,7 @@ Increments the current page number if possible.
 =cut
 method set_current_page_forward() {
 	if( $self->can_move_to_next_page ) {
-		$self->page_number( $self->page_number + 1 );
+		$self->set_page_number_with_scroll( $self->page_number + 1 );
 	}
 }
 
@@ -99,7 +99,7 @@ Decrements the current page number if possible.
 =cut
 method set_current_page_back() {
 	if( $self->can_move_to_previous_page ) {
-		$self->page_number( $self->page_number - 1 );
+		$self->set_page_number_with_scroll( $self->page_number - 1 );
 	}
 }
 

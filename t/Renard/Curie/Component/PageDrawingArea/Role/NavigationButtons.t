@@ -71,7 +71,7 @@ subtest 'Check that the current button sensitivity is set on the first and last 
 	ok   $forward_button->is_sensitive, 'button-forward is enabled on first page';
 
 	$last_button->clicked;
-	$page_comp->refresh_drawing_area;
+	$page_comp->refresh_drawing_area( $page_comp->view );
 
 	is $page_comp->view->page_number, 4, 'On page 4 after hitting button-last';
 

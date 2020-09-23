@@ -24,20 +24,22 @@ method on_draw_page_cb_highlight( (InstanceOf['Cairo::Context']) $cr ) {
 		my $sentence = $self->view_manager->current_text_page->[
 			$self->view_manager->current_sentence_number
 		];
-		for my $bbox_str ( @{ $sentence->{bbox} } ) {
-			my $bbox = [ split ' ', $bbox_str ];
-			my $z_bbox = [ map {
-				$_ * $self->view_manager
-					->view_options
-					->zoom_options
-					->zoom_level
-			} @$bbox ];
-			$cr->rectangle(
-				$top_left[0] + $z_bbox->[0],
-				$top_left[1] + $z_bbox->[1],
-				$z_bbox->[2] - $z_bbox->[0],
-				$z_bbox->[3] - $z_bbox->[1],
-			);
+
+		my @bboxes;
+		my $page_number = $self->view->page_number;
+		my ($page, $view) = $self->drawing_area->_get_page_view_for_page_number($page_number);
+		return unless $view;
+
+		my @extents = ( $sentence->{extent}->start,
+			$sentence->{extent}->end, );
+
+		push @bboxes, @{
+			$self->drawing_area->_get_bboxes_for_page_extents(
+				$page, $view, \@extents )
+		};
+
+		for my $bounds (@bboxes) {
+			$self->drawing_area->_draw_bounds_as_rectangle($cr, $bounds);
 			$cr->set_source_rgba(1, 0, 0, 0.2);
 			$cr->fill;
 		}
