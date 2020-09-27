@@ -102,7 +102,7 @@ sub cb_on_draw {
 		my $start_pages = $self->{selection}{start}{pointer}{pages};
 		my $end_pages = $self->{selection}{end}{pointer}{pages};
 		if( @$start_pages && @$end_pages ) {
-			my @sorted = sort ( $start_pages->[0] , $end_pages->[0] );
+			my @sorted = sort {$a <=> $b} ( $start_pages->[0] , $end_pages->[0] );
 			my @pgs = ( $sorted[0] .. $sorted[1] );
 			my @bboxes;
 			for my $page_number (@pgs) {
