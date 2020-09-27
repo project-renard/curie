@@ -22,6 +22,11 @@ use Glib::Object::Subclass
 	signals => {
 		'view-changed' => {},
 		'text-found' => {},
+		'text-selected' => {
+			param_types => [
+				'Glib::Scalar', # selection hash
+			]
+		},
 	},
 ;
 

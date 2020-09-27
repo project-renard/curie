@@ -11,6 +11,7 @@ after set_data => sub {
 	my ($self, %data) = @_;
 
 	$self->{selection}{state} = 0;
+	$self->signal_connect( 'text-selected' => \&cb_on_text_selected );
 };
 
 sub mark_selection_start {
@@ -73,10 +74,53 @@ after cb_on_button_release_event => sub {
 		} else {
 			$self->mark_selection_end($event_point);
 			$self->{selection}{state} = 2;
+			$self->signal_emit( 'text-selected' , {
+				start => $self->{selection}{start},
+				end => $self->{selection}{end},
+			});
 		}
 	}
 
 	return TRUE;
 };
+
+sub cb_on_text_selected {
+	my ($self, $selections) = @_;
+
+	if( my $text =  $self->_get_text_for_selection($selections) ) {
+		Gtk3::Clipboard::get(Gtk3::Gdk::Atom::intern ('PRIMARY', Glib::FALSE))
+			->set_text($text);
+	}
+}
+
+sub _get_text_for_selection {
+	my ($self, $selections) = @_;
+
+	my $text;
+
+	my $start_pages = $selections->{start}{pointer}{pages};
+	my $end_pages = $selections->{end}{pointer}{pages};
+	if( @$start_pages && @$end_pages ) {
+		my @sorted = sort {$a <=> $b} ( $start_pages->[0] , $end_pages->[0] );
+		my @pgs = ( $sorted[0] .. $sorted[1] );
+		my @bboxes;
+		for my $page_number (@pgs) {
+			my ($page, $view) = $self->_get_page_view_for_page_number($page_number);
+			next unless $view;
+
+			my @extents = $page->get_extents_from_selection(
+				$selections->{start},
+				$selections->{end}
+			);
+
+			if( @extents ) {
+				@extents = sort {$a <=> $b} @extents;
+				$text .=  $page->_textual_page->substr( $extents[0], $extents[1]-$extents[0] )->str;
+			}
+		}
+	}
+
+	$text;
+}
 
 1;
