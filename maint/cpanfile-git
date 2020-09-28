@@ -13,6 +13,3 @@ requires 'Renard::Block::NLP',
 requires 'Renard::Jacquard',
 	git => 'https://github.com/project-renard/p5-Renard-Jacquard.git',
 	branch => 'layout-punchcard';
-requires 'Renard::Taffeta',
-	git => 'https://github.com/project-renard/p5-Renard-Taffeta.git',
-	branch => 'cairo-image-surface';
