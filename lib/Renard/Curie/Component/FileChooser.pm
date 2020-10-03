@@ -3,7 +3,7 @@ package Renard::Curie::Component::FileChooser;
 # ABSTRACT: Component that implements a file chooser dialog
 
 use Moo;
-use Renard::API::Gtk3::Helper;
+use Intertangle::API::Gtk3::Helper;
 use Renard::Incunabula::Common::Types qw(InstanceOf);
 
 =attr all_filter

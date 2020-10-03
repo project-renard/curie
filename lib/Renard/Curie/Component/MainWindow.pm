@@ -2,7 +2,7 @@ use Renard::Incunabula::Common::Setup;
 package Renard::Curie::Component::MainWindow;
 # ABSTRACT: Main window of the application
 
-use Renard::API::Gtk3::Helper;
+use Intertangle::API::Gtk3::Helper;
 
 use Gtk3;
 use Cairo;
@@ -113,8 +113,8 @@ callback on_application_quit_cb( $event, $self ) {
 # }}}
 
 with qw(
-	Renard::API::Gtk3::Component::Role::FromBuilder
-	Renard::API::Gtk3::Component::Role::UIFileFromPackageName
+	Intertangle::API::Gtk3::Component::Role::FromBuilder
+	Intertangle::API::Gtk3::Component::Role::UIFileFromPackageName
 	MooX::Role::Logger
 
 	Renard::Curie::Component::MainWindow::Role::PageDrawingArea

@@ -4,7 +4,7 @@ package Renard::Curie::Component::PageDrawingArea;
 
 use Moo;
 
-use Renard::API::Gtk3::Helper;
+use Intertangle::API::Gtk3::Helper;
 use Glib 'TRUE', 'FALSE';
 use Glib::Object::Subclass
 	'Gtk3::Bin',
@@ -193,8 +193,8 @@ method update_view($new_view) {
 }
 
 with qw(
-	Renard::API::Gtk3::Component::Role::FromBuilder
-	Renard::API::Gtk3::Component::Role::UIFileFromPackageName
+	Intertangle::API::Gtk3::Component::Role::FromBuilder
+	Intertangle::API::Gtk3::Component::Role::UIFileFromPackageName
 
 	Renard::Curie::Component::PageDrawingArea::Role::KeyBindings
 	Renard::Curie::Component::PageDrawingArea::Role::MouseScrollBindings

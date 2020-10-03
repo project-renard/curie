@@ -4,7 +4,7 @@ package Renard::Curie::Component::DocumentPropertiesWindow;
 
 use Moo;
 use Glib 'TRUE', 'FALSE';
-use Renard::API::Gtk3::Helper;
+use Intertangle::API::Gtk3::Helper;
 use Renard::Incunabula::Common::Types qw(InstanceOf);
 use Renard::Incunabula::Document::Types qw(DocumentModel);
 use Renard::Block::Format::PDF::InformationDictionary;
@@ -100,8 +100,8 @@ method show_all() {
 
 
 with qw(
-	Renard::API::Gtk3::Component::Role::FromBuilder
-	Renard::API::Gtk3::Component::Role::UIFileFromPackageName
+	Intertangle::API::Gtk3::Component::Role::FromBuilder
+	Intertangle::API::Gtk3::Component::Role::UIFileFromPackageName
 );
 
 

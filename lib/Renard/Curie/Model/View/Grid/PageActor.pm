@@ -4,13 +4,13 @@ package Renard::Curie::Model::View::Grid::PageActor;
 
 use Mu;
 use Renard::Block::Format::Cairo::Types qw(RenderableDocumentModel);
-use Renard::Taffeta::Graphics::Image::PNG;
-use Renard::Taffeta::Graphics::Image::CairoImageSurface;
-use Renard::Yarn::Graphene;
-use Renard::Yarn::Types qw(Point Size);
+use Intertangle::Taffeta::Graphics::Image::PNG;
+use Intertangle::Taffeta::Graphics::Image::CairoImageSurface;
+use Intertangle::Yarn::Graphene;
+use Intertangle::Yarn::Types qw(Point Size);
 use List::AllUtils qw(pairmap);
 
-extends qw(Renard::Jacquard::Actor);
+extends qw(Intertangle::Jacquard::Actor);
 
 ro document => (
 	isa => RenderableDocumentModel,
@@ -32,12 +32,12 @@ lazy _taffeta => method() {
 	my $rp = $self->_rendered_page;
 	my $taffeta;
 	if( $rp->can('png_data') ) {
-		$taffeta = Renard::Taffeta::Graphics::Image::PNG->new(
+		$taffeta = Intertangle::Taffeta::Graphics::Image::PNG->new(
 			data => $rp->png_data,
 			origin => $self->origin_point,
 		);
 	} else {
-		$taffeta = Renard::Taffeta::Graphics::Image::CairoImageSurface->new(
+		$taffeta = Intertangle::Taffeta::Graphics::Image::CairoImageSurface->new(
 			cairo_image_surface => $rp->cairo_image_surface,
 			origin => $self->origin_point,
 		);
@@ -64,7 +64,7 @@ lazy _textual_page => method() {
 };
 
 lazy _page_transform => method() {
-	my $page_transform = Renard::Yarn::Graphene::Matrix->new;
+	my $page_transform = Intertangle::Yarn::Graphene::Matrix->new;
 	$page_transform->init_from_2d( 1, 0 , 0 , 1,
 		$self->x->value,
 		$self->y->value );
@@ -74,7 +74,7 @@ lazy _page_transform => method() {
 method _bbox_to_rect($bbox) {
 	my ($x0, $y0, $x1, $y1) = split ' ', $bbox;
 	$self->_page_transform->transform_bounds(
-		Renard::Yarn::Graphene::Rect->new(
+		Intertangle::Yarn::Graphene::Rect->new(
 			origin => Point->coerce([$x0, $y0]),
 			size => Size->coerce([$x1-$x0, $y1-$y0]),
 		)
@@ -84,7 +84,7 @@ method _bbox_to_rect($bbox) {
 method _m_quad_to_rect($quad) {
 	my @points = pairmap { Point->coerce([$a, $b]) } split ' ', $quad;
 	$self->_page_transform->transform_bounds(
-		Renard::Yarn::Graphene::Quad->alloc
+		Intertangle::Yarn::Graphene::Quad->alloc
 			->init_from_points( \@points )
 			->bounds
 	);
@@ -229,11 +229,11 @@ method text_at_point( (Point) $point) {
 }
 
 with qw(
-	Renard::Jacquard::Role::Render::QnD::SVG
-	Renard::Jacquard::Role::Render::QnD::Cairo
-	Renard::Jacquard::Role::Geometry::Position2D
-	Renard::Jacquard::Role::Render::QnD::Size::Direct
-	Renard::Jacquard::Role::Render::QnD::Bounds::Direct
+	Intertangle::Jacquard::Role::Render::QnD::SVG
+	Intertangle::Jacquard::Role::Render::QnD::Cairo
+	Intertangle::Jacquard::Role::Geometry::Position2D
+	Intertangle::Jacquard::Role::Render::QnD::Size::Direct
+	Intertangle::Jacquard::Role::Render::QnD::Bounds::Direct
 );
 
 1;

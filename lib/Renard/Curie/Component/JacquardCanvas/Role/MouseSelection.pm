@@ -3,9 +3,9 @@ package Renard::Curie::Component::JacquardCanvas::Role::MouseSelection;
 # ABSTRACT: Role for selecting text
 
 use Role::Tiny;
-use Renard::API::Gtk3::Helper;
+use Intertangle::API::Gtk3::Helper;
 use Glib qw(TRUE FALSE);
-use Renard::Yarn::Types qw(Point Size);
+use Intertangle::Yarn::Types qw(Point Size);
 
 after set_data => sub {
 	my ($self, %data) = @_;

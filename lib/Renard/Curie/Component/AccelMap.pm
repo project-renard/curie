@@ -3,7 +3,7 @@ package Renard::Curie::Component::AccelMap;
 # ABSTRACT: Set up the accelerator map (global keybindings)
 
 use Moo;
-use Renard::API::Gtk3::Helper;
+use Intertangle::API::Gtk3::Helper;
 
 =method BUILD
 
