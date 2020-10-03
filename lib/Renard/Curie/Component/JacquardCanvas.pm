@@ -4,7 +4,7 @@ package Renard::Curie::Component::JacquardCanvas;
 
 use Role::Tiny::With;
 
-use Renard::API::Gtk3::Helper;
+use Intertangle::API::Gtk3::Helper;
 use Glib qw(TRUE FALSE);
 
 use feature qw(current_sub);
@@ -33,15 +33,15 @@ use Glib::Object::Subclass
 use Glib qw(TRUE FALSE);
 use List::AllUtils qw(first);
 
-use Renard::Yarn::Types qw(Point Size);
+use Intertangle::Yarn::Types qw(Point Size);
 
 my $_EmptyGraph = Moo::Role->create_class_with_roles(
-	'Renard::Jacquard::Actor' => qw(
-	Renard::Jacquard::Role::Geometry::Position2D
-	Renard::Jacquard::Role::Geometry::Size2D
-	Renard::Jacquard::Role::Render::QnD::Cairo::Group
-	Renard::Jacquard::Role::Render::QnD::Size::Direct
-	Renard::Jacquard::Role::Render::QnD::Bounds::Direct
+	'Intertangle::Jacquard::Actor' => qw(
+	Intertangle::Jacquard::Role::Geometry::Position2D
+	Intertangle::Jacquard::Role::Geometry::Size2D
+	Intertangle::Jacquard::Role::Render::QnD::Cairo::Group
+	Intertangle::Jacquard::Role::Render::QnD::Size::Direct
+	Intertangle::Jacquard::Role::Render::QnD::Bounds::Direct
 ));
 
 use constant HIGHLIGHT_BOUNDS => $ENV{T_GRID_HIGHLIGHT_BOUNDS} // 0;

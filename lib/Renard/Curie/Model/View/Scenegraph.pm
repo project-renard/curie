@@ -7,18 +7,18 @@ use Mu;
 use feature qw(current_sub);
 
 use Renard::Curie::Model::View::Grid::PageActor;
-use Renard::Jacquard::Layout::Grid;
-use Renard::Jacquard::Layout::Box;
+use Intertangle::Jacquard::Layout::Grid;
+use Intertangle::Jacquard::Layout::Box;
 
 my $_LayoutGroup = Moo::Role->create_class_with_roles(
-	'Renard::Jacquard::Actor' => qw(
-	Renard::Jacquard::Role::Geometry::Position2D
-	Renard::Jacquard::Role::Geometry::Size2D
-	Renard::Jacquard::Role::Render::QnD::SVG::Group
-	Renard::Jacquard::Role::Render::QnD::Cairo::Group
-	Renard::Jacquard::Role::Render::QnD::Layout
-	Renard::Jacquard::Role::Render::QnD::Size::Direct
-	Renard::Jacquard::Role::Render::QnD::Bounds::Direct
+	'Intertangle::Jacquard::Actor' => qw(
+	Intertangle::Jacquard::Role::Geometry::Position2D
+	Intertangle::Jacquard::Role::Geometry::Size2D
+	Intertangle::Jacquard::Role::Render::QnD::SVG::Group
+	Intertangle::Jacquard::Role::Render::QnD::Cairo::Group
+	Intertangle::Jacquard::Role::Render::QnD::Layout
+	Intertangle::Jacquard::Role::Render::QnD::Size::Direct
+	Intertangle::Jacquard::Role::Render::QnD::Bounds::Direct
 ));
 
 has box_layout => (
@@ -47,7 +47,7 @@ method create_group( :$grid_scheme, :$margin = 10 ) {
 	my @pages = @{ $grid_scheme->pages };
 
 	my $group = $_LayoutGroup->new(
-		layout => Renard::Jacquard::Layout::Grid->new(
+		layout => Intertangle::Jacquard::Layout::Grid->new(
 			rows => $grid_scheme->rows,
 			columns => $grid_scheme->columns ),
 	);
@@ -62,7 +62,7 @@ method create_group( :$grid_scheme, :$margin = 10 ) {
 		);
 		if( $self->box_layout ) {
 			my $box = $_LayoutGroup->new(
-				layout => Renard::Jacquard::Layout::Box->new( margin => $margin ),
+				layout => Intertangle::Jacquard::Layout::Box->new( margin => $margin ),
 			);
 			$box->add_child( $actor );
 			$group->add_child( $box );

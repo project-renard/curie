@@ -6,7 +6,7 @@ use Role::Tiny;
 
 use Glib qw(TRUE FALSE);
 use Scalar::Util qw(refaddr);
-use Renard::Yarn::Types qw(Point Size);
+use Intertangle::Yarn::Types qw(Point Size);
 
 around new => sub {
 	my $orig = shift;
@@ -38,7 +38,7 @@ sub _get_data_for_pointer {
 		$self->get_hadjustment,
 		$self->get_vadjustment,
 	);
-	my $matrix = Renard::Yarn::Graphene::Matrix->new;
+	my $matrix = Intertangle::Yarn::Graphene::Matrix->new;
 	$matrix->init_from_2d( 1, 0 , 0 , 1, $h->get_value, $v->get_value );
 
 	my $point = $matrix * $event_point;

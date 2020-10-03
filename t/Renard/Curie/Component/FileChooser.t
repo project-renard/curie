@@ -7,7 +7,7 @@ use CurieTestHelper;
 use Renard::Block::Format::PDF::Devel::TestHelper;
 
 use Renard::Incunabula::Common::Setup;
-use Renard::API::Gtk3::Helper;
+use Intertangle::API::Gtk3::Helper;
 use Renard::Curie::App;
 use Renard::Curie::Component::FileChooser;
 use Test::MockModule;
@@ -46,7 +46,7 @@ subtest "Menu: File -> Open" => sub {
 
 		my $c = CurieTestHelper->get_app_container;
 		my $app = $c->app;
-		Renard::API::Gtk3::Helper->callback( $c->menu_bar,
+		Intertangle::API::Gtk3::Helper->callback( $c->menu_bar,
 			on_menu_file_open_activate_cb => undef );
 
 		ok( $got_file, "Callback retrieved the filename");
@@ -59,7 +59,7 @@ subtest "Menu: File -> Open" => sub {
 
 		my $c = CurieTestHelper->get_app_container;
 		my $app = $c->app;
-		Renard::API::Gtk3::Helper->callback( $c->menu_bar,
+		Intertangle::API::Gtk3::Helper->callback( $c->menu_bar,
 			on_menu_file_open_activate_cb => undef );
 		ok(!$got_file, "Callback did not retrieve the filename");
 		ok( $destroyed, "Callback destroyed the dialog");

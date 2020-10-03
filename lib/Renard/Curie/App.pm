@@ -4,7 +4,7 @@ package Renard::Curie::App;
 
 use Moo 2.001001;
 
-use Renard::API::Gtk3::Helper;
+use Intertangle::API::Gtk3::Helper;
 
 use File::Spec;
 use File::Basename;
