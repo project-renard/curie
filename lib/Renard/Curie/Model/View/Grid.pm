@@ -61,6 +61,11 @@ has view_options => (
 	isa => InstanceOf['Renard::Curie::Model::ViewOptions'],
 );
 
+=method zoom_level
+
+Accessor for the view's zoom level.
+
+=cut
 method zoom_level() {
 	$self->view_options->zoom_options->zoom_level;
 }
@@ -143,11 +148,21 @@ method _trigger_page_number($page_number) {
 	$self->_update_subview_idx;
 }
 
+=method set_page_number_with_scroll
+
+Set page number then emit scroll event.
+
+=cut
 method set_page_number_with_scroll( $page_number ) {
 	$self->page_number( $page_number );
 	$self->signal_emit( 'scroll-to-page', $page_number );
 }
 
+=method scroll_emit
+
+Emit C<scroll-to-page> signal.
+
+=cut
 method scroll_emit() {
 	$self->signal_emit( 'scroll-to-page', $self->page_number );
 }

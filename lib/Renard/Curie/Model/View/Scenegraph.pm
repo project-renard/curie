@@ -21,16 +21,31 @@ my $_LayoutGroup = Moo::Role->create_class_with_roles(
 	Intertangle::Jacquard::Role::Render::QnD::Bounds::Direct
 ));
 
+=attr box_layout
+
+A C<Bool> for whether to use box layout or not.
+
+=cut
 has box_layout => (
 	is => 'ro',
 	default => sub { 1 },
 );
 
+=attr view_manager
+
+The view manager for this scene graph (required).
+
+=cut
 has view_manager => (
 	is => 'ro',
 	required => 1,
 );
 
+=attr view
+
+The view for this scene graph (required).
+
+=cut
 has view => (
 	is => 'ro',
 	required => 1,
@@ -43,6 +58,11 @@ lazy graph => method() {
 	$graph;
 };
 
+=method create_group
+
+Creates a grid layout group given a grid scheme.
+
+=cut
 method create_group( :$grid_scheme, :$margin = 10 ) {
 	my @pages = @{ $grid_scheme->pages };
 
@@ -74,6 +94,11 @@ method create_group( :$grid_scheme, :$margin = 10 ) {
 	$group;
 }
 
+=method create_scene_graph
+
+Creates and sets up a scene graph for the current view.
+
+=cut
 method create_scene_graph() {
 	my $grid_scheme = $self->view
 		->_current_subview->_grid_scheme;
@@ -92,6 +117,11 @@ sub _update_layouts {
 	$g->update_layout if $g->can('update_layout');
 }
 
+=method update_layout
+
+Update layouts for scene graph.
+
+=cut
 method update_layout($group) {
 	_update_layouts($group);
 }

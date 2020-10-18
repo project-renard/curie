@@ -8,6 +8,11 @@ use feature qw(current_sub);
 use Object::Util magic => 0;
 use Intertangle::Yarn::Types qw(Point Size);
 
+=attr STEP_SIZE_RATIO
+
+Ratio of the viewport page size to the viewport step size.
+
+=cut
 use constant STEP_SIZE_RATIO => (1 / 20.0);
 
 around new => sub {
@@ -48,6 +53,11 @@ after set_data => sub {
 	$self->update_bounds;
 };
 
+=method update_bounds
+
+Update the viewport adjustments to the scene graph size.
+
+=cut
 sub update_bounds {
 	my ($self) = @_;
 	my $bounds = $self->{sg}->bounds;
@@ -73,6 +83,11 @@ sub update_bounds {
 	cb_on_scroll(undef, $self);
 }
 
+=callback cb_on_scroll
+
+Callback for any changes to the scroll adjustments.
+
+=cut
 sub cb_on_scroll {
 	my ($adjustment, $self) = @_;
 	my ($h, $v) = (
@@ -134,6 +149,11 @@ sub _last_page_in_viewport {
 	$self->{views}[-1]{page_number};
 }
 
+=method scroll_to_page
+
+Scroll the view port to a given page number.
+
+=cut
 sub scroll_to_page {
 	my ($self, $page_number) = @_;
 

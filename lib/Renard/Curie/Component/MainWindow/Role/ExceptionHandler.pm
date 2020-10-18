@@ -6,6 +6,11 @@ use Moo::Role;
 use Gtk3;
 use Glib 'TRUE', 'FALSE';
 
+=attr EXCEPTION_DIALOG_LABEL_MAX_WIDTH_CHARS
+
+Constant with maximum width for exception dialog.
+
+=cut
 use constant EXCEPTION_DIALOG_LABEL_MAX_WIDTH_CHARS => 30;
 
 has _exception_handler => (
@@ -13,7 +18,7 @@ has _exception_handler => (
 );
 
 method _build__exception_handler() {
-	Glib->install_exception_handler( fun( $exception ) {
+	Glib->install_exception_handler( my $cb = fun( $exception ) {
 		if ( $exception->isa('Renard::Curie::Error::User::InvalidPageNumber') ) {
 			$self->_show_exception_dialog_box(
 				'Page number entered is invalid: entered "%s", should be between %s and %s.',

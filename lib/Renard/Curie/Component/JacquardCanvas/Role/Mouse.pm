@@ -101,18 +101,33 @@ sub _get_text_data_for_pointer {
 	return $text_data;
 }
 
+=callback cb_on_button_press_event
+
+...
+
+=cut
 sub cb_on_button_press_event {
 	my ($widget, $event, $self) = @_;
 	# nop
 	return TRUE;
 }
 
+=callback cb_on_button_release_event
+
+...
+
+=cut
 sub cb_on_button_release_event {
 	my ($widget, $event, $self) = @_;
 	# nop
 	return TRUE;
 }
 
+=callback cb_on_motion_notify
+
+...
+
+=cut
 sub cb_on_motion_notify {
 	my ($widget, $event, $self) = @_;
 
@@ -124,6 +139,11 @@ sub cb_on_motion_notify {
 	}
 }
 
+=callback cb_on_motion_notify_hover
+
+...
+
+=cut
 sub cb_on_motion_notify_hover {
 	my ($widget, $event, $self) = @_;
 	my $event_point = Point->coerce([ $event->x, $event->y ]);
@@ -135,12 +155,22 @@ sub cb_on_motion_notify_hover {
 	return TRUE;
 }
 
+=callback cb_on_motion_notify_button1
+
+...
+
+=cut
 sub cb_on_motion_notify_button1 {
 	my ($widget, $event, $self) = @_;
 	# nop
 	return TRUE;
 }
 
+=method do_pointer_data
+
+Abstract method that can be used by roles to receive pointer data.
+
+=cut
 sub do_pointer_data {
 	my ($self, $event_point, $pointer_data, $text_data ) = @_;
 	# nop

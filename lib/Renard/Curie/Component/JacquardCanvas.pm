@@ -44,6 +44,11 @@ my $_EmptyGraph = Moo::Role->create_class_with_roles(
 	Intertangle::Jacquard::Role::Render::QnD::Bounds::Direct
 ));
 
+=func HIGHLIGHT_BOUNDS HIGHLIGHT_LAYERS
+
+Debug environment variables.
+
+=cut
 use constant HIGHLIGHT_BOUNDS => $ENV{T_GRID_HIGHLIGHT_BOUNDS} // 0;
 use constant HIGHLIGHT_LAYERS => $ENV{T_GRID_HIGHLIGHT_LAYERS} // 0;
 
@@ -82,6 +87,11 @@ sub set_data {
 
 }
 
+=callback cb_on_draw
+
+Callback for C<draw> signal.
+
+=cut
 sub cb_on_draw {
 	my ($self, $cr) = @_;
 
@@ -197,6 +207,11 @@ sub _draw_bounds_as_rectangle {
 	);
 }
 
+=method GET_BORDER
+
+Implements C<Gtk3::Scrollable::get_border>.
+
+=cut
 sub GET_BORDER { (FALSE, undef); }
 
 with qw(

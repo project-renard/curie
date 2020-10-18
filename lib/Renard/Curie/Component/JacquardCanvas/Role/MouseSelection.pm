@@ -14,6 +14,11 @@ after set_data => sub {
 	$self->signal_connect( 'text-selected' => \&cb_on_text_selected );
 };
 
+=method mark_selection_start
+
+Mark start of selection.
+
+=cut
 sub mark_selection_start {
 	my ($self, $event_point) = @_;
 
@@ -23,6 +28,11 @@ sub mark_selection_start {
 	$self->{selection}{end} = $self->{selection}{start};
 }
 
+=method mark_selection_end
+
+Mark end of selection.
+
+=cut
 sub mark_selection_end {
 	my ($self, $event_point) = @_;
 
@@ -32,6 +42,11 @@ sub mark_selection_end {
 	$self->queue_draw;
 }
 
+=method clear_selection
+
+Clear selection data.
+
+=cut
 sub clear_selection {
 	my ($self) = @_;
 	$self->{selection}{state} = 0;
@@ -84,6 +99,13 @@ after cb_on_button_release_event => sub {
 	return TRUE;
 };
 
+=callback cb_on_text_selected
+
+Callback for C<text-selected> signal.
+
+Currently sets the primary clipboard to the text of the selection.
+
+=cut
 sub cb_on_text_selected {
 	my ($self, $selections) = @_;
 

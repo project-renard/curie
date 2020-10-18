@@ -12,10 +12,20 @@ use List::AllUtils qw(pairmap);
 
 extends qw(Intertangle::Jacquard::Actor);
 
+=attr document
+
+A C<RenderableDocumentModel> (required).
+
+=cut
 ro document => (
 	isa => RenderableDocumentModel,
 );
 
+=attr page_number
+
+The page number of C<document> to render.
+
+=cut
 ro 'page_number';
 
 
@@ -46,10 +56,20 @@ lazy _taffeta => method() {
 	$taffeta;
 };
 
+=method render
+
+Render to SVG.
+
+=cut
 method render($svg) {
 	$self->_taffeta->render_svg( $svg );
 }
 
+=method render_cairo
+
+Render to Cairo.
+
+=cut
 method render_cairo($cr) {
 	return unless $self->{visible};
 	$self->_taffeta->render_cairo( $cr );
@@ -99,6 +119,11 @@ method _compute_bbox_for_tag_value($tag_value) {
 		: $self->_m_quad_to_rect($tag_value->{quad});
 }
 
+=method get_bboxes_from_extents
+
+Return Array of bounding boxes from extents of the page text.
+
+=cut
 method get_bboxes_from_extents( $start_extent, $end_extent ) {
 	my @gather_bboxes;
 	my @gather_line_extents;
@@ -132,6 +157,11 @@ method get_bboxes_from_extents( $start_extent, $end_extent ) {
 	return @gather_bboxes;
 }
 
+=method get_extents_from_selection
+
+Return extents on the page text given (start, end) pointer locations.
+
+=cut
 method get_extents_from_selection( $start, $end ) {
 	my $pg = $self->page_number;
 	my $start_page = $start->{pointer}{pages}[0];
@@ -192,6 +222,11 @@ method get_extents_from_selection( $start, $end ) {
 	}
 }
 
+=method text_at_point
+
+Return (block, line, char) for page text under a given point.
+
+=cut
 method text_at_point( (Point) $point) {
 	my $tp = $self->_textual_page;
 
