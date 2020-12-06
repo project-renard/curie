@@ -3,10 +3,8 @@ language: perl
 matrix:
   include:
     - os: linux
-      sudo: required
       services: docker
     - os: linux
-      sudo: required
       services: docker
       env: ORBITAL_COVERAGE=coveralls
     - os: osx
