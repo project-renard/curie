@@ -34,6 +34,7 @@ use Glib qw(TRUE FALSE);
 use List::AllUtils qw(first);
 
 use Intertangle::Yarn::Types qw(Point Size);
+use Intertangle::Jacquard::Actor;
 
 my $_EmptyGraph = Moo::Role->create_class_with_roles(
 	'Intertangle::Jacquard::Actor' => qw(
