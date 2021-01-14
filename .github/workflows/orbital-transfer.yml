@@ -17,12 +17,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
+        os: [windows-latest]
         coverage: ['']
-        include:
-          - os: 'ubuntu-latest'
-            coverage: coveralls
-            joblabel: '(Coverage)'
     steps:
       - uses: actions/checkout@v2
 
@@ -49,4 +45,9 @@ jobs:
         run: |
           perl -S orbitalism bootstrap auto
           perl -S orbitalism
+          true
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+      - name: Use Orbital Transfer
+        run: |
           perl -S orbitalism test
