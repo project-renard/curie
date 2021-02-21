@@ -235,7 +235,6 @@ sub _build_synth_function {
 with qw(
 	Intertangle::API::Gtk3::Component::Role::FromBuilder
 	Intertangle::API::Gtk3::Component::Role::UIFileFromPackageName
-	Renard::Curie::Component::Role::HasParentMainWindow
 );
 
 1;
